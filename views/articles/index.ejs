@@ -1,0 +1,174 @@
+<%- include('../partials/header', { title: 'Artículos' }) %>
+
+<div class="InicioArticulos">
+  <div class="guides-header-text">
+    <h1 class="guides-header-title">Artículos</h1>
+    <p class="lead">La Psicología es la ciencia que estudia la conducta humana, así como los procesos mentales y, en general, todo lo relativo a la experiencia humana. Asimismo, la Psicología explora conceptos como la percepción, la motivación, la personalidad, la inteligencia, las relaciones entre personas... Además, de una disciplina académica, también es una profesión: los psicólogos son los profesionales que se encargan de aplicar sus conocimientos hacia la terapia psicológica.</p>
+  </div>
+</div>
+
+<div class="public-top-search" style="margin-bottom: 20px;">
+  <label class="articles-filter-label"><i class="fas fa-search"></i> Buscar Artículos</label>
+  <input type="text" id="articlesPublicSearchInput" class="articles-filter-input" placeholder="Buscar artículos por título o autor" />
+</div>
+
+<div class="contenedorArt1" style="display:block; width: 1800px;">
+  <div class="primero" style="width:100%;">
+  <div class="main-content-container">
+    <div style="display:flex; gap:20px; align-items:flex-start; max-width:1200px; margin:0 auto;">
+      <div style="flex:1; min-width:0;">
+<div class="articles-container">
+  <% if (articles && articles.length > 0) { %>
+    <% articles.forEach(article => { %>
+      <div class="article-card">
+        <div class="article-content">
+          <% if (article.image) { %>
+            <img src="<%= article.image %>" class="article-image" alt="<%= article.title %>">
+          <% } else { %>
+            <div class="article-no-image">
+              <i class="article-image-icon bi bi-image"></i>
+              <p>Sin imagen</p>
+            </div>
+          <% } %>
+          <div class="article-info">
+            <div class="infoImport">
+            <span class="article-topic"><%= article.topic %></span>
+            <span class="article-date"><%= new Date(article.publicationDate).toLocaleDateString() %></span>
+            </div>
+
+            <a href="/articles/<%= article._id %>" class="article-link"><h2 class="article-title"><%= article.title %></h2></a>
+            <div class="article-meta">
+              <span class="article-author">Por <%= article.author ? article.author.name : 'Autor desconocido' %></span>
+              
+            </div>
+            <div class="article-footer">
+              <span class="article-views"><%= article.views || 0 %> vistas</span>
+            </div>
+          </div>
+        </div>
+        <div class="divisor"></div>
+      </div>
+    <% }) %>
+  <% } else { %>
+    <div class="no-articles">
+      <img src="../img/cooki/CokiLaptop.png" alt="CokiLaptop" class="no-articles-image">
+      <h3>No hay artículos disponibles</h3>
+      <p>Intenta cambiar los filtros o vuelve más tarde.</p>
+    </div>
+  <% } %>
+      </div>
+
+<div id="articlesPublicPagination" class="articles-pagination"></div>
+      </div>
+      <aside style="width:360px; max-width:40%;">
+        <div class="filtro-container">
+          <div class="filtro-card">
+            <form action="/articles" method="GET" class="filtro-form">
+              <div class="filtro-row">
+                <div class="filtro-col">
+                  <label for="topic" class="filtro-label">Filtrar por tema</label>
+                  <select class="filtro-select" id="topic" name="topic">
+                    <option value="todos" <%= currentTopic === 'todos' ? 'selected' : '' %>>Todos los temas</option>
+                    <option value="Transtornos" <%= currentTopic === 'Transtornos' ? 'selected' : '' %>>Transtornos</option>
+                    <option value="Recomendaciones" <%= currentTopic === 'Recomendaciones' ? 'selected' : '' %>>Recomendaciones</option>
+                    <option value="Tratamientos" <%= currentTopic === 'Tratamientos' ? 'selected' : '' %>>Tratamientos</option>
+                    <option value="Prevencion" <%= currentTopic === 'Prevencion' ? 'selected' : '' %>>Prevención</option>
+                    <option value="Investigacion" <%= currentTopic === 'Investigacion' ? 'selected' : '' %>>Investigación</option>
+                  </select>
+                </div>
+                <div class="filtro-col">
+                  <label for="sort" class="filtro-label">Ordenar por</label>
+                  <select class="filtro-select" id="sort" name="sort">
+                    <option value="fecha" <%= currentSort === 'fecha' ? 'selected' : '' %>>Más recientes</option>
+                    <option value="vistas" <%= currentSort === 'vistas' ? 'selected' : '' %>>Más vistos</option>
+                  </select>
+                </div>
+                <div class="filtro-col filtro-submit">
+                  <button type="submit" class="filtro-btn" style="color: #fff;">Aplicar filtros</button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div class="filtro-card" style="margin-top:12px;">
+          <div class="filtro-body" style="padding:12px;">
+            <h5 style="margin-bottom:10px;"><i class="fas fa-fire"></i> Populares (24h)</h5>
+            <div class="popular-list">
+              <% if (typeof popularArticles24h !== 'undefined' && popularArticles24h && popularArticles24h.length > 0) { %>
+                <% popularArticles24h.forEach(p => { %>
+                  <div class="popular-item" style="margin-bottom:12px;">
+                    <a href="/articles/<%= p._id %>" class="article-link"><strong><%= p.title %></strong></a>
+                    <div class="small text-muted">Por <%= p.author && p.author.name ? p.author.name : 'Autor desconocido' %></div>
+                    <div class="small"><i class="fas fa-eye"></i> <%= p.views24h || 0 %> vistas (24h)</div>
+                  </div>
+                <% }) %>
+              <% } else { %>
+                <div class="small text-muted">Sin datos recientes</div>
+              <% } %>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    </div>
+  </div>
+  
+</div>
+
+  <script>
+    (function(){
+      document.querySelectorAll('.popular-list .article-link').forEach(function(a){
+        a.addEventListener('click', function(e){ e.preventDefault(); var href = a.getAttribute('href'); if (href) window.location.href = href; });
+      });
+      const input = document.getElementById('articlesPublicSearchInput');
+      const container = document.querySelector('.articles-container');
+      const cards = Array.from(container ? container.querySelectorAll('.article-card') : []);
+      const pag = document.getElementById('articlesPublicPagination');
+      let empty = document.getElementById('articlesEmptyResult');
+      let page = 1; const size = 10; let query = '';
+      function filterItems(){
+        const q = query.toLowerCase();
+        return cards.filter(card => {
+          const title = (card.querySelector('.article-title')?.textContent || '').toLowerCase();
+          const author = (card.querySelector('.article-author')?.textContent || '').toLowerCase();
+          return (!q || title.includes(q) || author.includes(q));
+        });
+      }
+      function render(){
+        const items = filterItems();
+        const total = items.length; const pages = Math.max(1, Math.ceil(total/size));
+        if(page>pages) page = pages;
+        cards.forEach(c=>c.style.display='none');
+        const start = (page-1)*size; const end = start+size;
+        items.slice(start,end).forEach(c=>{ c.style.display=''; c.style.animation='fadeInUp 0.25s ease-out'; });
+        if (!empty) {
+          empty = document.createElement('div');
+          empty.id = 'articlesEmptyResult';
+          empty.className = 'guides-empty';
+          empty.innerHTML = '<h3>No se encontraron resultados</h3><p>No hay artículos que coincidan con la búsqueda.</p>';
+          empty.style.display = 'none';
+          container.parentNode.insertBefore(empty, container.nextSibling);
+        }
+        empty.style.display = total === 0 ? '' : 'none';
+        if(pag){
+          pag.innerHTML='';
+          for(let i=1;i<=pages;i++){
+            const b = document.createElement('button');
+            b.className = 'page-btn'+(i===page?' active':'');
+            b.textContent = i;
+            b.onclick = function(){ page=i; render(); };
+            pag.appendChild(b);
+          }
+        }
+      }
+      if(input){ input.addEventListener('input', function(e){ query = e.target.value || ''; page=1; render(); }); }
+      render();
+    })();
+  </script>
+  <!-- Tu JS primero, para que el callback global exista antes de cargar el script de Google -->
+  <script src="/js/tradux.js"></script>
+  <!-- Script oficial de Google (callback definido en translate.js) -->
+  <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+<%- include('../partials/footer') %>

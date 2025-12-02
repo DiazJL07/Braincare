@@ -1,0 +1,1055 @@
+/* CSS personalizado para los foros - Diseño moderno sin Bootstrap */
+.InicioForo {
+    background-image: url("/img/articles/foroheader1.jpeg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    padding: 80px 0 60px;
+    margin-bottom: 40px;
+    width: 100vw;
+    margin-left: calc(-50vw + 50%);
+    margin-right: calc(-50vw + 50%);
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 50vh;
+    height: auto;
+}
+
+
+.foro-header-text {
+    position: relative;
+    z-index: 3;
+    width: 100%;
+    max-width: 1200px;
+    padding: 0 40px;
+    text-align: center;
+    animation: slideInLeft 1s ease-out;
+}
+
+.foro-header-title {
+    font-size: 3.5rem;
+    font-weight: 800;
+    text-align: center;
+    color: white;
+    margin-bottom: 20px;
+    line-height: 1.1;
+    animation: fadeInUp 1s ease-out 0.3s both;
+}
+
+.foro-header-text .lead {
+    font-size: 1.2rem;
+    color: rgba(255, 255, 255, 0.9);
+    line-height: 1.6;
+    font-weight: 400;
+ 
+    animation: fadeInUp 1s ease-out 0.6s both;
+}
+
+.foro-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 10px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Estilos responsivos para el header del foro */
+@media (max-width: 768px) {
+  .InicioForo {
+    min-height: 40vh;
+    padding: 60px 3% 40px;
+    background-size: cover;
+    background-position: center top;
+  }
+  
+  .foro-header-title {
+    font-size: 2.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .InicioForo {
+    min-height: 35vh;
+    padding: 40px 2% 30px;
+  }
+  
+  .foro-header-title {
+    font-size: 2rem;
+  }
+  
+  .foro-header-text .lead {
+    font-size: 1rem;
+    max-width: 95%;
+  }
+}
+
+.foro-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+}
+
+.foro-title {
+  margin: 0;
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #667eea;
+}
+
+.foro-subtitle {
+  margin: 5px 0 0 0;
+  font-size: 1.1rem;
+  color: #6c757d;
+  font-weight: 300;
+}
+
+.create-btn {
+  background: #667eea;
+  color: #000000;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 20px;
+  text-decoration: none;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+}
+
+/* Botón flotante simplificado */
+.Btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 45px;
+  height: 45px;
+  border: none;
+  border-radius: 0px;
+  cursor: pointer;
+  background-color: black;
+  text-decoration: none;
+}
+
+/* plus sign */
+.sign {
+  width: 100%;
+  font-size: 2em;
+  color: #000000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* text */
+.text {
+  display: none;
+}
+
+/* button click effect*/
+.Btn:active {
+  transform: translate(2px ,2px);
+}
+
+/* Posición flotante */
+.floating-btn {
+  position: fixed;
+  right: 30px;
+  top: calc(60% + 4rem);
+  z-index: 1000;
+}
+
+/* Responsive para dispositivos móviles */
+@media (max-width: 768px) {
+  .floating-btn {
+    right: 20px;
+    top: 70%;
+  }
+}
+
+/* Filtros personalizados - Mismo diseño que artículos */
+.filtro-container {
+  margin-bottom: 2rem;
+  border-radius: 20px;
+  padding: 1rem;
+}
+
+.filtro-card {
+  background: #FFFFFF;
+  border-radius: 20px;
+  padding: 2.5rem;
+  margin-bottom: 3rem;
+  position: relative;
+  overflow: hidden;
+  animation: slideInDown 0.8s ease-out 0.2s both;
+  border: 1px solid #E5E5E7;
+}
+
+.filtro-card::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 50%);
+  animation: rotate 15s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.filtro-form {
+  position: relative;
+  z-index: 2;
+}
+
+.filtro-row {
+  display: flex;
+  gap: 1.5rem;
+  align-items: end;
+  flex-wrap: wrap;
+}
+
+.filtro-col {
+  flex: 1;
+  min-width: 200px;
+}
+
+.filtro-label {
+  display: block;
+  color: #000000;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+}
+
+.filtro-select {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #E5E5E7;
+  border-radius: 12px;
+  background: #F8F9FA;
+  color: #000000;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.filtro-select:focus {
+  outline: none;
+  border-color: #667eea;
+  background: #FFFFFF;
+  box-shadow: 0 0 0 3px rgba(139, 126, 200, 0.1);
+}
+
+.filtro-select option {
+  background: #FFFFFF;
+  color: #000000;
+}
+
+.filtro-submit {
+  display: flex;
+  align-items: end;
+}
+
+.filtro-btn {
+  background: #667eea;
+  color: #ffffff;
+  border: none;
+  padding: 8px 20px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 15px rgba(139, 126, 200, 0.3);
+  position: relative;
+  z-index: 2;
+  overflow: hidden;
+  margin: 0.25rem;
+}
+
+.filtro-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  transition: left 0.5s;
+}
+
+.filtro-btn:hover::before {
+  left: 100%;
+}
+
+
+
+/* Grid de publicaciones personalizado */
+.foros-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-bottom: 40px;
+}
+
+/* Tarjeta de foro personalizada */
+.foro-card {
+  background: white;
+  border-radius: 20px;
+  overflow: hidden;
+  border: 10px solid #f8f9fa;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 25px;
+  width: 100%;
+  min-height: 160px;
+  padding: 10px;
+}
+
+/* Imagen de portada */
+.foro-image {
+  width: 200px;
+  height: 140px;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+  flex-shrink: 0;
+  border-radius: 15px;
+  border: 10px solid #f8f9fa;
+}
+
+
+
+.foro-image-placeholder {
+  width: 200px;
+  height: 140px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #6c757d;
+  font-size: 2.5rem;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+  border-radius: 15px;
+  border: 10px solid #f8f9fa;
+}
+
+.foro-card:hover .foro-image-placeholder {
+  background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
+}
+
+/* Contenido de la tarjeta */
+.foro-content {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  height: 100%;
+  padding-right: 80px;
+}
+
+/* Header del autor */
+/* Autor arriba a la derecha */
+.author-avatar {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  background: #4a90e2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #000000;
+  font-weight: bold;
+  font-size: 1rem;
+  margin-right: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.post-date {
+  color: #6c757d;
+  font-size: 0.8rem;
+  margin: 2px 0 0 0;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: help;
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 4px 8px;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  z-index: 10;
+}
+
+/* Título del foro */
+.foro-title-card {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #2c3e50;
+  margin: 0 0 8px 0;
+  line-height: 1.3;
+  transition: color 0.3s ease;
+}
+
+.foro-card:hover .foro-title-card {
+  color: #667eea;
+}
+
+/* Contenido del foro */
+.foro-content {
+  font-size: 0.95rem;
+  color: #555;
+  line-height: 1.5;
+  margin: 15px 0;
+  text-align: justify;
+}
+
+/* Badge del tema */
+.topic-badge {
+  display: inline-block;
+  padding: 6px 12px;
+  background: #667eea;
+  color: #000000;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-bottom: 15px;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+/* Footer de la tarjeta */
+.foro-footer {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin-top: 10px;
+  gap: 15px;
+}
+
+.foro-stats {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+}
+
+/* Botón de like */
+.like-btn {
+  background: none;
+  border: none;
+  color: #6c757d;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 0.7rem;
+  transition: all 0.3s ease;
+  padding: 2px 4px;
+  border-radius: 8px;
+}
+
+.like-btn.liked {
+  color: #e74c3c;
+}
+
+/* Contador de comentarios */
+.comment-count {
+  color: #6c757d;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.9rem;
+  padding: 5px 8px;
+}
+
+/* Contador de vistas */
+.view-count {
+  color: #6c757d;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.9rem;
+  padding: 5px 8px;
+}
+
+.view-count i {
+  color: #17a2b8;
+}
+
+/* Botón leer más */
+.read-more-btn {
+  background: #4a90e2;
+  color: #000000;
+  text-decoration: none;
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+/* Botón de eliminar */
+.delete-btn {
+  background: transparent;
+  border: 1px solid #6c757d;
+  color: #000;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+}
+
+.delete-btn svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.delete-icon img{
+  width: 16px;
+}
+
+/* Información del autor */
+.foro-author {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  color: #495057;
+  font-size: 0.95rem;
+  margin-bottom: 1rem;
+  padding: 0 10px;
+}
+
+
+
+/* Fecha del post en esquina superior derecha */
+.post-date-corner {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 0.8rem;
+  color: #000000 !important;
+  cursor: help;
+  background-color: #FFFFFF !important;
+  padding: 4px 8px;
+  border-radius: 4px;
+  z-index: 10;
+  margin: 0;
+}
+
+
+
+
+/* Estilos adicionales para compatibilidad */
+.foro-actions {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+/* Nuevo botón animado de leer más */
+.readmore-btn-link {
+  text-decoration: none;
+}
+
+
+
+
+.readmore-btn .text {
+  width: auto;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 13px;
+  color: rgb(255, 255, 255);
+  white-space: nowrap;
+}
+
+/* Etiqueta del tema */
+.topic-tag {
+  display: inline-block;
+  color: #667eea;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+  text-transform: lowercase;
+}
+
+.topic-tag .hashtag {
+  color: #764ba2;
+  font-weight: 700;
+  margin-right: 2px;
+}
+
+/* Colores específicos para cada tema */
+.topic-tag.ansiedad {
+  color: #a855f7;
+}
+
+.topic-tag.ansiedad .hashtag {
+  color: #7c3aed;
+}
+
+.topic-tag.depresion {
+  color: #ec4899;
+}
+
+.topic-tag.depresion .hashtag {
+  color: #be185d;
+}
+
+.topic-tag.estres {
+  color: #3b82f6;
+}
+
+.topic-tag.estres .hashtag {
+  color: #1d4ed8;
+}
+
+.topic-tag.trastornos {
+  color: #06b6d4;
+}
+
+.topic-tag.trastornos .hashtag {
+  color: #0891b2;
+}
+
+.topic-tag.adicciones {
+  color: #f59e0b;
+}
+
+.topic-tag.adicciones .hashtag {
+  color: #d97706;
+}
+
+.topic-tag.fobias {
+  color: #10b981;
+}
+
+.topic-tag.fobias .hashtag {
+  color: #059669;
+}
+
+.topic-tag.autolesiones {
+  color: #8b5cf6;
+}
+
+.topic-tag.autolesiones .hashtag {
+  color: #7c3aed;
+}
+
+/* Mantener estilos antiguos para compatibilidad */
+.read-more-btn {
+  background: #667eea;
+  color: #000000;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 20px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+/* Estilos duplicados de delete-btn comentados para evitar conflictos
+.delete-btn {
+  background: #e74c3c;
+  color: white;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 3px 10px rgba(231, 76, 60, 0.3);
+}
+
+.delete-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
+}
+*/
+
+.views-count {
+  color: #6c757d;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* Botones de filtro por temas principales */
+.topic-filter-buttons {
+  display: flex;
+  gap: 15px;
+  margin: 20px 0;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.topic-btn {
+  padding: 8px 16px;
+  border-radius: 20px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.8rem;
+  border: 2px solid transparent;
+  color: #000000;
+  text-align: center;
+  min-width: 100px;
+  /* Estilo por defecto para todos los temas */
+  background: #667eea;
+}
+
+.topic-btn.active {
+  opacity: 0.8;
+}
+
+/* Colores específicos para cada tema */
+.topic-btn:first-child {
+  background: #667eea;
+  color: white;
+}
+
+.topic-btn.ansiedad {
+  background: #a855f7;
+  color: white;
+}
+
+.topic-btn.depresion {
+  background: #ec4899;
+  color: white;
+}
+
+.topic-btn.estres {
+  background: #3b82f6;
+  color: white;
+}
+
+.topic-btn.trastornos {
+  background: #06b6d4;
+  color: white;
+}
+
+.topic-btn.adicciones {
+  background: #f59e0b;
+  color: white;
+}
+
+.topic-btn.fobias {
+  background: #10b981;
+  color: white;
+}
+
+.topic-btn.autolesiones {
+  background: #8b5cf6;
+  color: white;
+}
+
+.topic-btn.wilson {
+  background: #ff6b6b;
+  color: white;
+}
+
+/* Estilos adicionales para temas nuevos */
+.topic-btn.relaciones {
+  background: #ff9ff3;
+  color: white;
+}
+
+.topic-btn.trabajo {
+  background: #54a0ff;
+  color: white;
+}
+
+.topic-btn.familia {
+  background: #5f27cd;
+  color: white;
+}
+
+.topic-btn.autoestima {
+  background: #00d2d3;
+  color: white;
+}
+
+.topic-btn.duelo {
+  background: #fd79a8;
+  color: white;
+}
+
+.topic-btn.terapia {
+  background: #fdcb6e;
+  color: white;
+}
+
+.topic-btn.medicacion {
+  background: #6c5ce7;
+  color: white;
+}
+
+.topic-btn.sueno {
+  background: #a29bfe;
+  color: white;
+}
+
+.topic-btn.alimentacion {
+  background: #fd63a3;
+  color: white;
+}
+
+.topic-btn.ejercicio {
+  background: #1dd1a1;
+  color: white;
+}
+
+/* Estado vacío */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: #6c757d;
+}
+
+.empty-state h3 {
+  font-size: 1.8rem;
+  margin-bottom: 10px;
+  color: #495057;
+}
+
+.empty-state p {
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+/* Animaciones adicionales */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.foro-card {
+  animation: fadeInUp 0.6s ease forwards;
+}
+
+.foro-card:nth-child(1) { animation-delay: 0.1s; }
+.foro-card:nth-child(2) { animation-delay: 0.2s; }
+.foro-card:nth-child(3) { animation-delay: 0.3s; }
+.foro-card:nth-child(4) { animation-delay: 0.4s; }
+.foro-card:nth-child(5) { animation-delay: 0.5s; }
+.foro-card:nth-child(6) { animation-delay: 0.6s; }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .foro-container {
+    padding: 15px;
+  }
+  
+  .foro-header {
+    flex-direction: column;
+    gap: 20px;
+    text-align: center;
+  }
+  
+  .foro-title {
+    font-size: 2rem;
+  }
+  
+  .filters-row {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+  
+  .foros-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .foro-content {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .foro-title {
+    font-size: 1.8rem;
+  }
+  
+  .foro-content {
+    padding: 15px;
+  }
+  
+  .foro-footer {
+    flex-direction: column;
+    gap: 10px;
+    align-items: stretch;
+  }
+  
+  .foro-actions {
+    justify-content: center;
+  }
+}
+
+/* Responsive para foro-card y elementos internos */
+
+/* 1440px y menos: desktop grande */
+@media (max-width: 1440px) {
+  .foro-card {
+    min-height: 150px;
+    gap: 20px;
+    padding: 10px;
+  }
+  .foro-image, .foro-image-placeholder {
+    width: 180px;
+    height: 120px;
+  }
+}
+
+/* 1200px y menos: laptop */
+@media (max-width: 1200px) {
+  .foro-card {
+    min-height: 140px;
+    gap: 16px;
+    padding: 8px;
+  }
+  .foro-image, .foro-image-placeholder {
+    width: 150px;
+    height: 100px;
+  }
+  .foro-content {
+    padding-right: 30px;
+  }
+}
+
+/* 992px y menos: tablet horizontal */
+@media (max-width: 992px) {
+  .foro-card {
+    flex-direction: column;
+    align-items: flex-start;
+    min-height: unset;
+    gap: 10px;
+    padding: 15px 10px; /* Aumentamos el padding */
+  }
+  
+  .foro-author {
+    order: -1; /* Lo movemos al principio */
+    margin-bottom: 10px;
+    width: 100%;
+  }
+
+  .foro-image, .foro-image-placeholder {
+    order: 0;
+    width: 100%;
+    height: 180px;
+    max-width: 100%;
+  }
+  
+  .foro-content {
+    order: 1;
+    padding-right: 0;
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .foro-card {
+    padding: 12px 8px;
+  }
+  
+  .foro-author {
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+  }
+  
+  .author-avatar {
+    width: 30px;
+    height: 30px;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .foro-card {
+    padding: 10px 6px;
+  }
+  
+  .foro-author {
+    margin-bottom: 6px;
+    font-size: 0.85rem;
+  }
+  
+  .author-avatar {
+    width: 28px;
+    height: 28px;
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 375px) {
+  .foro-card {
+    padding: 8px 4px;
+  }
+  
+  .foro-author {
+    margin-bottom: 4px;
+    font-size: 0.8rem;
+  }
+  
+  .author-avatar {
+    width: 25px;
+    height: 25px;
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 340px) {
+  .foro-author {
+    font-size: 0.75rem;
+  }
+  
+  .author-avatar {
+    width: 24px;
+    height: 24px;
+    font-size: 0.75rem;
+  }
+}
+

@@ -1,0 +1,733 @@
+<%- include('../partials/header', { title: 'Mi Perfil' }) %>
+<style>
+    body{
+      padding-top: 50px;
+    }
+  </style>
+<div class="container mt-4">
+  <!-- Foto de portada -->
+  <div class="row">
+    <div class="col-12 col-lg-8 col-md-8 mx-auto">
+      <div class="card shadow mb-4">
+        <div class="position-relative" style="height: 200px; overflow: hidden; border-radius: 0.375rem 0.375rem 0 0;">
+          <img src="<%= user.getCoverImageUrl() %>" class="w-100 h-100" style="object-fit: cover;" alt="Foto de portada" id="coverImagePreview">
+          <div class="position-absolute top-0 end-0 m-3">
+            <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#coverImageModal">
+              <i class="fas fa-camera"></i> Cambiar portada
+            </button>
+          </div>
+        </div>
+        
+        <!-- Foto de perfil -->
+        <div class="position-relative" style="margin-top: -75px; margin-left: 30px;">
+          <% if (user.getProfileImageUrl()) { %>
+            <img src="<%= user.getProfileImageUrl() %>" class="rounded-circle border border-4 border-white" style="width: 150px; height: 150px; object-fit: cover;" alt="Foto de perfil" id="profileImagePreview">
+          <% } else { %>
+            <div class="rounded-circle border border-4 border-white bg-secondary d-flex align-items-center justify-content-center" style="width: 150px; height: 150px; color: white; font-size: 48px; font-weight: bold;" id="profileImagePreview">
+              <%= user.name.charAt(0).toUpperCase() %>
+            </div>
+          <% } %>
+          <button type="button" class="btn btn-sm btn-primary position-absolute bottom-0 end-0 rounded-circle" data-bs-toggle="modal" data-bs-target="#profileImageModal" style="margin-right: 10px;">
+            <i class="fas fa-camera"></i>
+          </button>
+        </div>
+        
+        <div class="card-body pt-0">
+          <div class="row">
+            <div class="col-md-8">
+              <h2 class="card-title mt-4 mb-2 user-name-display" data-sync-field="name" data-user-id="<%= user._id %>"><%= user.name %></h2>
+              <p class="text-muted mb-2"><%= user.email %></p>
+              <span class="badge mb-3 <%= user.role === 'admin' ? 'bg-danger' : (user.role === 'psychologist' ? 'bg-success' : 'bg-primary') %>">
+                <i class="fas <%= user.role === 'admin' ? 'fa-crown' : (user.role === 'psychologist' ? 'fa-stethoscope' : 'fa-user') %>"></i> 
+                <%= user.role === 'admin' ? 'Administrador' : (user.role === 'psychologist' ? 'Psicólogo' : 'Usuario') %>
+              </span>
+              <p class="text-muted small">Miembro desde <%= new Date(user.createdAt).toLocaleDateString() %></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Configuración del perfil -->
+  <div class="row">
+    <div class="col-md-8 mx-auto">
+      <div class="card shadow">
+        <div class="card-body profile-config-container">
+          <h3 class="profile-config-title">Configuración del Perfil</h3>
+        
+        <% if (typeof success !== 'undefined') { %>
+          <div class="alert alert-success profile-alert" role="alert">
+            <i class="fas fa-check-circle"></i>
+            <%= success %>
+          </div>
+        <% } %>
+        
+        <% if (typeof uploadError !== 'undefined' && uploadError) { %>
+        <div class="modal" id="profileErrorModal" style="display:block; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1050;">
+          <div class="modal-dialog" style="margin:10% auto; max-width:500px;">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">Error</h5>
+                <button type="button" class="btn-close" onclick="document.getElementById('profileErrorModal').style.display='none'"></button>
+              </div>
+              <div class="modal-body">
+                <p><%= uploadError %></p>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="document.getElementById('profileErrorModal').style.display='none'">Cerrar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <% } %>
+        
+        <ul class="profile-nav-tabs" id="profileTabs" role="tablist">
+          <li class="profile-nav-item" role="presentation">
+            <button class="profile-nav-link active" id="info-tab" data-bs-toggle="tab" data-bs-target="#info" type="button" role="tab" aria-controls="info" aria-selected="true">
+              <i class="fas fa-user"></i>
+              <span>Información Personal</span>
+            </button>
+          </li>
+          <li class="profile-nav-item" role="presentation">
+            <button class="profile-nav-link" id="password-tab" data-bs-toggle="tab" data-bs-target="#password" type="button" role="tab" aria-controls="password" aria-selected="false">
+              <i class="fas fa-lock"></i>
+              <span>Cambiar Contraseña</span>
+            </button>
+          </li>
+          <% if (user.role === 'admin') { %>
+          <li class="profile-nav-item" role="presentation">
+            <button class="profile-nav-link" id="role-tab" data-bs-toggle="tab" data-bs-target="#role" type="button" role="tab" aria-controls="role" aria-selected="false">
+              <i class="fas fa-crown"></i>
+              <span>Gestión de Rol</span>
+            </button>
+          </li>
+          <% } %>
+        </ul>
+        
+        <div class="profile-tab-content" id="profileTabsContent">
+          <!-- Pestaña de información personal -->
+          <div class="tab-pane fade show active" id="info" role="tabpanel" aria-labelledby="info-tab">
+            <form action="/user/profile" method="POST" class="profile-form">
+              <div class="profile-form-group">
+                <label for="name" class="profile-form-label">
+                  <i class="fas fa-user"></i>
+                  Nombre completo
+                </label>
+                <input type="text" class="profile-form-control" id="name" name="name" value="<%= user.name %>" required data-sync-field="name" data-user-id="<%= user._id %>">
+              </div>
+              
+              <div class="profile-form-group">
+                <label for="email" class="profile-form-label">
+                  <i class="fas fa-envelope"></i>
+                  Correo electrónico
+                </label>
+                <input type="email" class="profile-form-control" id="email" name="email" value="<%= user.email %>" required>
+              </div>
+              
+              <div class="profile-form-group">
+                <label for="currentPassword" class="profile-form-label">
+                  <i class="fas fa-key"></i>
+                  Contraseña actual
+                </label>
+                <input type="password" class="profile-form-control" id="currentPassword" name="currentPassword" required>
+                <div class="profile-form-text">Ingresa tu contraseña actual para confirmar los cambios</div>
+              </div>
+              
+              <div class="profile-form-actions">
+                <button type="submit" class="profile-btn profile-btn-primary">
+                  <i class="fas fa-save"></i>
+                  Actualizar Perfil
+                </button>
+              </div>
+            </form>
+
+            <% if (user.role === 'user') { %>
+            <div class="mt-4">
+              <div class="card p-3">
+                <p class="mb-2">¿Eres psicólogo?</p>
+                <% if (typeof latestPsychRequest !== 'undefined' && latestPsychRequest && latestPsychRequest.status === 'pending') { %>
+                  <div class="alert alert-info mb-2">Ya tienes una solicitud en proceso</div>
+                  <button class="btn btn-secondary" disabled>Solicita tu rol de psicólogo</button>
+                <% } else { %>
+                  <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#psychologistRequestModal">Solicita tu rol de psicólogo</button>
+                <% } %>
+                <% if (typeof latestPsychRequest !== 'undefined' && latestPsychRequest) { %>
+                  <div class="mt-3">
+                    <span class="badge bg-secondary">Estado: <%= latestPsychRequest.status %></span>
+                    <% if (latestPsychRequest.status === 'rejected' && latestPsychRequest.rejectionReason) { %>
+                      <div class="text-danger mt-2">Motivo del rechazo: <%= latestPsychRequest.rejectionReason %></div>
+                      <div class="text-muted">Reaplicar: <%= latestPsychRequest.reapplyAllowed ? 'Permitido' : 'No permitido' %></div>
+                    <% } %>
+                  </div>
+                <% } %>
+              </div>
+            </div>
+            <% } %>
+          </div>
+          
+          <!-- Pestaña de cambio de contraseña -->
+          <div class="tab-pane fade" id="password" role="tabpanel" aria-labelledby="password-tab">
+            <form action="/user/change-password" method="POST" class="profile-form">
+              <div class="profile-form-group">
+                <label for="currentPasswordChange" class="profile-form-label">
+                  <i class="fas fa-lock"></i>
+                  Contraseña actual
+                </label>
+                <input type="password" class="profile-form-control" id="currentPasswordChange" name="currentPassword" required>
+              </div>
+              
+              <div class="profile-form-group">
+                <label for="newPassword" class="profile-form-label">
+                  <i class="fas fa-key"></i>
+                  Nueva contraseña
+                </label>
+                <input type="password" class="profile-form-control" id="newPassword" name="newPassword" required minlength="8">
+                <div class="profile-form-text">La contraseña debe tener al menos 8 caracteres</div>
+              </div>
+              
+              <div class="profile-form-group">
+                <label for="confirmPassword" class="profile-form-label">
+                  <i class="fas fa-shield-alt"></i>
+                  Confirmar nueva contraseña
+                </label>
+                <input type="password" class="profile-form-control" id="confirmPassword" name="confirmPassword" required minlength="8">
+              </div>
+              
+              <div class="profile-form-actions">
+                <button type="submit" class="profile-btn profile-btn-warning">
+                  <i class="fas fa-sync-alt"></i>
+                  Cambiar Contraseña
+                </button>
+              </div>
+            </form>
+          </div>
+          
+          <% if (user.role === 'admin') { %>
+          <!-- Pestaña de gestión de rol -->
+          <div class="tab-pane fade" id="role" role="tabpanel" aria-labelledby="role-tab">
+            <form action="/user/profile/role" method="POST" class="profile-form">
+              <div class="profile-form-group">
+                <label for="role" class="profile-form-label">
+                  <i class="fas fa-crown"></i>
+                  Rol del usuario
+                </label>
+                <select class="profile-form-control" id="role" name="role" required>
+                  <option value="user" <%= user.role === 'user' ? 'selected' : '' %>>Usuario</option>
+                  <option value="admin" <%= user.role === 'admin' ? 'selected' : '' %>>Administrador</option>
+                </select>
+                <div class="profile-form-text">Como administrador, puedes cambiar tu propio rol</div>
+              </div>
+              
+              <div class="profile-form-group">
+                <label for="roleCurrentPassword" class="profile-form-label">
+                  <i class="fas fa-key"></i>
+                  Contraseña actual
+                </label>
+                <input type="password" class="profile-form-control" id="roleCurrentPassword" name="currentPassword" required>
+                <div class="profile-form-text">Ingresa tu contraseña actual para confirmar el cambio de rol</div>
+              </div>
+              
+              <div class="profile-form-actions">
+                <button type="submit" class="profile-btn profile-btn-danger">
+                  <i class="fas fa-exchange-alt"></i>
+                  Cambiar Rol
+                </button>
+              </div>
+            </form>
+          </div>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para cambiar foto de perfil -->
+<div class="modal fade" id="profileImageModal" tabindex="-1" aria-labelledby="profileImageModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="profileImageModalLabel">Cambiar Foto de Perfil</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form action="/user/profile/image" method="POST" enctype="multipart/form-data">
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="profileImage" class="form-label">Seleccionar imagen</label>
+            <input type="file" class="form-control" id="profileImage" name="profileImage" accept="image/*" required>
+            <div class="form-text">Formatos permitidos: JPG, PNG, GIF. Tamaño máximo: 5MB</div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Subir Imagen</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal solicitud de rol psicólogo -->
+<div class="modal fade" id="psychologistRequestModal" tabindex="-1" aria-labelledby="psychologistRequestModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="psychologistRequestModalLabel">Solicitud de rol de psicólogo</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form action="/user/psychologist-request" method="POST" enctype="multipart/form-data">
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label">Nombre completo</label>
+            <input type="text" name="fullName" class="form-control" value="<%= user.name %>" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Correo</label>
+            <input type="email" name="email" class="form-control" value="<%= user.email %>" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Descripción de los servicios</label>
+            <textarea name="servicesDescription" class="form-control" rows="4" required></textarea>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Imagen de comprobación</label>
+            <input type="file" name="proofImage" class="form-control" accept="image/*" required>
+          </div>
+          <div class="alert alert-info">Gracias por su solicitud. Será evaluada para su aprobación.</div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Enviar solicitud</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para cambiar foto de portada -->
+<div class="modal fade" id="coverImageModal" tabindex="-1" aria-labelledby="coverImageModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="coverImageModalLabel">Cambiar Foto de Portada</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form action="/user/profile/cover" method="POST" enctype="multipart/form-data">
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="coverImage" class="form-label">Seleccionar imagen</label>
+            <input type="file" class="form-control" id="coverImage" name="coverImage" accept="image/*" required>
+            <div class="form-text">Formatos permitidos: JPG, PNG, GIF. Tamaño máximo: 5MB</div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Subir Imagen</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+/* Configuración del perfil - CSS nativo moderno */
+.profile-config-container {
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  border-radius: 20px;
+  padding: 2.5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+
+.profile-config-title {
+  color: #2c3e50;
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 2rem;
+  text-align: center;
+  position: relative;
+}
+
+.profile-config-title::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(90deg, #007bff, #6f42c1);
+  border-radius: 2px;
+}
+
+/* Alertas personalizadas */
+.profile-alert {
+  border: none;
+  border-radius: 15px;
+  padding: 1rem 1.5rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-weight: 500;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.profile-alert.alert-success {
+  background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+  color: #155724;
+  border-left: 4px solid #28a745;
+}
+
+.profile-alert.alert-danger {
+  background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+  color: #721c24;
+  border-left: 4px solid #dc3545;
+}
+
+/* Navegación de pestañas */
+.profile-nav-tabs {
+  display: flex;
+  background: #f8f9fa;
+  border-radius: 15px;
+  padding: 0.5rem;
+  margin-bottom: 2rem;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+  list-style: none;
+  gap: 0.5rem;
+}
+
+.profile-nav-item {
+  flex: 1;
+}
+
+.profile-nav-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1rem 1.5rem;
+  background: transparent;
+  border: none;
+  border-radius: 10px;
+  color: #6c757d;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  width: 100%;
+  cursor: pointer;
+}
+
+.profile-nav-link:hover {
+  background: rgba(0, 123, 255, 0.1);
+  color: #007bff;
+  transform: translateY(-2px);
+}
+
+.profile-nav-link.active {
+  background-color: #007bff;
+  color: white;
+  box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+.profile-nav-link i {
+  font-size: 1.1rem;
+}
+
+/* Contenido de pestañas */
+.profile-tab-content {
+  background: white;
+  border-radius: 15px;
+  padding: 2rem;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e9ecef;
+}
+
+/* Asegurar que solo se muestre una pestaña a la vez */
+.tab-pane {
+  display: none !important;
+}
+
+.tab-pane.show.active {
+  display: block !important;
+}
+
+/* Mejorar la transición entre pestañas */
+.tab-pane.fade {
+  transition: opacity 0.3s ease-in-out;
+}
+
+.tab-pane.fade.show {
+  opacity: 1;
+}
+
+.tab-pane.fade:not(.show) {
+  opacity: 0;
+}
+
+/* Formularios */
+.profile-form {
+  max-width: 100%;
+}
+
+.profile-form-group {
+  margin-bottom: 1.5rem;
+  position: relative;
+}
+
+.profile-form-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  color: #495057;
+  margin-bottom: 0.75rem;
+  font-size: 0.95rem;
+}
+
+.profile-form-label i {
+  color: #007bff;
+  font-size: 1rem;
+}
+
+.profile-form-control {
+  width: 100%;
+  padding: 0.875rem 1rem;
+  border: 2px solid #e9ecef;
+  border-radius: 10px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  background: #f8f9fa;
+}
+
+.profile-form-control:focus {
+  outline: none;
+  border-color: #007bff;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+  transform: translateY(-1px);
+}
+
+.profile-form-control:hover {
+  border-color: #007bff;
+  background: white;
+}
+
+.profile-form-text {
+  font-size: 0.875rem;
+  color: #6c757d;
+  margin-top: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.profile-form-text::before {
+  content: '💡';
+  font-size: 0.8rem;
+}
+
+/* Botones */
+.profile-form-actions {
+  margin-top: 2rem;
+  display: flex;
+  justify-content: center;
+}
+
+.profile-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.875rem 2rem;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 1rem;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 180px;
+  justify-content: center;
+}
+
+.profile-btn-primary {
+  background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+  color: white;
+  box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+}
+
+.profile-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 123, 255, 0.4);
+}
+
+.profile-btn-warning {
+  background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);
+  color: #212529;
+  box-shadow: 0 4px 15px rgba(255, 193, 7, 0.3);
+}
+
+.profile-btn-warning:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 193, 7, 0.4);
+}
+
+.profile-btn-danger {
+  background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+  color: white;
+  box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+}
+
+.profile-btn-danger:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4);
+}
+
+/* Responsividad */
+@media (max-width: 768px) {
+  .profile-config-container {
+    padding: 1.5rem;
+    border-radius: 15px;
+  }
+  
+  .profile-config-title {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .profile-nav-tabs {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  
+  .profile-nav-link {
+    padding: 0.75rem 1rem;
+  }
+  
+  .profile-nav-link span {
+    display: none;
+  }
+  
+  .profile-tab-content {
+    padding: 1.5rem;
+  }
+  
+  .profile-btn {
+    width: 100%;
+    min-width: auto;
+  }
+}
+
+@media (max-width: 576px) {
+  .profile-nav-link span {
+    display: inline;
+    font-size: 0.875rem;
+  }
+  
+  .profile-nav-link {
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 0.5rem;
+  }
+  
+  .profile-nav-link i {
+    font-size: 1.2rem;
+  }
+}
+
+/* Animaciones */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.profile-config-container {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.profile-form-group {
+  animation: fadeInUp 0.6s ease-out;
+  animation-fill-mode: both;
+}
+
+.profile-form-group:nth-child(1) { animation-delay: 0.1s; }
+.profile-form-group:nth-child(2) { animation-delay: 0.2s; }
+.profile-form-group:nth-child(3) { animation-delay: 0.3s; }
+.profile-form-actions { animation-delay: 0.4s; }
+</style>
+
+  <!-- JavaScript para las pestañas del perfil -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Inicializar las pestañas de Bootstrap
+      const triggerTabList = document.querySelectorAll('#profileTabs button[data-bs-toggle="tab"]');
+      triggerTabList.forEach(triggerEl => {
+        const tabTrigger = new bootstrap.Tab(triggerEl);
+        
+        triggerEl.addEventListener('click', event => {
+          event.preventDefault();
+          tabTrigger.show();
+        });
+      });
+      
+      // Asegurar que solo la primera pestaña esté activa al cargar
+      const firstTab = document.querySelector('#info-tab');
+      const firstTabContent = document.querySelector('#info');
+      
+      if (firstTab && firstTabContent) {
+        // Remover todas las clases activas
+        document.querySelectorAll('.profile-nav-link').forEach(link => {
+          link.classList.remove('active');
+        });
+        document.querySelectorAll('.tab-pane').forEach(pane => {
+          pane.classList.remove('show', 'active');
+        });
+        
+        // Activar solo la primera pestaña
+        firstTab.classList.add('active');
+        firstTabContent.classList.add('show', 'active');
+      }
+      
+      // Manejar el cambio de pestañas
+      document.addEventListener('shown.bs.tab', function (event) {
+        // Ocultar todos los contenidos
+        document.querySelectorAll('.tab-pane').forEach(pane => {
+          pane.style.display = 'none';
+        });
+        
+        // Mostrar solo el contenido activo
+        const activeTabId = event.target.getAttribute('data-bs-target');
+        const activeContent = document.querySelector(activeTabId);
+        if (activeContent) {
+          activeContent.style.display = 'block';
+        }
+      });
+      
+      // Inicializar mostrando solo el contenido de la primera pestaña
+      document.querySelectorAll('.tab-pane').forEach((pane, index) => {
+        if (index === 0) {
+          pane.style.display = 'block';
+        } else {
+          pane.style.display = 'none';
+        }
+      });
+    });
+  </script>
+  
+  <!-- Tu JS primero, para que el callback global exista antes de cargar el script de Google -->
+  <script src="/js/password-change-validator.js"></script>
+  <script src="/js/profile-validator.js"></script>
+  <script src="/js/tradux.js"></script>
+  <!-- Script oficial de Google (callback definido en translate.js) -->
+  <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+<%- include('../partials/footer') %>

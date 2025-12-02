@@ -1,0 +1,129 @@
+<%- include('../partials/header', { title: 'Psicólogos' }) %>
+
+<div class="InicioArticulos">
+  <div class="guides-header-text">
+    <h1 class="guides-header-title">Psicólogos</h1>
+    <p class="lead">Explora los psicólogos registrados y visita su perfil público.</p>
+  </div>
+</div>
+<div class="public-top-search" style="margin-top:10px;">
+    <label class="articles-filter-label"><i class="fas fa-search"></i> Buscar Psicólogos</label>
+    <input type="text" id="psychSearchInput" class="articles-filter-input" placeholder="Buscar por nombre de psicólogo" />
+  </div>
+<div class="filtro-container" style="margin-top: 10px; margin-left: 415px; margin-right: 415px;">
+  <div class="filtro-card">
+    <form class="filtro-form" onsubmit="return false;">
+      <div class="filtro-row">
+        <div class="filtro-col">
+          <label for="psychSpecialtyFilter" class="filtro-label">Filtrar por especialidad</label>
+          <select class="filtro-select" id="psychSpecialtyFilter">
+            <option value="all">Todas</option>
+            <% const uniqueSpecs = [...new Set((psychologists || []).map(p => p.specialty).filter(Boolean))]; %>
+            <% if (uniqueSpecs.length > 0) { %>
+              <% uniqueSpecs.forEach(spec => { %>
+                <option value="<%= spec %>"><%= spec %></option>
+              <% }); %>
+            <% } else { %>
+              <option value="Clínica">Clínica</option>
+              <option value="Infantil">Infantil</option>
+              <option value="Parejas">Parejas</option>
+              <option value="Cognitivo-Conductual">Cognitivo-Conductual</option>
+              <option value="Neuropsicología">Neuropsicología</option>
+              <option value="Adicciones">Adicciones</option>
+              <option value="Trauma">Trauma</option>
+            <% } %>
+          </select>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+  <div class="guides-grid" id="psychGrid" style="margin-top: 10px; margin-left: 200px; margin-right: 200px;">
+  <% if (psychologists && psychologists.length > 0) { %>
+    <% psychologists.forEach(p => { %>
+      <div class="guide-card psych-card" style="border-radius:16px; overflow:hidden; box-shadow:0 10px 30px rgba(0,0,0,0.12); border:1px solid #e9ecef;">
+        <% const img = p.profileImage ? p.profileImage : '/img/default-avatar.svg'; %>
+        <div style="padding:16px; display:flex; align-items:center; gap:16px;">
+          <div style="position:relative; width:72px; height:72px; flex-shrink:0;">
+            <div style="position:absolute; inset:-3px; border-radius:50%; background:linear-gradient(135deg, #667eea, #764ba2); filter:blur(0.5px);"></div>
+            <img src="<%= img %>" alt="<%= p.name %>" style="position:relative; width:100%; height:100%; object-fit:cover; border-radius:50%; border:3px solid #fff;"/>
+          </div>
+          <div style="flex:1;">
+            <h5 class="guide-card-title" style="margin:0; font-weight:700; color:#333;"><%= p.name %></h5>
+            <div class="guide-card-meta" style="margin-top:6px; display:flex; align-items:center; gap:8px;">
+              <span class="guide-badge" style="background:linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%); color:#0f5132; border:1px solid #c3e6cb;">
+                <i class="fas fa-user-md"></i> <%= p.specialty || 'Especialidad no especificada' %>
+              </span>
+            </div>
+          </div>
+        </div>
+        <div class="guide-card-footer" style="padding:12px 16px; display:flex; justify-content:flex-end;">
+          <a href="/user/public/<%= p._id %>" class="guide-btn" style="border-radius:10px;">
+            Ver perfil
+          </a>
+        </div>
+      </div>
+    <% }) %>
+  <% } else { %>
+    <div class="guides-empty">
+      <h3>No hay psicólogos registrados</h3>
+      <p>Vuelve más tarde.</p>
+    </div>
+  <% } %>
+</div>
+
+<div id="psychPagination" class="articles-pagination"></div>
+
+<script>
+  (function(){
+    const input = document.getElementById('psychSearchInput');
+    const spec = document.getElementById('psychSpecialtyFilter');
+    const grid = document.getElementById('psychGrid');
+    const cards = Array.from(grid ? grid.querySelectorAll('.psych-card') : []);
+    const pag = document.getElementById('psychPagination');
+    let empty = document.getElementById('psychEmptyResult');
+    let page = 1; const size = 10; let query = ''; let specialty = 'all';
+    function matches(card){
+      const title = (card.querySelector('.guide-card-title')?.textContent || '').toLowerCase();
+      const specText = (card.querySelector('.guide-badge')?.textContent || '').toLowerCase();
+      const q = query.toLowerCase();
+      const nameOk = (!q || title.includes(q));
+      const specOk = (specialty === 'all' || specText === specialty.toLowerCase());
+      return nameOk && specOk;
+    }
+    function filtered(){ return cards.filter(matches); }
+    function render(){
+      const items = filtered();
+      const total = items.length; const pages = Math.max(1, Math.ceil(total/size));
+      if(page>pages) page = pages;
+      cards.forEach(c=>c.style.display='none');
+      const start = (page-1)*size; const end = start+size;
+      items.slice(start,end).forEach(c=>{ c.style.display=''; c.style.animation='fadeInUp 0.25s ease-out'; });
+      if (!empty) {
+        empty = document.createElement('div');
+        empty.id = 'psychEmptyResult';
+        empty.className = 'guides-empty';
+        empty.innerHTML = '<h3>No se encontraron resultados</h3><p>No hay psicólogos que coincidan con la búsqueda.</p>';
+        empty.style.display = 'none';
+        grid.parentNode.insertBefore(empty, grid.nextSibling);
+      }
+      empty.style.display = total === 0 ? '' : 'none';
+      if(pag){
+        pag.innerHTML='';
+        for(let i=1;i<=pages;i++){
+          const b = document.createElement('button');
+          b.className = 'page-btn'+(i===page?' active':'');
+          b.textContent = i;
+          b.onclick = function(){ page=i; render(); };
+          pag.appendChild(b);
+        }
+      }
+    }
+    if(input){ input.addEventListener('input', function(e){ query = e.target.value || ''; page=1; render(); }); }
+    if(spec){ spec.addEventListener('change', function(e){ specialty = e.target.value || 'all'; page=1; render(); }); }
+    render();
+  })();
+</script>
+
+<%- include('../partials/footer') %>

@@ -1,0 +1,264 @@
+<%- include('../partials/header', { title: topic ? 'Editar Tema - Admin' : 'Crear Tema - Admin' }) %>
+<link rel="stylesheet" href="/css/admin-forms.css">
+<link rel="stylesheet" href="/css/admin-topics.css">
+<link rel="stylesheet" href="/css/variables-espacios.css">
+
+<div class="container-fluid py-4 mt-8">
+  <!-- Header -->
+  <div class="row justify-content-center mb-4">
+    <div class="col-lg-8">
+      <div class="d-flex justify-content-start">
+        <div>
+          <h2 class="mb-1">
+            <i class="text-primary"></i>
+            <%= topic ? 'Editar Tema' : 'Crear Nuevo Tema' %>
+          </h2>
+          <p class="text-muted mb-0">
+            <%= topic ? 'Modifica la información del tema' : 'Añade un nuevo tema al foro' %>
+          </p>
+        </div>
+       
+      </div>
+    </div>
+  </div>
+
+  <!-- Alertas -->
+  <div id="alertContainer">
+    <div class="col-12"></div>
+  </div>
+
+  <!-- Formulario -->
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white border-bottom">
+          <h5 class="mb-0">
+            <i class="fas fa-<%= topic ? 'edit' : 'plus' %> me-2"></i>
+            <%= topic ? 'Información del Tema' : 'Nuevo Tema' %>
+          </h5>
+        </div>
+        <div class="card-body p-4">
+          <form id="topicForm">
+            <!-- Nombre del tema -->
+            <div class="mb-4">
+              <label for="name" class="form-label fw-semibold">
+                <i class="fas fa-tag text-primary me-1"></i>
+                Nombre del tema 
+              </label>
+              <input type="text" 
+                     class="form-control form-control-lg" 
+                     id="name" 
+                     name="name" 
+                     value="<%= topic ? topic.name : '' %>" 
+                     placeholder="Ej: Autoestima, Relaciones, Trabajo, etc."
+                     required
+                     maxlength="50">
+              <div class="form-text">
+                <i class="fas fa-info-circle me-1"></i>
+                El nombre debe ser único y descriptivo (máximo 50 caracteres)
+              </div>
+            </div>
+
+            <!-- Descripción -->
+            <div class="mb-4">
+              <label for="description" class="form-label fw-semibold">
+                <i class="fas fa-align-left text-primary me-1"></i>
+                Descripción
+              </label>
+              <textarea class="form-control" 
+                        id="description" 
+                        name="description" 
+                        rows="4" 
+                        placeholder="Describe brevemente de qué trata este tema y qué tipo de contenido se puede publicar..."
+                        maxlength="200"><%= topic ? topic.description || '' : '' %></textarea>
+              <div class="form-text">
+                <i class="fas fa-info-circle me-1"></i>
+                Opcional. Ayuda a los usuarios a entender el propósito del tema (máximo 200 caracteres)
+              </div>
+            </div>
+
+            <!-- Estado (solo para edición) -->
+            <% if (topic) { %>
+              <div class="mb-4">
+                <label class="form-label fw-semibold">
+                  <i class="fas fa-toggle-on text-primary me-1"></i>
+                  Estado del tema
+                </label>
+                <div class="form-check form-switch">
+                  <input class="form-check-input" 
+                         type="checkbox" 
+                         id="isActive" 
+                         name="isActive" 
+                         <%= topic.isActive ? 'checked' : '' %>>
+                  <label class="form-check-label" for="isActive">
+                    <span class="fw-semibold">Tema activo</span>
+                    <div class="form-text mt-1">
+                      Los temas inactivos no aparecerán como opción para nuevas publicaciones
+                    </div>
+                  </label>
+                </div>
+              </div>
+            <% } %>
+
+            <!-- Información adicional -->
+            <div class="alert alert-info border-0">
+              <div class="d-flex">
+                <div class="flex-shrink-0">
+                  <i class="fas fa-lightbulb fa-lg"></i>
+                </div>
+                <div class="flex-grow-1 ms-3">
+                  <h6 class="alert-heading mb-2">Consejos para crear un buen tema:</h6>
+                  <ul class="mb-0 small">
+                    <li>Usa nombres claros y específicos</li>
+                    <li>Evita temas demasiado amplios o demasiado específicos</li>
+                    <li>Considera si ya existe un tema similar</li>
+                    <li>La descripción ayuda a los usuarios a elegir el tema correcto</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <!-- Botones -->
+            <div class="d-flex justify-content-end gap-2 mt-4">
+              <a href="/admin/topics" class="btn btn-outline-secondary px-4">
+                <i class="fas fa-times me-1"></i>Cancelar
+              </a>
+              <button type="submit" class="btn btn-primary px-4" id="submitBtn">
+                <span class="spinner-border spinner-border-sm d-none me-2" role="status"></span>
+                <i class="fas fa-<%= topic ? 'save' : 'plus' %> me-1"></i>
+                <%= topic ? 'Actualizar Tema' : 'Crear Tema' %>
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.getElementById('topicForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const submitBtn = document.getElementById('submitBtn');
+    const spinner = submitBtn.querySelector('.spinner-border');
+    const btnText = submitBtn.querySelector('i').nextSibling;
+    
+    // Deshabilitar botón y mostrar spinner
+    submitBtn.disabled = true;
+    spinner.classList.remove('d-none');
+    
+    try {
+      const formData = new FormData(this);
+      const data = {
+        name: formData.get('name'),
+        description: formData.get('description')
+      };
+      
+      <% if (topic) { %>
+        data.isActive = formData.get('isActive');
+      <% } %>
+      
+      const url = '<%= topic ? `/admin/topics/${topic._id}` : '/admin/topics' %>';
+      const method = 'POST';
+      
+      const response = await fetch(url, {
+        method: method,
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      });
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        showAlert('success', result.message);
+        
+        // Redirigir después de un breve delay
+        setTimeout(() => {
+          window.location.href = '/admin/topics';
+        }, 1500);
+      } else {
+        showAlert('danger', result.message || 'Error al procesar la solicitud');
+        
+        // Rehabilitar botón
+        submitBtn.disabled = false;
+        spinner.classList.add('d-none');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      showAlert('danger', 'Error de conexión al procesar la solicitud');
+      
+      // Rehabilitar botón
+      submitBtn.disabled = false;
+      spinner.classList.add('d-none');
+    }
+  });
+  
+  function showAlert(type, message) {
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
+    alertDiv.innerHTML = `
+      ${message}
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    const alertContainer = document.querySelector('#alertContainer .col-12');
+    alertContainer.insertBefore(alertDiv, alertContainer.firstChild);
+    
+    // Auto-remover después de 5 segundos
+    setTimeout(() => {
+      if (alertDiv.parentNode) {
+        alertDiv.remove();
+      }
+    }, 5000);
+  }
+  
+  // Contador de caracteres para nombre
+  document.getElementById('name').addEventListener('input', function() {
+    const maxLength = 50;
+    const currentLength = this.value.length;
+    const formText = this.nextElementSibling;
+    
+    if (currentLength > maxLength - 10) {
+      formText.innerHTML = `<i class="fas fa-info-circle me-1"></i>Caracteres restantes: ${maxLength - currentLength}`;
+      if (currentLength >= maxLength) {
+        formText.classList.add('text-danger');
+      } else {
+        formText.classList.remove('text-danger');
+        formText.classList.add('text-warning');
+      }
+    } else {
+      formText.innerHTML = '<i class="fas fa-info-circle me-1"></i>El nombre debe ser único y descriptivo (máximo 50 caracteres)';
+      formText.classList.remove('text-danger', 'text-warning');
+    }
+  });
+  
+  // Contador de caracteres para descripción
+  document.getElementById('description').addEventListener('input', function() {
+    const maxLength = 200;
+    const currentLength = this.value.length;
+    const formText = this.nextElementSibling;
+    
+    if (currentLength > maxLength - 20) {
+      formText.innerHTML = `<i class="fas fa-info-circle me-1"></i>Caracteres restantes: ${maxLength - currentLength}`;
+      if (currentLength >= maxLength) {
+        formText.classList.add('text-danger');
+      } else {
+        formText.classList.remove('text-danger');
+        formText.classList.add('text-warning');
+      }
+    } else {
+      formText.innerHTML = '<i class="fas fa-info-circle me-1"></i>Opcional. Ayuda a los usuarios a entender el propósito del tema (máximo 200 caracteres)';
+      formText.classList.remove('text-danger', 'text-warning');
+    }
+  });
+</script>
+
+  <!-- Tu JS primero, para que el callback global exista antes de cargar el script de Google -->
+  <script src="/js/tradux.js"></script>
+  <!-- Script oficial de Google (callback definido en translate.js) -->
+  <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+<%- include('../partials/footer') %>

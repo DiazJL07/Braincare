@@ -1,0 +1,168 @@
+<%- include('../partials/header', { title: 'Guías' }) %>
+<link rel="stylesheet" href="/css/guides-native.css">
+<link rel="stylesheet" href="/css/Articulos.css">
+
+<div class="InicioArticulos">
+  <div class="guides-header-text">
+    <h1 class="guides-header-title">Guías</h1>
+    <p class="lead">Explora nuestras guías de salud mental</p>
+  </div>
+</div>
+<div class="public-top-search">
+  <label class="articles-filter-label"><i class="fas fa-search"></i> Buscar Guías</label>
+  <input type="text" id="guidesPublicSearchInput" class="articles-filter-input" placeholder="Buscar guías por título o autor" />
+</div>
+  
+  
+  <!-- Layout principal con columna izquierda y aside derecho -->
+  <div style="display:flex; gap:20px; align-items:flex-start;">
+    <div style="flex:1; min-width:0;">
+      <% if (guides && guides.length > 0) { %>
+        <div class="guides-grid">
+          <% guides.forEach(guide => { %>
+            <div class="guide-card">
+          <% if (guide.image) { %>
+            <img src="<%= guide.image %>" class="guide-card-img" alt="<%= guide.title %>">
+          <% } else { %>
+            <div class="guide-card-placeholder">
+              <i class="fas fa-file-pdf"></i>
+              <p>Sin imagen</p>
+            </div>
+          <% } %>
+          <div class="guide-card-body">
+            <h5 class="guide-card-title"><%= guide.title %></h5>
+            <div class="guide-card-meta">
+               <span class="guide-badge"><%= guide.topic %></span>
+               <span class="guide-card-author">Por <%= guide.author ? guide.author.name : 'Autor desconocido' %></span>
+             </div>
+            <div class="guide-card-stats">
+              <i class="fas fa-eye"></i> <%= guide.views || 0 %> vistas
+            </div>
+            <div class="guide-card-footer">
+              <a href="/guides/<%= guide._id %>" class="guide-btn">Ver guía</a>
+              <div class="guide-downloads">
+                <i class="fas fa-download"></i>
+                <span><%= guide.downloads %> descargas</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% }); %>
+        </div>
+      <% } else { %>
+        <div class="guides-empty">
+          <h3>No hay guías registradas</h3>
+          <p>Intenta cambiar los filtros o vuelve más tarde.</p>
+        </div>
+      <% } %>
+      <div id="guidesPublicPagination" class="articles-pagination"></div>
+    </div>
+    <aside style="width:360px; max-width:40%;">
+      <div class="guides-filter-card">
+        <div class="guides-filter-body">
+          <form action="/guides" method="GET" class="guides-filter-form">
+            <div class="guides-filter-group">
+              <label for="topic" class="guides-filter-label">Filtrar por tema</label>
+              <select class="guides-filter-select" id="topic" name="topic">
+                <option value="todos" <%= currentTopic === 'todos' ? 'selected' : '' %>>Todos los temas</option>
+                <option value="Transtornos" <%= currentTopic === 'Transtornos' ? 'selected' : '' %>>Transtornos</option>
+                <option value="Recomendaciones" <%= currentTopic === 'Recomendaciones' ? 'selected' : '' %>>Recomendaciones</option>
+                <option value="Tratamientos" <%= currentTopic === 'Tratamientos' ? 'selected' : '' %>>Tratamientos</option>
+                <option value="Prevencion" <%= currentTopic === 'Prevencion' ? 'selected' : '' %>>Prevención</option>
+                <option value="Investigacion" <%= currentTopic === 'Investigacion' ? 'selected' : '' %>>Investigación</option>
+              </select>
+            </div>
+            <div class="guides-filter-group">
+              <label for="sort" class="guides-filter-label">Ordenar por</label>
+              <select class="guides-filter-select" id="sort" name="sort">
+                <option value="fecha" <%= currentSort === 'fecha' ? 'selected' : '' %>>Más recientes</option>
+                <option value="vistas" <%= currentSort === 'vistas' ? 'selected' : '' %>>Más vistos</option>
+                <option value="descargas" <%= currentSort === 'descargas' ? 'selected' : '' %>>Más descargados</option>
+              </select>
+            </div>
+            <div class="guides-filter-submit">
+              <button type="submit" class="guides-filter-btn">Aplicar filtros</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="filtro-card" style="margin-top:12px;">
+        <div class="filtro-body" style="padding:12px;">
+          <h5 style="margin-bottom:10px;"><i class="fas fa-fire"></i> Populares (24h)</h5>
+          <div class="popular-list">
+            <% if (typeof popularGuides24h !== 'undefined' && popularGuides24h && popularGuides24h.length > 0) { %>
+              <% popularGuides24h.forEach(p => { %>
+                <div class="popular-item" style="margin-bottom:12px;">
+                  <a href="/guides/<%= p._id %>" class="article-link"><strong><%= p.title %></strong></a>
+                  <div class="small text-muted">Por <%= p.author && p.author.name ? p.author.name : 'Autor desconocido' %></div>
+                  <div class="small"><i class="fas fa-eye"></i> <%= p.views24h || 0 %> vistas (24h)</div>
+                </div>
+              <% }) %>
+            <% } else { %>
+              <div class="small text-muted">Sin datos recientes</div>
+            <% } %>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function(){
+  (function(){
+    document.querySelectorAll('.popular-list .article-link').forEach(function(a){
+      a.addEventListener('click', function(e){ e.preventDefault(); var href = a.getAttribute('href'); if (href) window.location.href = href; });
+    });
+    const input = document.getElementById('guidesPublicSearchInput');
+    const container = document.querySelector('.guides-grid');
+    const cards = Array.from(container ? container.querySelectorAll('.guide-card') : []);
+    const pag = document.getElementById('guidesPublicPagination');
+    let empty = document.getElementById('guidesEmptyResult');
+    let page = 1; const size = 10; let query = '';
+    function filterItems(){
+      const q = query.toLowerCase();
+      return cards.filter(card => {
+        const title = (card.querySelector('.guide-card-title')?.textContent || '').toLowerCase();
+        const author = (card.querySelector('.guide-card-author')?.textContent || '').toLowerCase();
+        return (!q || title.includes(q) || author.includes(q));
+      });
+    }
+    function render(){
+      const items = filterItems();
+      const total = items.length; const pages = Math.max(1, Math.ceil(total/size));
+      if(page>pages) page = pages;
+      cards.forEach(c=>c.style.display='none');
+      const start = (page-1)*size; const end = start+size;
+      items.slice(start,end).forEach(c=>{ c.style.display=''; c.style.animation='fadeInUp 0.25s ease-out'; });
+      if (!empty) {
+        empty = document.createElement('div');
+        empty.id = 'guidesEmptyResult';
+        empty.className = 'guides-empty';
+        empty.innerHTML = '<h3>No se encontraron resultados</h3><p>No hay guías que coincidan con la búsqueda.</p>';
+        empty.style.display = 'none';
+        container.parentNode.insertBefore(empty, container.nextSibling);
+      }
+      empty.style.display = total === 0 ? '' : 'none';
+      if(pag){
+        pag.innerHTML='';
+        for(let i=1;i<=pages;i++){
+          const b = document.createElement('button');
+          b.className = 'page-btn'+(i===page?' active':'');
+          b.textContent = i;
+          b.onclick = function(){ page=i; render(); };
+          pag.appendChild(b);
+        }
+      }
+    }
+    if(input){ input.addEventListener('input', function(e){ query = e.target.value || ''; page=1; render(); }); }
+    render();
+  })();
+  });
+ </script>
+
+  <!-- Tu JS primero, para que el callback global exista antes de cargar el script de Google -->
+  <script src="/js/tradux.js"></script>
+  <!-- Script oficial de Google (callback definido en translate.js) -->
+  <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+<%- include('../partials/footer') %>

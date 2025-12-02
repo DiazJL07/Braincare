@@ -1,0 +1,87 @@
+<%- include('../partials/header', { title: 'Detalle de Solicitud' }) %>
+<link rel="stylesheet" href="/css/admin-articles-dashboard.css">
+
+<div class="articles-admin-dashboard">
+  <div class="articles-dashboard-header">
+    <h1>Detalle de Solicitud</h1>
+    <p class="subtitle">Verifica la información y procesa la solicitud</p>
+  </div>
+
+  <div class="articles-main-content">
+    <div class="card p-3 mb-3">
+      <div class="articles-author-info">
+        <div class="articles-author-avatar">
+          <% const avatar = (request.user && request.user.profileImage) ? request.user.profileImage : '/img/default-avatar.svg'; %>
+          <img src="<%= avatar %>" alt="Avatar" style="width:40px;height:40px;border-radius:50%;object-fit:cover;">
+        </div>
+        <div class="articles-author-details">
+          <span class="articles-author-name"><%= request.user ? request.user.name : request.fullName %></span>
+          <span class="articles-author-role"><%= request.email %></span>
+        </div>
+      </div>
+      <p><strong>Servicios:</strong> <%= request.servicesDescription %></p>
+      <p><strong>Estado:</strong> <span class="articles-category-badge"><%= ({pending:'Pendiente', approved:'Aprobada', rejected:'Denegada'})[request.status] %></span></p>
+      <div class="mt-2">
+        <p><strong>Evidencia:</strong></p>
+        <img src="<%= request.proofImage %>" alt="Evidencia" style="max-width: 400px; height: auto;"/>
+      </div>
+    </div>
+
+    <% if (request.status === 'pending') { %>
+      <form action="/admin/requests/<%= request._id %>/process" method="POST" class="request-process-form" style="background:#fff; border:1px solid #e6e6e6; border-radius:8px; padding:12px;">
+        <div class="decision-section" style="display:flex; gap:12px; align-items:center;">
+          <label for="processAction" style="font-weight:600; color:#333;">Decisión</label>
+          <select name="action" id="processAction" style="border:1px solid #ccc; border-radius:6px; padding:6px 10px; color:#333; background:#fafafa;">
+            <option value="approve">Aprobado</option>
+            <option value="reject">Denegado</option>
+          </select>
+        </div>
+        <div id="rejectFields" style="display:none;" class="articles-advanced-filters">
+          <div class="articles-advanced-grid">
+            <div class="articles-filter-group">
+              <label class="articles-filter-label"><i class="fas fa-comment"></i> Motivo del rechazo</label>
+              <textarea name="rejectionReason" class="articles-filter-input" rows="3"></textarea>
+            </div>
+            <div class="articles-filter-group">
+              <label class="articles-filter-label"><i class="fas fa-redo"></i> Permitir re-solicitud</label>
+              <div class="form-check" style="margin-top:8px;">
+                <input class="form-check-input" type="checkbox" value="true" id="reapplyAllowed" name="reapplyAllowed" checked>
+                <label class="form-check-label" for="reapplyAllowed">Permitir nuevas solicitudes</label>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="request-actions" style="margin-top:12px; display:flex; align-items:center; gap:10px;">
+          <button type="submit" class="request-process-btn" style="background:#5b3df6; color:#ffffff; border:1px solid #4a32d4; border-radius:8px; padding:10px 14px; font-weight:600; box-shadow:0 2px 8px rgba(91,61,246,.35);" <%= request.status !== 'pending' ? 'disabled' : '' %>><i class="fas fa-check-double"></i> Procesar</button>
+          <% if (request.status !== 'pending') { %>
+            <span class="ms-2 text-muted">Esta solicitud ya fue <%= ({approved:'aprobada', rejected:'denegada'})[request.status] %>.</span>
+          <% } %>
+        </div>
+      </form>
+    <% } else { %>
+      <div class="alert alert-info" style="margin-top:12px;">Esta solicitud ya fue <%= ({approved:'aprobada', rejected:'denegada'})[request.status] %>.</div>
+    <% } %>
+      <script>
+        document.addEventListener('DOMContentLoaded', function(){
+          var select = document.getElementById('processAction');
+          var rejectFields = document.getElementById('rejectFields');
+          var toggle = function(){
+            rejectFields.style.display = (select.value === 'reject') ? 'block' : 'none';
+          };
+          select.addEventListener('change', toggle);
+          toggle();
+        });
+      </script>
+      <style>
+        .request-process-btn[disabled]{
+          background:#cfcfcf !important;
+          color:#666 !important;
+          border-color:#bbb !important;
+          box-shadow:none !important;
+          cursor:not-allowed;
+        }
+      </style>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

@@ -1,0 +1,846 @@
+<%- include('../partials/header', { title: 'Foro' }) %>
+<link rel="stylesheet" href="/css/foro-custom.css">
+<link rel="stylesheet" href="/css/forum-modals-pastel.css">
+
+<style>
+/* Estilos mejorados para botones de eliminar en el foro */
+.delete-btn {
+  background-color: transparent;
+  position: relative;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+}
+
+
+.delete-icon {
+  width: 18px;
+  height: 18px;
+  transition: all 0.3s ease;
+}
+
+.delete-btn:hover {
+  background-color: rgba(220, 53, 69, 0.1);
+  transform: scale(1.1);
+}
+
+.delete-btn:hover .delete-icon {
+  transform: scale(1.2);
+}
+
+.delete-btn:hover .delete-icon path {
+  fill: #dc3545;
+}
+
+.delete-btn:hover::after,
+.delete-btn:hover::before {
+  visibility: visible;
+  opacity: 1;
+}
+
+.delete-btn:active {
+  transform: scale(0.95);
+}
+
+/* Asegurar que el contenedor de estadísticas tenga el espacio adecuado */
+.foro-stats {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+}
+
+/* Estilos para el enlace del nombre del autor */
+.author-name-link {
+  text-decoration: none;
+  color: inherit;
+  transition: color 0.3s ease;
+}
+
+.author-name-link:hover {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.author-name-link:hover span {
+  text-decoration: underline;
+}
+
+/* Estilos para el nuevo botón de crear */
+.create-btn {
+  border: 2px solid #24b4fb;
+  background-color: #d1f0ff;
+  border-radius: 0.9em;
+  cursor: pointer;
+  padding: 0.8em 1.2em 0.8em 1em;
+  transition: all ease-in-out 0.2s;
+  font-size: 16px;
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  z-index: 1000;
+}
+
+.create-btn span {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #24b4fb;
+  font-weight: 600;
+  gap: 8px;
+}
+
+.create-btn:hover {
+  background-color: #b6e5fd;
+ 
+  transform: translateY(-2px);
+}
+
+.create-btn svg {
+  transition: transform 0.2s ease;
+}
+
+.create-btn:hover svg {
+  transform: rotate(90deg);
+}
+</style>
+
+
+<div class="InicioForo">
+  <div class="foro-header-text">
+    <h1 class="foro-header-title">BrainCare Foro</h1>
+    <p class="lead">Conoce a una comunidad dispuesta a escucharte, compartir y aprender sobre tu salud mental.</p>
+  </div>
+</div>
+
+<div class="public-top-search">
+  <label class="articles-filter-label"><i class="fas fa-search"></i> Buscar Publicaciones</label>
+  <input type="text" id="foroPublicSearchInput" class="articles-filter-input" placeholder="Buscar foros por título o autor" />
+</div>
+
+<div class="foro-container">
+
+  <!-- Botón flotante para crear publicación -->
+  <button type="button" class="create-btn" onclick="openCreateForoModal()">
+    <span>
+      <svg
+        height="24"
+        width="24"
+        viewBox="0 0 24 24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M11 11V5h2v6h6v2h-6v6h-2v-6H5v-2z" fill="currentColor"></path>
+      </svg>
+      Crear
+    </span>
+  </button>
+
+  <!-- Contenedor para alertas -->
+  <div id="alertContainer"></div>
+
+  <!-- Filtros -->
+  <div class="filtro-container">
+    <div class="filtro-card">
+      <form action="/foro" method="GET" class="filtro-form">
+        <div class="filtro-row">
+          <div class="filtro-col">
+            <label for="topic" class="filtro-label">Filtrar por tema</label>
+            <select class="filtro-select" id="topic" name="topic">
+              <option value="todos" <%= currentTopic === 'todos' ? 'selected' : '' %>>Todos los temas</option>
+              <% topics.forEach(topic => { %>
+                <option value="<%= topic._id %>" <%= currentTopic === topic._id.toString() ? 'selected' : '' %>><%= topic.name %></option>
+              <% }); %>
+            </select>
+          </div>
+          <div class="filtro-col">
+            <label for="sort" class="filtro-label">Ordenar por</label>
+            <select class="filtro-select" id="sort" name="sort">
+              <option value="fecha" <%= currentSort === 'fecha' ? 'selected' : '' %>>Más recientes</option>
+              <option value="vistas" <%= currentSort === 'vistas' ? 'selected' : '' %>>Más vistos</option>
+              <option value="likes" <%= currentSort === 'likes' ? 'selected' : '' %>>Más likes</option>
+              <option value="comentarios" <%= currentSort === 'comentarios' ? 'selected' : '' %>>Más comentarios</option>
+            </select>
+          </div>
+          <div class="filtro-col filtro-submit">
+            <button type="submit" class="filtro-btn">Aplicar filtros</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+
+
+  <!-- Botones de filtro por temas principales 
+  <div class="topic-filter-buttons">
+    <a href="/foro?topic=todos" class="topic-btn <%= currentTopic === 'todos' || !currentTopic ? 'active' : '' %>">Todos</a>
+    <% topics.forEach(topic => { %>
+      <a href="/foro?topic=<%= topic._id %>" class="topic-btn <%= topic.name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]/g, '') %> <%= currentTopic === topic._id.toString() ? 'active' : '' %>"><%= topic.name %></a>
+    <% }); %>
+  </div>
+  -->
+
+  <!-- Lista de publicaciones -->
+  <div class="foros-grid">
+    <% if (foros && foros.length > 0) { %>
+      <% foros.forEach(foro => { %>
+        <div class="foro-card">
+           
+          <% if (foro.image) { %>
+            <img src="<%= foro.image %>" class="foro-image" alt="<%= foro.title %>">
+          <% } else { %>
+            <div class="foro-image-placeholder">
+              <i class="bi bi-image"></i>
+              <p style="margin: 10px 0 0 0; font-size: 1rem;">Sin imagen</p>
+            </div>
+          <% } %>
+          
+          <div class="foro-content">
+            <!-- Fecha en esquina superior derecha -->
+            <p class="post-date-corner" data-tooltip="Creado el <%= new Date(foro.publicationDate).toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }) %>">
+              <% 
+                const now = new Date();
+                const postDate = new Date(foro.publicationDate);
+                const diffTime = Math.abs(now - postDate);
+                const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+                const diffHours = Math.floor(diffTime / (1000 * 60 * 60));
+                const diffMinutes = Math.floor(diffTime / (1000 * 60));
+                
+                let timeAgo = '';
+                if (diffDays > 0) {
+                  timeAgo = `Hace ${diffDays} día${diffDays > 1 ? 's' : ''}`;
+                } else if (diffHours > 0) {
+                  timeAgo = `Hace ${diffHours} hora${diffHours > 1 ? 's' : ''}`;
+                } else if (diffMinutes > 0) {
+                  timeAgo = `Hace ${diffMinutes} minuto${diffMinutes > 1 ? 's' : ''}`;
+                } else {
+                  timeAgo = 'Hace un momento';
+                }
+              %>
+              <%= timeAgo %>
+            </p>
+            
+            <!-- Header del autor -->
+              <div class="foro-author">
+              <div class="author-avatar">
+                <% 
+                  const authorImgUrl = foro.author 
+                    ? (typeof foro.author.getProfileImageUrl === 'function'
+                        ? foro.author.getProfileImageUrl()
+                        : (foro.author.profileImage || '/img/default-avatar.svg'))
+                    : null;
+                %>
+                <% if (authorImgUrl) { %>
+                  <img src="<%= authorImgUrl %>" 
+                       class="rounded-circle" 
+                       style="width: 100%; height: 100%; object-fit: cover;" 
+                       alt="Foto de perfil de <%= foro.author && foro.author.name ? foro.author.name : 'Usuario' %>">
+                <% } else if (foro.author) { %>
+                  <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center" 
+                       style="width: 100%; height: 100%; color: white; font-weight: bold;">
+                    <%= foro.author.name.charAt(0).toUpperCase() %>
+                  </div>
+                <% } else { %>
+                  <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center" 
+                       style="width: 100%; height: 100%; color: white; font-weight: bold;">
+                    ?
+                  </div>
+                <% } %>
+              </div>
+              <% if (foro.author) { %>
+                <a href="/user/public/<%= foro.author._id %>" class="author-name-link">
+                  <span><%= foro.author.name %></span>
+                </a>
+              <% } else { %>
+                <span class="author-name-link text-muted">Usuario eliminado</span>
+              <% } %>
+            </div>
+            
+            <!-- Título -->
+            <a href="/foro/<%= foro._id %>" class="readmore-btn-link">
+            <h3 class="foro-title-card"><%= foro.title %></h3>
+            </a>
+            <!-- Contenido -->
+            <p class="foro-content"><%= foro.content.replace(/<[^>]*>/g, '').substring(0, 150) %>...</p>
+            
+            <!-- Etiqueta del tema -->
+            <div class="topic-tag <%= (foro.topic && foro.topic.name) ? foro.topic.name.toLowerCase().replace(/[^a-z0-9]/g, '') : '' %>">
+              <span class="hashtag">#</span><%= (foro.topic && foro.topic.name) ? foro.topic.name : 'Sin tema' %>
+            </div>
+            
+            <!-- Footer -->
+            <div class="foro-footer">
+              <div class="foro-stats">
+                <div class="stat-item">
+                  <button class="like-btn <%= foro.likes && foro.likes.includes(user._id) ? 'btn-danger' : 'btn-outline-danger' %>" 
+                          data-post-id="<%= foro._id %>">
+                    <i class="fas fa-heart"></i>
+                    <span class="likes-count"><%= foro.likes ? foro.likes.length : 0 %></span>
+                  </button>
+                </div>
+                <div class="stat-item">
+                  <span class="comment-count">
+                    <i class="fas fa-comment"></i>
+                    <%= foro.comments.length %>
+                  </span>
+                </div>
+                <div class="stat-item">
+                  <span class="view-count">
+                    <img src="/img/iconos/vistas.png" alt="" class="delete-icon">
+                    <%= foro.views %>
+                  </span>
+                </div>
+                <% if (user && foro.author && foro.author._id && user._id.toString() !== foro.author._id.toString()) { %>
+                <div class="stat-item">
+                  <button class="btn btn-sm btn-outline-warning report-btn" data-post-id="<%= foro._id %>" data-content-type="foro" title="Reportar publicación" data-bs-toggle="modal" data-bs-target="#reportModal">
+                    <i class="fas fa-flag"></i>
+                  </button>
+                </div>
+                <% } %>
+                <% if (user && user.role === 'admin') { %>
+                  <div class="stat-item">
+                    <button type="button" class="delete-btn" 
+                            onclick="confirmDeleteForoIndex('<%= foro._id %>', '<%= foro.title %>')" 
+                            title="Eliminar publicación">
+                      <svg class="delete-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6h14zM10 11v6M14 11v6"/>
+                      </svg>
+                    </button>
+                  </div>
+                <% } %>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% }) %>
+    <% } else { %>
+      <div class="empty-state">
+        <h3>No hay publicaciones disponibles</h3>
+        <p>Intenta cambiar los filtros o vuelve más tarde.</p>
+      </div>
+    <% } %>
+  </div>
+  <div id="foroPublicPagination" class="articles-pagination"></div>
+
+<script>
+  (function(){
+    const input = document.getElementById('foroPublicSearchInput');
+    const container = document.querySelector('.foros-grid');
+    const cards = Array.from(container ? container.querySelectorAll('.foro-card') : []);
+    const pag = document.getElementById('foroPublicPagination');
+    let empty = document.getElementById('foroEmptyResult');
+    let page = 1; const size = 10; let query = '';
+    function filterItems(){
+      const q = query.toLowerCase();
+      return cards.filter(card => {
+        const title = (card.querySelector('.foro-title-card')?.textContent || '').toLowerCase();
+        const author = (card.querySelector('.author-name-link')?.textContent || '').toLowerCase();
+        return (!q || title.includes(q) || author.includes(q));
+      });
+    }
+    function render(){
+      const items = filterItems();
+      const total = items.length; const pages = Math.max(1, Math.ceil(total/size));
+      if(page>pages) page = pages;
+      cards.forEach(c=>c.style.display='none');
+      const start = (page-1)*size; const end = start+size;
+      items.slice(start,end).forEach(c=>{ c.style.display=''; c.style.animation='fadeInUp 0.25s ease-out'; });
+      if (!empty) {
+        empty = document.createElement('div');
+        empty.id = 'foroEmptyResult';
+        empty.className = 'empty-state';
+        empty.innerHTML = '<h3>No se encontraron resultados</h3><p>No hay publicaciones que coincidan con la búsqueda.</p>';
+        empty.style.display = 'none';
+        container.parentNode.insertBefore(empty, container.nextSibling);
+      }
+      empty.style.display = total === 0 ? '' : 'none';
+      if(pag){
+        pag.innerHTML='';
+        for(let i=1;i<=pages;i++){
+          const b = document.createElement('button');
+          b.className = 'page-btn'+(i===page?' active':'');
+          b.textContent = i;
+          b.onclick = function(){ page=i; render(); };
+          pag.appendChild(b);
+        }
+      }
+    }
+    if(input){ input.addEventListener('input', function(e){ query = e.target.value || ''; page=1; render(); }); }
+    render();
+  })();
+ </script>
+</div>
+
+<!-- Modal de confirmación para eliminar -->
+<div class="modal fade" id="deleteForoIndexModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title"><i class="fas fa-exclamation-triangle me-2"></i>Confirmar eliminación</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body text-center py-4">
+        <div class="mb-3">
+          <i class="fas fa-trash-alt text-danger" style="font-size: 3rem;"></i>
+        </div>
+        <h6 class="mb-3">¿Estás seguro de eliminar esta publicación?</h6>
+        <p class="fw-bold text-primary mb-2" id="foroIndexTitle"></p>
+        <p class="text-muted small mb-0">Esta acción no se puede deshacer y eliminará permanentemente la publicación y todos sus comentarios.</p>
+      </div>
+      <div class="modal-footer justify-content-center border-0">
+        <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">
+          <i class="fas fa-times me-1"></i>Cancelar
+        </button>
+        <button type="button" class="btn btn-danger px-4 ms-2" id="confirmDeleteIndexBtn">
+          <i class="fas fa-trash me-1"></i>Eliminar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  let currentForoIndexId = null;
+  
+  function confirmDeleteForoIndex(foroId, title) {
+    currentForoIndexId = foroId;
+    
+    // Establecer el título de la publicación en el modal
+    document.getElementById('foroIndexTitle').textContent = title;
+    
+    // Mostrar el modal de confirmación
+    const deleteModal = new bootstrap.Modal(document.getElementById('deleteForoIndexModal'));
+    deleteModal.show();
+    
+    return false;
+  }
+  
+  // Manejar la confirmación de eliminación
+  document.getElementById('confirmDeleteIndexBtn').addEventListener('click', async function() {
+    if (!currentForoIndexId) return;
+    
+    try {
+      const response = await fetch(`/admin/foros/${currentForoIndexId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        // Cerrar el modal
+        const deleteModal = bootstrap.Modal.getInstance(document.getElementById('deleteForoIndexModal'));
+        deleteModal.hide();
+        
+        // Mostrar mensaje de éxito
+        showAlert('success', result.message);
+        
+        // Recargar la página después de un breve delay
+        setTimeout(() => {
+          window.location.reload();
+        }, 1500);
+      } else {
+        showAlert('danger', result.message || 'Error al eliminar la publicación');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      showAlert('danger', 'Error de conexión al eliminar la publicación');
+    }
+  });
+  
+  function showAlert(type, message) {
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+    alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+    alertDiv.innerHTML = `
+      ${message}
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    document.body.appendChild(alertDiv);
+    
+    // Auto-remove after 5 seconds
+    setTimeout(() => {
+      if (alertDiv.parentNode) {
+        alertDiv.remove();
+      }
+    }, 5000);
+  }
+
+  // Los likes ahora se manejan en comments.js
+</script>
+
+<!-- Cargar el script de comments para manejar likes -->
+<script src="/js/comments.js"></script>
+
+<!-- Modal de Reporte -->
+<div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content p-4">
+      <div class="modal-header">
+        <h5 class="modal-title" id="reportModalLabel">
+          <i class="fas fa-flag text-warning"></i> Reportar Contenido
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form id="reportForm">
+        <div class="modal-body">
+          <div class="alert alert-info">
+            <i class="fas fa-info-circle"></i>
+            <strong>¿Por qué reportas este contenido?</strong>
+            <p class="mb-0 mt-2">Tu reporte nos ayuda a mantener una comunidad segura y respetuosa.</p>
+          </div>
+          
+          <div class="mb-3">
+            <label for="reportReason" class="form-label">Razón del reporte *</label>
+            <select class="form-select" id="reportReason" name="reason" required>
+              <option value="">Selecciona una razón...</option>
+              <option value="Contenido inapropiado">Contenido inapropiado</option>
+              <option value="Spam">Spam</option>
+              <option value="Acoso o bullying">Acoso o bullying</option>
+              <option value="Lenguaje ofensivo">Lenguaje ofensivo</option>
+              <option value="Información falsa">Información falsa</option>
+              <option value="Violación de términos">Violación de términos</option>
+              <option value="Otro">Otro</option>
+            </select>
+          </div>
+          
+          <div class="mb-3">
+            <label for="reportDescription" class="form-label">Descripción adicional (opcional)</label>
+            <textarea class="form-control" id="reportDescription" name="description" rows="3" 
+                      placeholder="Proporciona más detalles sobre el problema..." maxlength="500"></textarea>
+            <div class="form-text">Máximo 500 caracteres</div>
+          </div>
+          
+          <div class="alert alert-warning">
+            <i class="fas fa-exclamation-triangle"></i>
+            <strong>Importante:</strong> Los reportes falsos o malintencionados pueden resultar en acciones contra tu cuenta.
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+            <i class="fas fa-times"></i> Cancelar
+          </button>
+          <button type="submit" class="btn btn-warning">
+            <i class="fas fa-flag"></i> Enviar Reporte
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para crear nueva publicación -->
+<!-- Modal de Creación de Foro - Diseño Pastel -->
+<div class="modal-pastel-overlay" id="createForoModal" style="display: none;">
+  <div class="modal-pastel-content">
+    <div class="modal-pastel-header">
+      <h2 class="modal-pastel-title">
+        <i class="fas fa-plus-circle"></i>
+        Crear Nuevo Foro
+      </h2>
+      <button type="button" class="modal-pastel-close" onclick="closeCreateForoModal()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    
+    <div class="modal-pastel-body">
+      <div id="createForoAlert"></div>
+      
+      <form id="createForoForm" class="modal-pastel-form">
+        <div class="modal-form-group">
+          <label for="modalTitle" class="modal-form-label">
+            <i class="fas fa-heading"></i>
+            Título del Foro
+          </label>
+          <input type="text" class="modal-form-input" id="modalTitle" name="title" required 
+                 placeholder="Escribe un título atractivo para tu foro...">
+        </div>
+        
+        <div class="modal-form-group">
+          <label for="modalTopic" class="modal-form-label">
+            <i class="fas fa-tag"></i>
+            Categoría
+          </label>
+          <select class="modal-form-select" id="modalTopic" name="topic" required>
+            <option value="" disabled selected>Selecciona una categoría</option>
+            <% topics.forEach(topic => { %>
+              <option value="<%= topic._id %>"><%= topic.name %></option>
+            <% }); %>
+          </select>
+        </div>
+        
+        <div class="modal-form-group">
+          <label for="modalContent" class="modal-form-label">
+            <i class="fas fa-edit"></i>
+            Contenido
+          </label>
+          
+          
+          
+          <textarea class="modal-form-textarea" id="modalContent" name="content" required 
+                    placeholder="Comparte tu experiencia, pregunta o reflexión. Usa las herramientas de arriba para dar formato..."
+                    style="font-family: Arial; font-size: 14px; color: #000000; text-align: left;"></textarea>
+          <div id="modal-editor-status" class="modal-form-help"></div>
+          <small class="modal-form-help">💡 Tip: Usa las herramientas de edición para personalizar el formato de tu contenido</small>
+        </div>
+        
+        <div class="modal-form-group">
+          <label for="modalImage" class="modal-form-label">
+            <i class="fas fa-image"></i>
+            Imagen (opcional)
+          </label>
+          <input type="file" class="modal-form-file" id="modalImage" name="image" accept="image/*">
+          <small class="modal-form-help">📸 Formatos permitidos: JPG, PNG, GIF. Tamaño máximo: 5MB</small>
+        </div>
+      </form>
+    </div>
+    
+    <div class="modal-pastel-footer">
+      <button type="button" class="modal-btn modal-btn-cancel" onclick="closeCreateForoModal()">
+        <i class="fas fa-times"></i>
+        Cancelar
+      </button>
+      <button type="submit" form="createForoForm" class="modal-btn modal-btn-primary" id="submitForoBtn">
+        <span class="modal-spinner d-none" id="submitSpinner"></span>
+        <i class="fas fa-paper-plane" id="submitIcon"></i>
+        Crear Foro
+      </button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/5.10.5/tinymce.min.js"></script>
+
+<script>
+// Inicializar TinyMCE sobre el textarea de contenido
+tinymce.init({
+  selector: '#modalContent',
+  menubar: false,
+  toolbar: false,
+  forced_root_block: 'p',
+  valid_elements: 'p[style],div[style],span[style],strong/b,em/i,u,br,ul,ol,li,a[href|target],h1,h2,h3,h4,h5,h6',
+  valid_styles: { '*': 'color,font-size,font-family,text-align' },
+  content_style: '.mce-content-body { font-family: Arial, sans-serif; font-size: 14px; }'
+});
+// Funciones para el modal pastel de creación de foro
+function openCreateForoModal() {
+    const modal = document.getElementById('createForoModal');
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    
+    // Limpiar formulario
+    document.getElementById('createForoForm').reset();
+    document.getElementById('createForoAlert').innerHTML = '';
+}
+
+function closeCreateForoModal() {
+    const modal = document.getElementById('createForoModal');
+    modal.style.display = 'none';
+    document.body.style.overflow = 'auto';
+}
+
+// Cerrar modal al hacer clic fuera del contenido
+document.getElementById('createForoModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeCreateForoModal();
+    }
+});
+
+// Cerrar modal con tecla Escape
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        const modal = document.getElementById('createForoModal');
+        if (modal.style.display === 'flex') {
+            closeCreateForoModal();
+        }
+    }
+});
+
+function handleCreateForoSubmit(e){
+  if (e) e.preventDefault();
+  const form = document.getElementById('createForoForm');
+  const alertBox = document.getElementById('createForoAlert');
+  const btn = document.getElementById('submitForoBtn');
+  const spinner = document.getElementById('submitSpinner');
+  if (window.tinymce && tinymce.activeEditor) { tinymce.triggerSave(); }
+  const titleVal = form.querySelector('#modalTitle')?.value?.trim() || '';
+  const topicVal = form.querySelector('#modalTopic')?.value || '';
+  const contentVal = form.querySelector('#modalContent')?.value?.trim() || '';
+  if (!titleVal || !topicVal || !contentVal) {
+    alertBox.innerHTML = '<div class="alert-pastel alert-pastel-danger"><i class="fas fa-exclamation-circle"></i> Completa título, categoría y contenido.</div>';
+    return false;
+  }
+  if (btn) btn.disabled = true;
+  if (spinner) spinner.classList.remove('d-none');
+  fetch('/foro', { method: 'POST', body: new FormData(form), headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+    .then(res => Promise.all([res, res.json().catch(()=>({}))]))
+    .then(([res, data]) => {
+      if (res.ok) {
+        alertBox.innerHTML = '<div class="alert-pastel alert-pastel-success"><i class="fas fa-check-circle"></i> ¡Publicación creada exitosamente!</div>';
+        setTimeout(()=>{ try{ localStorage.setItem('foro_created_success','1'); }catch(e){} closeCreateForoModal(); window.location.reload(); }, 1000);
+      } else {
+        alertBox.innerHTML = '<div class="alert-pastel alert-pastel-danger"><i class="fas fa-exclamation-circle"></i> Error al crear la publicación.</div>';
+      }
+    })
+    .catch(()=>{
+      alertBox.innerHTML = '<div class="alert-pastel alert-pastel-danger"><i class="fas fa-exclamation-circle"></i> Error de conexión.</div>';
+    })
+    .finally(()=>{
+      if (btn) btn.disabled = false;
+      if (spinner) spinner.classList.add('d-none');
+    });
+  return false;
+}
+document.getElementById('createForoForm').addEventListener('submit', handleCreateForoSubmit);
+document.getElementById('submitForoBtn').addEventListener('click', function(e){ handleCreateForoSubmit(e); });
+
+// Validación en tiempo real
+document.getElementById('modalTitle').addEventListener('input', function() {
+    const value = this.value.trim();
+    if (value.length > 0 && value.length < 5) {
+        this.style.borderColor = 'var(--pastel-coral)';
+    } else if (value.length >= 5) {
+        this.style.borderColor = 'var(--pastel-green)';
+    } else {
+        this.style.borderColor = 'var(--border-color)';
+    }
+});
+
+document.getElementById('modalContent').addEventListener('input', function() {
+    const value = this.value.trim();
+    if (value.length > 0 && value.length < 20) {
+        this.style.borderColor = 'var(--pastel-coral)';
+    } else if (value.length >= 20) {
+        this.style.borderColor = 'var(--pastel-green)';
+    } else {
+        this.style.borderColor = 'var(--border-color)';
+    }
+});
+
+// Funciones de edición de texto
+function changeFontFamily() {
+  const fontSelect = document.getElementById('fontFamily');
+  if (window.tinymce && tinymce.activeEditor) {
+    tinymce.activeEditor.execCommand('FontName', false, fontSelect.value);
+  }
+}
+
+function changeFontSize() {
+  const fontSizeInput = document.getElementById('fontSize');
+  if (window.tinymce && tinymce.activeEditor) {
+    tinymce.activeEditor.execCommand('FontSize', false, fontSizeInput.value + 'px');
+  }
+}
+
+function increaseFontSize() {
+  const fontSizeInput = document.getElementById('fontSize');
+  let currentSize = parseInt(fontSizeInput.value);
+  if (currentSize < 72) {
+    fontSizeInput.value = currentSize + 1;
+    changeFontSize();
+  }
+}
+
+function decreaseFontSize() {
+  const fontSizeInput = document.getElementById('fontSize');
+  let currentSize = parseInt(fontSizeInput.value);
+  if (currentSize > 8) {
+    fontSizeInput.value = currentSize - 1;
+    changeFontSize();
+  }
+}
+
+function toggleBold() {
+  const button = event.target.closest('.toolbar-button');
+  if (window.tinymce && tinymce.activeEditor) {
+    tinymce.activeEditor.execCommand('Bold');
+  }
+  if (button) button.classList.toggle('active');
+}
+
+function toggleItalic() {
+  const button = event.target.closest('.toolbar-button');
+  if (window.tinymce && tinymce.activeEditor) {
+    tinymce.activeEditor.execCommand('Italic');
+  }
+  if (button) button.classList.toggle('active');
+}
+
+function toggleUnderline() {
+  const button = event.target.closest('.toolbar-button');
+  if (window.tinymce && tinymce.activeEditor) {
+    tinymce.activeEditor.execCommand('Underline');
+  }
+  if (button) button.classList.toggle('active');
+}
+
+function changeTextColor() {
+  const colorPicker = document.getElementById('textColor');
+  if (window.tinymce && tinymce.activeEditor) {
+    tinymce.activeEditor.execCommand('ForeColor', false, colorPicker.value);
+  }
+}
+
+function alignText(alignment) {
+  const buttons = document.querySelectorAll('.alignment-buttons .toolbar-button');
+  
+  // Remover clase active de todos los botones de alineación
+  buttons.forEach(btn => btn.classList.remove('active'));
+  
+  // Agregar clase active al botón seleccionado
+  event.target.closest('.toolbar-button').classList.add('active');
+  
+  // Aplicar alineación
+  if (window.tinymce && tinymce.activeEditor) {
+    const map = { left: 'JustifyLeft', center: 'JustifyCenter', right: 'JustifyRight', justify: 'JustifyFull' };
+    tinymce.activeEditor.execCommand(map[alignment] || 'JustifyLeft');
+  }
+}
+</script>
+<script>
+  function showCreationToast(msg){
+    var t=document.createElement('div');
+    t.className='foro-toast';
+    t.innerHTML='<div class="foro-toast-content"><i class="fas fa-check-circle"></i><span>'+msg+'</span></div>';
+    document.body.appendChild(t);
+    setTimeout(()=>{ t.classList.add('show'); },10);
+    setTimeout(()=>{ t.classList.remove('show'); setTimeout(()=>{ if(t && t.parentNode) t.parentNode.removeChild(t); },300); },4000);
+  }
+  document.addEventListener('DOMContentLoaded', function(){
+    try{
+      var flagged = localStorage.getItem('foro_created_success');
+      if(flagged){ showCreationToast('¡Publicación creada exitosamente!'); localStorage.removeItem('foro_created_success'); }
+    }catch(e){}
+    var serverHasMsg = <%= (typeof success_msg !== 'undefined' && success_msg && success_msg.length) ? 'true' : 'false' %>;
+    if (serverHasMsg) { showCreationToast('<%= Array.isArray(success_msg) ? success_msg[0] : success_msg %>'); }
+  });
+</script>
+<style>
+  .foro-toast{ position:fixed; top:20px; right:20px; z-index:9999; opacity:0; transform:translateX(100%); transition:all .3s ease; }
+  .foro-toast.show{ opacity:1; transform:translateX(0); }
+  .foro-toast-content{ display:flex; gap:8px; align-items:center; background:#28a745; color:#fff; padding:12px 16px; border-radius:8px; box-shadow:0 4px 12px rgba(40,167,69,.35); font-weight:600; }
+  .foro-toast-content i{ font-size:18px; }
+</style>
+
+  <!-- Tu JS primero, para que el callback global exista antes de cargar el script de Google -->
+  <script src="/js/translate-modern.js"></script>
+  <!-- Script oficial de Google (callback definido en translate.js) -->
+  <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+<%- include('../partials/footer') %>

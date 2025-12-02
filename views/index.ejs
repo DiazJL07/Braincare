@@ -1,0 +1,375 @@
+<%- include('partials/header', { title: '/' }) %>
+<link rel="stylesheet" href="/css/home.css">
+
+<!-- Alerta para usuarios baneados -->
+<%# Alerta para usuarios baneados comentada %>
+<% if (user && user.isBannedUser) { %>
+<div class="container mt-4">
+    <div class="d-flex align-items-center">
+      <div class="me-3">
+        <i class="fas fa-ban fa-3x text-danger"></i>
+      </div>
+      <div class="flex-grow-1">
+        <h4 class="alert-heading mb-2">
+          <i class="fas fa-exclamation-triangle"></i> Cuenta Suspendida
+        </h4>
+        <p class="mb-2">
+          <strong>Tu cuenta ha sido suspendida</strong>
+          <% if (user.banExpiresAt) { %>
+            <span class="badge bg-warning text-dark">Temporal</span>
+          <% } else { %>
+            <span class="badge bg-danger">Permanente</span>
+          <% } %>
+        </p>
+        <% if (user.banReason) { %>
+        <p class="mb-2"><strong>Motivo:</strong> <%= user.banReason %></p>
+        <% } %>
+        <% if (user.banDate) { %>
+        <p class="mb-2"><strong>Fecha de suspensión:</strong> <%= new Date(user.banDate).toLocaleDateString('es-ES') %></p>
+        <% } %>
+        <% if (user.banExpiresAt) { %>
+        <p class="mb-2"><strong>Expira el:</strong> <%= new Date(user.banExpiresAt).toLocaleDateString('es-ES') %></p>
+        <% } %>
+        <hr>
+        <p class="mb-0">
+          <i class="fas fa-info-circle"></i> 
+          No puedes acceder a otras secciones de la plataforma mientras tu cuenta esté suspendida.
+          <br>
+          <strong>Tu única opción disponible es cerrar sesión.</strong>
+        </p>
+      </div>
+    </div>
+    <div class="mt-3 text-end">
+      <a href="/auth/logout" class="btn btn-danger">
+        <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+      </a>
+    </div>
+  </div>
+</div>
+<% } %>
+%>
+
+<!-- Alerta por parámetro URL (cuando se redirige desde otra página) -->
+<% if (typeof banned !== 'undefined' && banned) { %>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Mostrar modal si viene de redirección
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('banned') === 'true') {
+    // Limpiar URL
+    window.history.replaceState({}, document.title, window.location.pathname);
+  }
+});
+</script>
+<% } %>
+
+
+
+<% if (user && !user.isBannedUser) { %>
+<div class="dashboardContainer">
+    <div class="dashboardGrid">
+<% } else if (!user) { %>
+<div class="dashboardContainer">
+    <div class="dashboardGrid">
+<% } else { %>
+<!-- Usuario baneado: mostrar mensaje en lugar de tarjetas -->
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card border-warning">
+                <div class="card-body text-center">
+                    <i class="fas fa-lock fa-4x text-warning mb-3"></i>
+                    <h3 class="text-warning">Acceso Restringido</h3>
+                    <p class="text-muted">
+                        Mientras tu cuenta esté suspendida, no puedes acceder a las funcionalidades de la plataforma.
+                    </p>
+                    <p class="text-muted">
+                        Para más información sobre tu suspensión, revisa la alerta mostrada arriba.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<% } %>
+
+<% if (!user || (user && !user.isBannedUser)) { %>
+  
+
+<div class="main-layout">
+        <!-- Sección de contenido (50% izquierda) -->
+        <div class="left-content">
+            <h1 class="main-title">BrainCare</h1>
+            <p class="subtitle">
+                Transformando vidas a través de<br>
+                la <span class="highlight">psicología</span>, un paso a la vez.
+                
+            </p>
+            <% if (!user) { %>
+                <a href="auth/register"><button class="cta-button">Comenzar</button></a>
+            <% } %>
+        </div>
+
+        <!-- Sección de imagen (50% derecha) -->
+        <div class="right-image">
+            <div class="image-placeholder">
+                <div>
+                   <img src="../img/cooki/CWF.png" alt="CookiWithuser" width="100%">
+                </div>
+            </div>
+        </div>
+ </div>
+
+<div class="contenedorInformacion">
+        <div class="image-section">
+            <model-viewer 
+                src="accidente_cerebro_vascular/scene.gltf"
+                camera-controls
+                auto-rotate
+                style="width: 530px; height: 530px;"
+            ></model-viewer>
+        </div>
+        <div class="text-section">
+            <h1>Dedicados a transformar tu <span>Salud Mental</span></h1>
+            <p>Braincare es un servicio de asesoramiento compasivo y centrado en la ayuda psicológica de las personas. Nuestro equipo reúne una variedad de especialidades y enfoques terapéuticos. Estamos aquí para escucharlo, guiarlo y brindarle herramientas para fomentar la resiliencia y la transformación personal.</p>
+            <a href="/articles/" style="color: white; text-decoration: none;"><button class="explore-button" style="color: white;">Explorar       
+                <span class="arrow">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                </span>
+            </button></a>
+        </div>
+</div>
+
+<div class="contenedorInformacion">
+        
+<div class="text-section">
+            <h1>Respaldados por expertos en Psicología</h1>
+            <p>Gracias al asesoramiento de profesionales en la psicología, en Braincare te ofrecemos temas de calidad y confianza.</p>
+            <a href="/ruta3" style="color: white; text-decoration: none;"><button class="explore-button" style="color: white;">Explorar       
+                <span class="arrow">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                </span>
+            </button></a>
+        </div>
+
+        <div class="image-section1">
+            <img src="/img/cooki/perrito medico.png" alt="PerritoMedico" width="530">
+        </div>
+</div>
+    
+    <div class="titulotemasInteres">
+        <h1>Temas que podrían interesarte</h1>
+        <p>Temas mas solicitado por los usuaríos</p>
+    </div>
+  
+    <div class="contenedor-flex">
+  
+        <div class="contenedor-izquierdo">
+          
+            <div class="seccion-destacada">
+                <h1>Psicología con Braincare</h1>
+                <p>Disponemos de temas que te ayudaran a mejorar tu salud mental.</p>
+            </div>
+
+            
+            <div class="contenedor-dos-cards">
+            
+                <div class="card" style="background-image: url(../Img/IndexImg/temas/Autoestima.jpg);">
+                    <h3>Autoestima</h3>
+                </div>
+           
+                <div class="card" style="background-image: url(../Img/IndexImg/temas/tdah.jpeg);">
+                    <h3>TDAH</h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contenedor derecho (6 cards) -->
+        <div class="contenedor-derecho">
+          
+            <div class="card" style="background-image: url(../Img/IndexImg/temas/depresion.jpeg);">
+                <h3>Depresión</h3>
+            </div>
+            
+            <div class="card" style="background-image: url(../Img/IndexImg/temas/Ansiedad.jpeg);">
+                <h3>Ansiedad</h3>
+            </div>
+            
+            <div class="card" style="background-image: url(../Img/IndexImg/temas/trasAlimen.jpg);">
+                <h3>Trastorno Alimenticio</h3>
+            </div>
+            
+            <div class="card" style="background-image: url(../Img/IndexImg/temas/bull.jpeg);">
+                <h3>Bullying</h3>
+            </div>
+            
+            <div class="card card-ludopatia" style="background-image: url(../img/Ludopatia.jpg);">
+                <h3>Ludopatía</h3>
+            </div>
+            
+            <div class="card" style="background-image: url(../Img/IndexImg/temas/Estres.jpeg);">
+                <h3>Estrés</h3>
+            </div>
+        </div>
+    </div>
+ 
+
+
+
+    <div class="contenedorInformacion">
+        
+        <div class="text-section">
+            <h3 class="TituloArticulosPsi">Artículos de Psicología</h3>
+            <h1 class="TituloSize2Psi">Explora multiples temas de la Psicología en El Salvador</h1>
+            <p class="TextoPsi">Explora nuestra colección de artículos que conectan la psicología con la cultura, historia y experiencias de El Salvador. Descubre cómo nuestras raíces influyen en nuestra salud mental.</p>
+            
+        </div>
+
+        <div class="image-section1">
+            <img src="/img/cooki/CokiLaptop.png" alt="Imagen de chicas" width="530">
+        </div>
+    </div>
+
+    <div class="contenedorInformacion">
+        
+        <div class="image-section2">
+            <img src="/img/cooki/cooki1.png" alt="Imagen de chicas" width="530">
+        </div>
+
+        <div class="text-section">
+            <h3 class="TituloGuiPsi">Guías sobre psicología</h3>
+            <h1 class="TituloSize2Psi">Conoce consejos, típs, y trucos para mejorar y tener una salud mental sana.</h1>
+            <p class="TextoPsi">Explora nuestra colección de artículos que conectan la psicología con la cultura, historia y experiencias de El Salvador. Descubre cómo nuestras raíces influyen en nuestra salud mental.</p>
+            
+        </div>
+
+       
+    </div>
+ 
+    <div class="ForoSection">
+        <div class="MiniHead">
+            <img src="/img/iconos/head1.png" alt="Header 1 del foro">
+        </div>
+        <div class="ContenedorInfoForo">
+            <h1>Conoce a una comunidad en el <span>Foro</span></h1>
+            <h4 class="TextoForo"> Comparte tus victorias y tus desafíos. Conéctate con personas que entienden lo que sientes, y construye lazos significativos en un entorno de respeto y empatía.</h4>
+                <a href="/foro/"><button class="visitarForo">Visitar el Foro</button></a>
+        </div>
+         <div class="MiniHead">
+           <img src="/img/iconos/Head2.png" alt="header 2 del foro">
+        </div>
+    </div>           
+    <script src="/js/animationForo.js"></script>
+
+   <div class="AIcontenedor">
+    <div class="contenerbloques">
+        <div class="imagenCooki">
+           <img src="/img/cooki/PSi.png" alt="">
+        </div>
+        <div class="bloqueIAinfo">
+            <h1>Conoce a Coki</h1>
+            <h3>Tu Bienestar Mental, cuidado y potenciado por Coki</h3>
+            <p>Coki no es solo un programa; es tu guía, tu apoyo y tu confidente. Diseñado para acompañarte en cada paso de tu viaje, Coki aprende de tus interacciones, comprende tus necesidades y te ofrece herramientas y perspectivas personalizadas en tiempo real.</p>
+
+            <a href="/IA/"><button class="visitarCooki">Hablar con Coki</button></a>
+        </div>
+    </div>
+   </div>
+
+   
+
+
+ <section class="preguntas">
+    
+        <div class="faq-container">
+            <h1>Preguntas Frecuentes</h1>
+            <div class="accordion">
+            <div class="accordion-item">
+                <button class="accordion-question">¿Por qué es importante hablar sobre salud mental?</button>
+                <div class="accordion-answer">
+                    <p>Porque ayuda a reducir el estigma, fomenta la empatía y permite que más personas busquen apoyo sin miedo al juicio.  </p>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <button class="accordion-question">¿Cómo impacta la salud mental en la vida diaria?</button>
+                <div class="accordion-answer">
+                    <p>Influye en la manera en que pensamos, sentimos y actuamos, afectando nuestras relaciones, desempeño laboral y bienestar general.  </p>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <button class="accordion-question">¿Qué pasa si no se atienden los problemas de salud mental?</button>
+                <div class="accordion-answer">
+                    <p>Pueden empeorar con el tiempo, afectando la calidad de vida y aumentando el riesgo de problemas físicos y emocionales más graves.</p>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <button class="accordion-question">¿Es segura la información que proporciono en la página?</button>
+                <div class="accordion-answer">
+                    <p>Sí, tomamos medidas de seguridad como el cifrado de datos y protocolos de protección para garantizar la privacidad de tu información.</p>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <button class="accordion-question">¿Cómo puedo contactar al soporte técnico?</button>
+                <div class="accordion-answer">
+                    <p>Puedes contactarnos a través del formulario de contacto en la sección "Ayuda" o enviándonos un correo electrónico a BraincareSupport@gmail.com.</p>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <button class="accordion-question">¿Puedo actualizar a un paquete diferente después de registrarme?</button>
+                <div class="accordion-answer">
+                    <p>Sí, puedes actualizar tu paquete en cualquier momento desde tu cuenta.</p>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <button class="accordion-question">¿Cuáles son los métodos de pago aceptados en la página?</button>
+                <div class="accordion-answer">
+                    <p>Aceptamos diferentes métodos de pago, como tarjetas de crédito, débito y pagos electrónicos. Puedes ver más detalles en la sección "Métodos de pago".</p>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <button class="accordion-question">¿Puedo reembolsar mi suscripción?</button>
+                <div class="accordion-answer">
+                    <p>Si, mientras tu reembolso sea en un periodo de 3 días, luego del plazo estipulado no podras hacer el reembolso</p>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <button class="accordion-question">¿Qué pasa si cancelo mi suscripción?</button>
+                <div class="accordion-answer">
+                    <p>Si cancelas tu suscripción, perderás acceso a actualizaciones y soporte premium.</p>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <button class="accordion-question">¿Que pasa si elimino mi cuenta con la suscripción comprada?</button>
+                <div class="accordion-answer">
+                    <p>Si eliminas tu cuenta en un plazo que no exceda los 3 días de la compra podrás reembolsar tu dinero de lo contario no podras obtener el reembolso.</p>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <button class="accordion-question">¿Puedo eliminar mi cuenta si ya no quiero usar la página?</button>
+                <div class="accordion-answer">
+                    <p>Sí, puedes solicitar la eliminación de tu cuenta desde la configuración de tu perfil o contactando al soporte técnico.</p>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <button class="accordion-question">¿La página web ofrece soporte en diferentes idiomas?</button>
+                <div class="accordion-answer">
+                    <p>    Sí, puedes cambiar el idioma de la página desde el botón de traducción y guardar tu preferencia para futuras visitas.  </p>
+                </div>
+            </div>
+            
+        </div>
+            </div>
+        </div>
+    
+    <script src="/javascript/acordeon.js"></script>
+</section>
+
+  <!-- Tu JS primero, para que el callback global exista antes de cargar el script de Google -->
+  <script src="/js/tradux.js"></script>
+  <!-- Script oficial de Google (callback definido en translate.js) -->
+  <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+<script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
+
+<% } %>
+
+<%- include('partials/footer')%>

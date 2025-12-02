@@ -1,0 +1,629 @@
+<%- include('../partials/header', { title: 'Administración de Artículos' }) %>
+
+<!-- CSS y JS específicos para el dashboard de artículos -->
+<link rel="stylesheet" href="/css/admin-articles-dashboard.css">
+<link rel="stylesheet" href="/css/admin-responsive.css">
+<script src="/js/admin-articles-dashboard.js" defer></script>
+
+<div class="articles-admin-dashboard">
+  <!-- Header del Dashboard -->
+  <div class="articles-dashboard-header">
+    <h1>Dashboard de Administración de Artículos</h1>
+    <p class="subtitle">Gestiona artículos, temas y estadísticas de contenido psicológico</p>
+    <div class="articles-header-actions">
+      <button class="articles-action-btn" data-action="new-article" onclick="openArticleModal()">
+        <i class="fas fa-plus"></i> Crear Artículo
+      </button>
+  
+    </div>
+  </div>
+
+  <!-- Filtros y Controles -->
+  <div class="articles-filters-section">
+    <div class="articles-filters-header">
+      <h2 class="articles-filters-title">
+        <i class="fas fa-filter"></i>
+        Filtros y Búsqueda
+      </h2>
+      <button class="articles-filters-toggle" onclick="toggleAdvancedFilters()">
+        <i class="fas fa-cog"></i>
+        Filtros Avanzados
+      </button>
+    </div>
+    
+    <div class="articles-filters-grid">
+      <!-- Búsqueda -->
+      <div class="articles-filter-group">
+        <label class="articles-filter-label">
+          <i class="fas fa-search"></i>
+          Buscar Artículos
+        </label>
+        <input type="text" 
+               class="articles-filter-input" 
+               id="articlesSearchInput" 
+               placeholder="Buscar por título, autor o contenido..."
+               onkeyup="filterArticles()">
+      </div>
+      
+      <!-- Filtro por Tema -->
+      <div class="articles-filter-group">
+        <label for="articlesTopicFilter" class="articles-filter-label">
+          <i class="fas fa-tag me-1"></i> Filtrar por tema:
+        </label>
+        <select class="articles-filter-select" id="articlesTopicFilter" onchange="filterArticles()">
+          <option value="all" <%= typeof currentTopic !== 'undefined' && currentTopic === 'all' ? 'selected' : '' %>>Todos los temas</option>
+          <% if (allTopics && allTopics.length > 0) { %>
+            <% allTopics.forEach(topic => { %>
+              <option value="<%= topic %>" <%= typeof currentTopic !== 'undefined' && currentTopic === topic ? 'selected' : '' %>><%= topic %></option>
+            <% }); %>
+          <% } %>
+        </select>
+      </div>
+      
+
+     
+    </div>
+    
+    <!-- Filtros Avanzados -->
+    <div class="articles-advanced-filters" id="articlesAdvancedFilters">
+      <div class="articles-advanced-grid">
+        <div class="articles-filter-group">
+          <label class="articles-filter-label">
+            <i class="fas fa-calendar-alt"></i>
+            Fecha de Publicación
+          </label>
+          <div class="articles-date-range">
+            <input type="date" class="articles-filter-input" id="articlesDateFrom" onchange="filterArticles()">
+            <span class="articles-date-separator">hasta</span>
+            <input type="date" class="articles-filter-input" id="articlesDateTo" onchange="filterArticles()">
+          </div>
+        </div>
+        
+        <div class="articles-filter-group">
+          <label class="articles-filter-label">
+            <i class="fas fa-eye"></i>
+            Rango de Vistas
+          </label>
+          <div class="articles-range-inputs">
+            <input type="number" class="articles-filter-input" id="articlesViewsMin" placeholder="Mín" onchange="filterArticles()">
+            <input type="number" class="articles-filter-input" id="articlesViewsMax" placeholder="Máx" onchange="filterArticles()">
+          </div>
+        </div>
+        
+        <div class="articles-filter-group">
+          <label class="articles-filter-label">
+            <i class="fas fa-user-edit"></i>
+            Autor
+          </label>
+          <select class="articles-filter-select" id="articlesAuthorFilter" onchange="filterArticles()">
+            <option value="all" <%= currentAuthor === 'all' ? 'selected' : '' %>>Todos los autores</option>
+          <% if (allAuthors && allAuthors.length > 0) { %>
+            <% allAuthors.forEach(author => { %>
+              <option value="<%= author %>" <%= currentAuthor === author ? 'selected' : '' %>><%= author %></option>
+            <% }); %>
+          <% } %>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  
+
+  <!-- Contenido Principal -->
+  <div class="articles-main-content">
+    <div class="articles-content-header">
+      <h2 class="articles-content-title">Gestión de Artículos</h2>
+      <div class="articles-real-time-indicator">
+        <div class="articles-real-time-dot"></div>
+  
+      </div>
+    </div>
+    
+    <div class="articles-table-container">
+      <table class="articles-table">
+        <thead>
+          <tr>
+            <th>Título</th>
+            <th>Tema</th>
+            <th>Autor</th>
+            <th>Fecha de publicación</th>
+            <th>Vistas</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (articles && articles.length > 0) { %>
+            <% articles.forEach(article => { %>
+              <tr data-article-id="<%= article._id %>" class="articles-table-row">
+                <td>
+                  <div class="articles-info">
+                    <% if (article.thumbnail) { %>
+                      <img src="<%= article.thumbnail %>" alt="<%= article.title %>" class="articles-thumbnail">
+                    <% } else { %>
+                      <div class="articles-thumbnail" style="background: var(--gradient-primary); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600;">
+                        <i class="fas fa-newspaper"></i>
+                      </div>
+                    <% } %>
+                    <div class="articles-details">
+                      <h4>
+                        <a href="/articles/<%= article._id %>" class="articles-title-link" target="_blank">
+                          <%= article.title %>
+                        </a>
+                      </h4>
+                      
+                      <div class="articles-content-tags">
+                        <% if (article.tags && article.tags.length > 0) { %>
+                          <% article.tags.slice(0, 3).forEach(tag => { %>
+                            <span class="articles-content-tag"><%= tag %></span>
+                          <% }); %>
+                        <% } %>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <span class="articles-category-badge"><%= article.topic %></span>
+                  <% if (article.featured) { %>
+                    <span class="articles-featured-badge">Destacado</span>
+                  <% } %>
+                  <% if (article.status === 'draft') { %>
+                    <span class="articles-draft-badge">Borrador</span>
+                  <% } %>
+                </td>
+                <td>
+                  <div class="articles-author-info">
+                    <div class="articles-author-avatar">
+                      <%= article.author && article.author.name ? article.author.name.charAt(0).toUpperCase() : 'A' %>
+                    </div>
+                    <div class="articles-author-details">
+                      <span class="articles-author-name">
+                        <%= article.author ? article.author.name : 'Autor desconocido' %>
+                      </span>
+                      <span class="articles-author-role">
+                        <%= article.author && article.author.role ? article.author.role : 'Autor' %>
+                      </span>
+                    </div>
+                  </div>
+                </td>
+                <td class="articles-date-cell">
+                  <div class="articles-date-info">
+                    <span class="articles-date-main">
+                      <%= new Date(article.publicationDate).toLocaleDateString('es-ES', { 
+                        year: 'numeric', 
+                        month: 'short', 
+                        day: 'numeric' 
+                      }) %>
+                    </span>
+                    <span class="articles-date-time">
+                      <%= new Date(article.publicationDate).toLocaleTimeString('es-ES', { 
+                        hour: '2-digit', 
+                        minute: '2-digit' 
+                      }) %>
+                    </span>
+                  </div>
+                </td>
+                <td class="articles-stats-cell">
+                  <div class="articles-stat-item">
+                    <i class="fas fa-eye"></i>
+                    <span><%= article.views || 0 %></span>
+                  </div>
+                
+                  
+                </td>
+                <td>
+                  <div class="articles-actions-group">
+                    <a href="/articles/<%= article._id %>" 
+                       class="articles-action-button articles-btn-view" 
+                       data-tooltip="Ver artículo"
+                       data-article-id="<%= article._id %>">
+                      <i class="fas fa-eye"></i>
+                    </a>
+                    <a href="/articles/admin/<%= article._id %>/edit" 
+                        class="articles-action-button articles-btn-edit" 
+                        data-tooltip="Editar artículo"
+                        data-article-id="<%= article._id %>">
+                      <i class="fas fa-edit"></i>
+                    </a>
+                    <button type="button" 
+                            class="articles-action-button articles-btn-delete" 
+                            data-tooltip="Eliminar artículo"
+                            data-article-id="<%= article._id %>"
+                            data-article-title="<%= article.title %>"
+                            onclick="confirmDeleteArticle('<%= article._id %>', '<%= article.title ? article.title.replace(/'/g, "\\'") : "" %>')">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            <% }) %>
+          <% } else { %>
+            <tr>
+              <td colspan="6" class="articles-empty-state">
+                <div class="articles-empty-content">
+                  <div class="articles-empty-illustration">
+                    <div class="articles-empty-circle">
+                      <i class="fas fa-newspaper articles-empty-icon"></i>
+                    </div>
+                    <div class="articles-empty-dots">
+                      <span></span>
+                      <span></span>
+                      <span></span>
+                    </div>
+                  </div>
+                  <h3>No hay artículos disponibles</h3>
+                  <p>Comienza creando tu primer artículo para compartir conocimiento psicológico con la comunidad. Los artículos son una excelente manera de educar y ayudar a otros usuarios.</p>
+                </div>
+              </td>
+            </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="articles-pagination" id="articlesPagination"></div>
+
+
+<!-- Modal de confirmación nativo -->
+<div class="articles-modal-container" id="deleteArticleModal">
+  <div class="articles-modal-content">
+    <div class="articles-modal-header">
+      <div class="articles-modal-icon">
+        <i class="fas fa-exclamation-triangle"></i>
+      </div>
+      <h3 class="articles-modal-title">Confirmar Eliminación</h3>
+      <button type="button" class="articles-modal-close" aria-label="Cerrar">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="articles-modal-body">
+      <p class="articles-modal-message">
+        ¿Estás seguro de que deseas eliminar el artículo 
+        <strong id="articleTitle"></strong>?
+      </p>
+      <p class="articles-modal-warning">
+        <i class="fas fa-info-circle"></i>
+        Esta acción no se puede deshacer y eliminará permanentemente el contenido.
+      </p>
+    </div>
+    <div class="articles-modal-footer">
+      <button type="button" class="articles-modal-btn articles-modal-btn-cancel">
+        <i class="fas fa-times"></i> Cancelar
+      </button>
+      <form id="deleteArticleForm" method="POST" style="display: inline;">
+        <button type="submit" class="articles-modal-btn articles-modal-btn-confirm">
+          <i class="fas fa-trash"></i> Eliminar Artículo
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<style>
+/* Estilos para el modal nativo de artículos */
+.articles-modal-container {
+
+  padding: 3rem;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(75, 0, 130, 0.8);
+  backdrop-filter: blur(10px);
+  color: black;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+  opacity: 0;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.articles-modal-container.show {
+  opacity: 1;
+}
+
+.articles-modal-content {
+  background: white;
+  border-radius: 25px;
+  box-shadow: 0 25px 60px rgba(138, 43, 226, 0.4);
+  max-width: 500px;
+  width: 90%;
+  transform: scale(0.8) translateY(50px);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 3px solid var(--primary-articles);
+  overflow: hidden;
+  position: relative;
+}
+
+.articles-modal-container.show .articles-modal-content {
+  transform: scale(1) translateY(0);
+  
+  margin: 0 auto;
+}
+
+.articles-modal-header {
+  background: linear-gradient(135deg, var(--primary-articles), var(--secondary-articles));
+  color: white;
+  padding: 30px;
+  text-align: center;
+  position: relative;
+}
+
+.articles-modal-icon {
+  font-size: 3rem;
+  margin-bottom: 15px;
+  animation: pulse 2s infinite;
+}
+
+.articles-modal-title {
+  margin: 0;
+  font-size: 1.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.articles-modal-close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: white;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1.2rem;
+}
+
+.articles-modal-close:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.1) rotate(90deg);
+}
+
+.articles-modal-body {
+  padding: 40px 30px;
+  text-align: center;
+}
+
+.articles-modal-message {
+  font-size: 1.2rem;
+  color: var(--text-primary);
+  margin-bottom: 20px;
+  line-height: 1.6;
+}
+
+.articles-modal-warning {
+  background: linear-gradient(135deg, #FFF3E0, #FFE0B2);
+  color: #E65100;
+  padding: 15px 20px;
+  border-radius: 15px;
+  border: 2px solid #FFB74D;
+  font-weight: 600;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: center;
+}
+
+.articles-modal-footer {
+  padding: 30px;
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  background: #FAFAFA;
+}
+
+.articles-modal-btn {
+  padding: 15px 30px;
+  border: none;
+  border-radius: 25px;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  position: relative;
+  overflow: hidden;
+}
+
+.articles-modal-btn::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  transition: all 0.4s ease;
+  transform: translate(-50%, -50%);
+}
+
+.articles-modal-btn:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+.articles-modal-btn-cancel {
+  background: linear-gradient(135deg, #95A5A6, #7F8C8D);
+  color: white;
+  border: 3px solid transparent;
+}
+
+.articles-modal-btn-cancel:hover {
+  background: linear-gradient(135deg, #7F8C8D, #6C7B7D);
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 8px 25px rgba(127, 140, 141, 0.4);
+}
+
+.articles-modal-btn-confirm {
+  background: linear-gradient(135deg, #E74C3C, #C0392B);
+  color: white;
+  border: 3px solid transparent;
+}
+
+.articles-modal-btn-confirm:hover {
+  background: linear-gradient(135deg, #C0392B, #A93226);
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 8px 25px rgba(231, 76, 60, 0.4);
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+</style>
+
+<script>
+
+
+  function closeModal() {
+    const modal = document.getElementById('deleteArticleModal');
+    modal.classList.remove('show');
+    
+    // Esperar a que termine la animación antes de ocultar
+    setTimeout(() => {
+      modal.style.display = 'none';
+    }, 400);
+  }
+
+  // Event listeners para el modal
+  document.addEventListener('DOMContentLoaded', function() {
+    const modal = document.getElementById('deleteArticleModal');
+    const closeButton = document.querySelector('.articles-modal-close');
+    const cancelButton = document.querySelector('.articles-modal-btn-cancel');
+    
+    // Cerrar con botón X
+    if (closeButton) {
+      closeButton.addEventListener('click', closeModal);
+    }
+    
+    // Cerrar con botón Cancelar
+    if (cancelButton) {
+      cancelButton.addEventListener('click', closeModal);
+    }
+    
+    // Cerrar al hacer clic fuera del modal
+    if (modal) {
+      modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+          closeModal();
+        }
+      });
+    }
+  });
+</script>
+
+</div> <!-- Cierre de articles-admin-dashboard -->
+
+<!-- Modal para Crear Artículo -->
+<div id="articleModal" class="article-modal">
+  <div class="article-modal-content">
+    <div class="article-modal-header">
+      <h2 class="article-modal-title">
+        <i class="fas fa-newspaper"></i>
+        Crear Nuevo Artículo
+      </h2>
+      <button class="article-modal-close" onclick="closeArticleModal()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    
+    <div class="article-modal-body">
+      <form id="articleForm" enctype="multipart/form-data">
+        <div class="article-form-row">
+          <div class="article-form-group">
+            <label for="articleTitle" class="article-form-label">
+              <i class="fas fa-heading"></i>
+              Título del Artículo
+            </label>
+            <input type="text" id="articleTitle" name="title" class="article-form-input" placeholder="Ingresa el título del artículo" required>
+          </div>
+        </div>
+        
+        <div class="article-form-row">
+          <div class="article-form-group">
+            <label for="articleTopic" class="article-form-label">
+              <i class="fas fa-tags"></i>
+              Tema
+            </label>
+            <select id="articleTopic" name="topic" class="article-form-select" required>
+              <option value="" disabled selected>Selecciona un tema</option>
+              <option value="Transtornos">Transtornos</option>
+              <option value="Recomendaciones">Recomendaciones</option>
+              <option value="Tratamientos">Tratamientos</option>
+              <option value="Prevencion">Prevención</option>
+              <option value="Investigacion">Investigación</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="article-form-row">
+          <div class="article-form-group">
+            <label for="articleContent" class="article-form-label">
+              <i class="fas fa-edit"></i>
+              Contenido
+            </label>
+            <textarea id="articleContent" name="content" class="article-form-textarea" rows="8" placeholder="Escribe el contenido del artículo..." required></textarea>
+            <small class="article-form-help">Puedes usar HTML para dar formato al contenido.</small>
+          </div>
+        </div>
+        
+        <div class="article-form-row">
+          <div class="article-form-group">
+            <label for="articleImage" class="article-form-label">
+              <i class="fas fa-image"></i>
+              Imagen (Opcional)
+            </label>
+            <div class="article-file-upload">
+              <input type="file" id="articleImage" name="image" class="article-file-input" accept="image/*">
+              <label for="articleImage" class="article-file-label">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <span>Seleccionar imagen</span>
+              </label>
+              <div id="articleImagePreview" class="article-file-preview"></div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="article-modal-actions">
+          <button type="button" class="article-btn article-btn-secondary" onclick="closeArticleModal()">
+            <i class="fas fa-times"></i>
+            Cancelar
+          </button>
+          <button type="submit" class="article-btn article-btn-primary" id="submitArticleBtn">
+            <i class="fas fa-save"></i>
+            <span>Crear Artículo</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+    <script src="/js/articles-dashboard-animations.js"></script>
+
+</div> <!-- Cierre de articles-admin-dashboard -->
+
+  <!-- Tu JS primero, para que el callback global exista antes de cargar el script de Google -->
+  <script src="/js/tradux.js"></script>
+  <!-- Script oficial de Google (callback definido en translate.js) -->
+  <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>

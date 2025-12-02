@@ -1,0 +1,585 @@
+|<%- include('../partials/header', { title: 'Gestión de Temas - Admin' }) %>
+<link rel="stylesheet" href="/css/admin-topics.css">
+<link rel="stylesheet" href="/css/topic-buttons.css">
+<link rel="stylesheet" href="/css/admin-topics-modern.css">
+<link rel="stylesheet" href="/css/variables-espacios.css">
+
+
+<div class="container-fluid mt-5 ">
+  <!-- Header moderno -->
+  <div class="row mb-5 justify-content-center ">
+    <div class="col-10">
+      <div class="topics-header fade-in-up">
+        <div class=" justify-content-between align-items-center pt-3">
+          <div>
+            <h2><i class="fas fa-comments me-3"></i>Gestión de Temas</h2>
+            <p>Administra y organiza todos los temas del foro de la comunidad</p>
+          </div>
+          <button class="btn btn-create-topic mt-5" data-bs-toggle="modal" data-bs-target="#createTopicModal">
+            <i class="fas fa-plus me-2"></i>Crear Nuevo Tema
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Alertas -->
+  <div id="alertContainer">
+    <div class="col-12"></div>
+  </div>
+
+  <!-- Estadísticas modernas -->
+  <div class="row mb-2 justify-content-center align-items-center"> 
+    <div class="col-md-5 mb-3">
+      <div class="stats-card primary fade-in-up" style="animation-delay: 0.1s">
+        <div class="stats-icon primary">
+          <i class="fas fa-comments fa-2x"></i>
+        </div>
+        <div class="stats-number"><%= topics.length %></div>
+        <div class="stats-label">Total de Temas</div>
+      </div>
+    </div>
+    <div class="col-md-5 mb-3">
+      <div class="stats-card success fade-in-up" style="animation-delay: 0.2s">
+        <div class="stats-icon success">
+          <i class="fas fa-check-circle fa-2x"></i>
+        </div>
+        <div class="stats-number"><%= topics.filter(t => t.isActive).length %></div>
+        <div class="stats-label">Temas Activos</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Tabla de temas -->
+  <div class="topics-table-container fade-in-up" style="animation-delay: 0.4s">
+    <div class="topics-table-header">
+      <h5><i class="fas fa-list me-2"></i>Lista de Temas</h5>
+    </div>
+    <div class="p-0">
+      <div class="table-responsive">
+        <table class="table mb-0">
+          <thead>
+            <tr>
+              <th><i class="fas fa-tag me-2"></i>Tema</th>
+              <th><i class="fas fa-align-left me-2"></i>Descripción</th>
+              <th><i class="fas fa-toggle-on me-2"></i>Estado</th>
+              <th><i class="fas fa-calendar me-2"></i>Fecha</th>
+              <th class="text-center"><i class="fas fa-cogs me-2"></i>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if (topics && topics.length > 0) { %>
+              <% topics.forEach((topic, index) => { %>
+                <tr style="animation-delay: <%= 0.1 * (index + 1) %>s" class="fade-in-up">
+                  <td>
+                    <div class="d-flex align-items-center">
+                      <div class="topic-icon">
+                        <i class="fas fa-tag"></i>
+                      </div>
+                      <div>
+                        <div class="topic-name"><%= topic.name %></div>
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <% if (topic.description) { %>
+                      <span class="text-muted"><%= topic.description.length > 50 ? topic.description.substring(0, 50) + '...' : topic.description %></span>
+                    <% } else { %>
+                      <span class="text-muted fst-italic">Sin descripción</span>
+                    <% } %>
+                  </td>
+                  <td>
+                    <% if (topic.isActive) { %>
+                      <span class="badge bg-success"><i class="fas fa-check me-1"></i>Activo</span>
+                    <% } else { %>
+                      <span class="badge bg-secondary"><i class="fas fa-pause me-1"></i>Inactivo</span>
+                    <% } %>
+                  </td>
+                 
+                  <td>
+                    <div class="text-muted">
+                      
+                      <%= new Date(topic.createdAt).toLocaleDateString('es-ES', 
+                        { year: 'numeric', 
+                        month: 'short', 
+                        day: 'numeric'}) %>
+                    </div>
+                    <small class="text-muted d-block">
+                     
+                      <%= new Date(topic.createdAt).toLocaleTimeString('es-ES', {hour: '2-digit', minute: '2-digit'}) %>
+                    </small>
+                  </td>
+                  <td>
+                    <div class="action-buttons">
+                      <a href="/admin/topics/<%= topic._id %>/edit" class="btn-action edit" title="Editar tema">
+                        <i class="fas fa-edit"></i>
+                      </a>
+                      <button class="btn-action delete" onclick="confirmDeleteTopic('<%= topic._id %>', '<%= topic.name %>')" title="Eliminar tema">
+                        <i class="fas fa-trash"></i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              <% }) %>
+            <% } else { %>
+              <tr>
+                <td colspan="6" class="text-center py-5">
+                  <div class="empty-state">
+                    <i class="fas fa-comments"></i>
+                    <h5>No hay temas disponibles</h5>
+                    <p>Crea el primer tema para comenzar a organizar las discusiones del foro</p>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para crear tema -->
+<div class="modal fade" id="createTopicModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered custom-modal-width modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="fas fa-plus-circle me-2"></i>Crear Nuevo Tema</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <form id="createTopicForm">
+        <div class="modal-body">
+          <div id="createTopicAlerts"></div>
+          <div class="row g-3">
+            <div class="col-12 col-md-6">
+              <div class="mb-3">
+                <label for="topicName" class="form-label"><i class="fas fa-tag me-2"></i>Nombre del Tema</label>
+                <input type="text" class="form-control" id="topicName" name="name" placeholder="Ej: Salud Mental, Nutrición, Ejercicio..." required>
+                <div class="form-text">Nombre descriptivo y único para el tema</div>
+              </div>
+            </div>
+            <div class="col-12 col-md-6">
+              <div class="mb-3">
+                <label for="topicActive" class="form-label"><i class="fas fa-toggle-on me-2"></i>Estado del Tema</label>
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" id="topicActive" name="isActive" checked>
+                  <label class="form-check-label" for="topicActive">
+                    <span class="fw-semibold">Tema activo</span>
+                    <small class="d-block text-muted">Los usuarios podrán crear posts en este tema</small>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="topicDescription" class="form-label"><i class="fas fa-align-left me-2"></i>Descripción</label>
+            <textarea class="form-control" id="topicDescription" name="description" rows="4" placeholder="Describe brevemente de qué trata este tema y qué tipo de contenido se puede compartir..." required></textarea>
+            <div class="form-text">Proporciona una descripción clara para ayudar a los usuarios a entender el propósito del tema</div>
+          </div>
+        </div>
+        <div class="modal-footer d-flex flex-column flex-sm-row gap-2">
+          <button type="button" class="btn btn-secondary order-2 order-sm-1" data-bs-dismiss="modal">
+            <i class="fas fa-times me-2"></i>Cancelar
+          </button>
+          <button type="button" class="btn btn-primary order-1 order-sm-2" id="createTopicBtn">
+            <span class="spinner-border spinner-border-sm d-none me-2" role="status"></span>
+            <i class="fas fa-save me-2"></i>Crear Tema
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para confirmar eliminación -->
+<div class="modal fade" id="deleteTopicModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered"> <!-- Agregado modal-dialog-centered -->
+    <div class="modal-content">
+      <div class="modal-header bg-danger">
+        <h5 class="modal-title"><i class="fas fa-exclamation-triangle me-2"></i>Confirmar Eliminación</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="text-center">
+          <div class="mb-4">
+            <div class="mx-auto" style="width: 80px; height: 80px; background: linear-gradient(135deg, rgba(255, 107, 107, 0.1) 0%, rgba(238, 90, 36, 0.1) 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+              <i class="fas fa-exclamation-triangle fa-2x" style="color: #ff6b6b;"></i>
+            </div>
+          </div>
+          <h5 class="mb-3">¿Estás seguro de eliminar este tema?</h5>
+          <div class="alert alert-warning border-0" style="background: linear-gradient(135deg, rgba(250, 112, 154, 0.1) 0%, rgba(254, 225, 64, 0.1) 100%);">
+            <p class="mb-2"><strong>Tema a eliminar:</strong> "<span id="topicName" class="fw-bold"></span>"</p>
+            <p class="mb-2"><i class="fas fa-info-circle me-1"></i>Se eliminarán todos los posts asociados a este tema</p>
+            <p class="mb-0 text-danger"><i class="fas fa-warning me-1"></i><strong>Esta acción no se puede deshacer</strong></p>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer d-flex flex-column flex-sm-row gap-2 justify-content-center">
+        <button type="button" class="btn btn-secondary order-2 order-sm-1" data-bs-dismiss="modal">
+          <i class="fas fa-times me-2"></i>Cancelar
+        </button>
+        <button type="button" class="btn btn-danger order-1 order-sm-2" id="confirmDeleteBtn" style="padding: 8px 30px; border-radius: 8px;">
+          <i class="fas fa-trash me-2"></i>Eliminar Tema
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  let currentTopicId = null;
+  let deleteTopicModal;
+  
+  // Inicializar modales cuando el DOM esté listo
+  document.addEventListener('DOMContentLoaded', function() {
+    deleteTopicModal = new bootstrap.Modal(document.getElementById('deleteTopicModal'));
+  });
+  
+  function confirmDeleteTopic(topicId, topicName) {
+    currentTopicId = topicId;
+    document.getElementById('topicName').textContent = topicName;
+    
+    // Asegurar que el modal esté inicializado
+    if (!deleteTopicModal) {
+      deleteTopicModal = new bootstrap.Modal(document.getElementById('deleteTopicModal'));
+    }
+    
+    deleteTopicModal.show();
+  }
+  
+  // Manejar la confirmación de eliminación
+  document.getElementById('confirmDeleteBtn').addEventListener('click', async function() {
+    if (!currentTopicId) return;
+    
+    const btn = this;
+    const originalText = btn.innerHTML;
+    
+    // Mostrar estado de carga
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Eliminando...';
+    btn.disabled = true;
+    
+    try {
+      const response = await fetch(`/admin/topics/${currentTopicId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        deleteTopicModal.hide();
+        
+        showAlert('success', result.message);
+        
+        // Recargar la página después de un breve delay
+        setTimeout(() => {
+          window.location.reload();
+        }, 1500);
+      } else {
+        showAlert('danger', result.message || 'Error al eliminar el tema');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      showAlert('danger', 'Error de conexión al eliminar el tema');
+    } finally {
+      btn.innerHTML = originalText;
+      btn.disabled = false;
+    }
+  });
+  
+  // Manejar creación de nuevo tema
+  document.getElementById('createTopicBtn').addEventListener('click', async function() {
+    const form = document.getElementById('createTopicForm');
+    const btn = this;
+    const spinner = btn.querySelector('.spinner-border');
+    const icon = btn.querySelector('.fas');
+    
+    // Prevenir múltiples envíos
+    if (btn.dataset.submitting === 'true') return;
+    btn.dataset.submitting = 'true';
+    
+    // Validar formulario
+    const name = document.getElementById('topicName').value.trim();
+    if (!name) {
+      showTopicAlert('danger', 'El nombre del tema es obligatorio');
+      btn.dataset.submitting = 'false';
+      return;
+    }
+    
+    // Mostrar estado de carga
+    btn.disabled = true;
+    spinner.classList.remove('d-none');
+    icon.classList.add('d-none');
+    
+    try {
+      const formData = {
+        name: name,
+        description: document.getElementById('topicDescription').value.trim(),
+        isActive: document.getElementById('topicActive').checked
+      };
+      
+      const response = await fetch('/admin/topics', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+      });
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        // Cerrar modal
+        const modal = bootstrap.Modal.getInstance(document.getElementById('createTopicModal'));
+        modal.hide();
+        
+        // Limpiar formulario
+        form.reset();
+        document.getElementById('topicActive').checked = true;
+        
+        // Mostrar mensaje de éxito
+        showAlert('success', result.message);
+        
+        // Recargar la página después de un breve delay
+        setTimeout(() => {
+          window.location.reload();
+        }, 1500);
+      } else {
+        showTopicAlert('danger', result.message || 'Error al crear el tema');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      showTopicAlert('danger', 'Error de conexión al crear el tema');
+    } finally {
+      // Restaurar botón
+      btn.disabled = false;
+      spinner.classList.add('d-none');
+      icon.classList.remove('d-none');
+      btn.dataset.submitting = 'false';
+    }
+  });
+  
+  // Configurar eventos de Bootstrap modals
+  const createTopicModal = new bootstrap.Modal(document.getElementById('createTopicModal'));
+  
+  // Limpiar formulario cuando se abre el modal de crear
+  document.getElementById('createTopicModal').addEventListener('show.bs.modal', function() {
+    const form = document.getElementById('createTopicForm');
+    form.reset();
+    document.getElementById('topicActive').checked = true;
+    document.getElementById('createTopicAlerts').innerHTML = '';
+  });
+  
+  // Configurar botón para abrir el modal de creación
+  document.querySelectorAll('[data-bs-toggle="modal"][data-bs-target="#createTopicModal"]').forEach(button => {
+    button.addEventListener('click', function() {
+      createTopicModal.show();
+    });
+  });
+  
+  function showTopicAlert(type, message) {
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
+    alertDiv.innerHTML = `
+      ${message}
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    const alertContainer = document.getElementById('createTopicAlerts');
+    alertContainer.innerHTML = '';
+    alertContainer.appendChild(alertDiv);
+    
+    // Auto-remover después de 5 segundos
+    setTimeout(() => {
+      if (alertDiv.parentNode) {
+        alertDiv.remove();
+      }
+    }, 5000);
+  }
+
+  function showAlert(type, message) {
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
+    alertDiv.innerHTML = `
+      ${message}
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    const alertContainer = document.querySelector('#alertContainer .col-12');
+    alertContainer.insertBefore(alertDiv, alertContainer.firstChild);
+    
+    // Auto-remover después de 5 segundos
+    setTimeout(() => {
+      if (alertDiv.parentNode) {
+        alertDiv.remove();
+      }
+    }, 5000);
+  }
+
+  // ===== MICRO-INTERACCIONES Y EFECTOS ADICIONALES =====
+
+  // Efecto de entrada para elementos cuando se carga la página
+  document.addEventListener('DOMContentLoaded', function() {
+    // Agregar clase de animación a elementos que no la tienen
+    const elements = document.querySelectorAll('.stats-card, .topics-table-container');
+    elements.forEach((el, index) => {
+      if (!el.classList.contains('fade-in-up')) {
+        el.classList.add('fade-in-up');
+        el.style.animationDelay = `${0.1 * (index + 1)}s`;
+      }
+    });
+    
+    // Efecto de hover mejorado para botones de acción
+    const actionButtons = document.querySelectorAll('.btn-action');
+    actionButtons.forEach(btn => {
+      btn.addEventListener('mouseenter', function() {
+        this.style.transform = 'translateY(-2px) scale(1.1)';
+      });
+      
+      btn.addEventListener('mouseleave', function() {
+        this.style.transform = 'translateY(0) scale(1)';
+      });
+    });
+    
+    // Efecto de ripple para botones principales
+    const primaryButtons = document.querySelectorAll('.btn-create-topic');
+    primaryButtons.forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        const ripple = document.createElement('span');
+        const rect = this.getBoundingClientRect();
+        const size = Math.max(rect.width, rect.height);
+        const x = e.clientX - rect.left - size / 2;
+        const y = e.clientY - rect.top - size / 2;
+        
+        ripple.style.cssText = `
+          position: absolute;
+          width: ${size}px;
+          height: ${size}px;
+          left: ${x}px;
+          top: ${y}px;
+          background: rgba(255, 255, 255, 0.3);
+          border-radius: 50%;
+          transform: scale(0);
+          animation: ripple 0.6s linear;
+          pointer-events: none;
+        `;
+        
+        this.style.position = 'relative';
+        this.style.overflow = 'hidden';
+        this.appendChild(ripple);
+        
+        setTimeout(() => {
+          ripple.remove();
+        }, 600);
+      });
+    });
+    
+    // Efecto de loading para tarjetas de estadísticas
+    const statsCards = document.querySelectorAll('.stats-card');
+    statsCards.forEach((card, index) => {
+      setTimeout(() => {
+        card.classList.add('loading');
+        setTimeout(() => {
+          card.classList.remove('loading');
+        }, 1000);
+      }, index * 200);
+    });
+    
+    // Efecto de contador animado para números de estadísticas
+    const statsNumbers = document.querySelectorAll('.stats-number');
+    statsNumbers.forEach(numberEl => {
+      const finalNumber = parseInt(numberEl.textContent);
+      let currentNumber = 0;
+      const increment = finalNumber / 30; // 30 frames de animación
+      
+      const timer = setInterval(() => {
+        currentNumber += increment;
+        if (currentNumber >= finalNumber) {
+          numberEl.textContent = finalNumber;
+          clearInterval(timer);
+        } else {
+          numberEl.textContent = Math.floor(currentNumber);
+        }
+      }, 50);
+    });
+  });
+
+  // Agregar estilos CSS para el efecto ripple
+  const rippleStyle = document.createElement('style');
+  rippleStyle.textContent = `
+    @keyframes ripple {
+      to {
+        transform: scale(4);
+        opacity: 0;
+      }
+    }
+    .btn-create-topic:active {
+      transform: translateY(0) !important;
+    }
+    .stats-card:hover .stats-number {
+      transform: scale(1.1);
+      transition: transform 0.3s ease;
+    }
+    .table tbody tr:hover .topic-icon {
+      transform: rotate(5deg) scale(1.1);
+      transition: transform 0.3s ease;
+    }
+    .modal.fade .modal-dialog {
+      transform: translateY(-50px) scale(0.9);
+      transition: transform 0.3s ease;
+    }
+    .modal.show .modal-dialog {
+      transform: translateY(0) scale(1);
+    }
+
+    /* Estilos responsive para el modal de crear tema */
+    @media (max-width: 425px) {
+      #createTopicModal .modal-dialog {
+        margin: 0;
+        width: 100vw;
+        max-width: 100vw;
+        height: 100vh;
+        max-height: 100vh;
+        display: flex;
+        align-items: stretch;
+      }
+      #createTopicModal .modal-content {
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        max-height: 100vh;
+        border-radius: 0;
+        overflow: hidden;
+      }
+      #createTopicModal .modal-header {
+        flex-shrink: 0;
+      }
+      #createTopicModal .modal-body {
+        flex: 1 1 auto;
+        min-height: 0;
+        overflow-y: auto;
+        padding-bottom: 1rem;
+      }
+      #createTopicModal .modal-footer {
+        flex-shrink: 0;
+        background: #fff;
+        position: sticky;
+        bottom: 0;
+        z-index: 2;
+        box-shadow: 0 -2px 8px rgba(0,0,0,0.04);
+      }
+    }
+  `;
+  document.head.appendChild(rippleStyle);
+</script>
+
+  <!-- Tu JS primero, para que el callback global exista antes de cargar el script de Google -->
+  <script src="/js/tradux.js"></script>
+  <!-- Script oficial de Google (callback definido en translate.js) -->
+  <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+<%- include('../partials/footer') %>

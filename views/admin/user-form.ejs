@@ -1,0 +1,141 @@
+<%- include('../partials/header', { title: user._id ? 'Editar Usuario' : 'Crear Usuario' }) %>
+<link rel="stylesheet" href="/css/admin-forms.css">
+<link rel="stylesheet" href="/css/admin-user-form.css">
+
+<div class="container-fluid">
+  <div class="row justify-content-center">
+    <div class="col-md-10 col-lg-8 col-xl-6">
+      <!-- Header del formulario -->
+      <div class="form-header">
+        <div class="d-flex justify-content-between align-items-start mb-3">
+          <div>
+            <h1>
+              <div class="header-icon">
+                <i class="fas <%= user._id ? 'fa-user-edit' : 'fa-user-plus' %>"></i>
+              </div>
+              <%= user._id ? 'Editar Usuario' : 'Crear Nuevo Usuario' %>
+            </h1>
+            <p><%= user._id ? 'Modifica la información del usuario seleccionado' : 'Completa el formulario para agregar un nuevo usuario al sistema' %></p>
+          </div>
+          <a href="/admin/dashboard" class="btn-admin">
+            <i class="fas fa-arrow-left"></i>
+            Volver al Dashboard
+          </a>
+        </div>
+      </div>
+      
+      <!-- Tarjeta del formulario -->
+      <div class="form-card">
+        <div class="form-card-body">
+          <% if (typeof error !== 'undefined' && error) { %>
+            <div class="alert alert-danger" role="alert">
+              <i class="fas fa-exclamation-triangle me-2"></i>
+              <%= error %>
+            </div>
+          <% } %>
+
+          <% if (typeof success !== 'undefined' && success) { %>
+            <div class="alert alert-success" role="alert">
+              <i class="fas fa-check-circle me-2"></i>
+              <%= success %>
+            </div>
+          <% } %>
+
+          <form method="POST" action="<%= user._id ? `/admin/users/${user._id}` : '/admin/users' %>" novalidate id="userForm" 
+                data-auto-save="true" data-form-id="user-form-<%= user._id || 'new' %>">
+            <% if (user._id) { %>
+              <input type="hidden" name="_method" value="PUT">
+            <% } %>
+
+            <div class="form-group">
+              <label for="name" class="form-label required">
+                <i class="fas fa-user"></i>Nombre Completo
+              </label>
+              <div class="input-group">
+                <input type="text" class="form-control with-icon" id="name" name="name" 
+                       value="<%= user.name || '' %>" required placeholder="Ingresa el nombre completo"
+        data-sync-field="name" data-user-id="<%= user._id || '' %>"
+                       minlength="2" maxlength="100" data-validate="true">
+                <i class="fas fa-user input-icon"></i>
+              </div>
+              <div class="form-text">
+                <i class="fas fa-info-circle"></i>
+                Ingresa el nombre completo del usuario
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="email" class="form-label required">
+                <i class="fas fa-envelope"></i>Correo Electrónico
+              </label>
+              <div class="input-group">
+                <input type="email" class="form-control with-icon" id="email" name="email" 
+                       value="<%= user.email || '' %>" required placeholder="usuario@ejemplo.com"
+                       data-validate="true" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$">
+                <i class="fas fa-envelope input-icon"></i>
+              </div>
+              <div class="form-text">
+                <i class="fas fa-info-circle"></i>
+                Debe ser una dirección de correo válida y única
+              </div>
+            </div>
+
+            <% if (!user._id) { %>
+            <div class="form-group">
+              <label for="password" class="form-label required">
+                <i class="fas fa-lock"></i>Contraseña
+              </label>
+              <div class="input-group">
+                <input type="password" class="form-control with-icon" id="password" name="password" 
+                       required placeholder="Mínimo 6 caracteres" minlength="6" maxlength="50" data-validate="true">
+                <i class="fas fa-lock input-icon"></i>
+              </div>
+              <div class="form-text">
+                <i class="fas fa-shield-alt"></i>
+                La contraseña debe tener al menos 6 caracteres
+              </div>
+            </div>
+            <% } %>
+
+            <div class="form-group">
+              <label for="role" class="form-label required">
+                <i class="fas fa-user-tag"></i>Rol del Usuario
+              </label>
+              <select class="form-select" id="role" name="role" required data-validate="true">
+                <option value="">Seleccionar rol...</option>
+                <option value="user" <%= (user.role === 'user' || !user.role) ? 'selected' : '' %>>
+                  👤 Usuario - Acceso básico al sistema
+                </option>
+                <option value="admin" <%= user.role === 'admin' ? 'selected' : '' %>>
+                  👑 Administrador - Acceso completo al sistema
+                </option>
+                <option value="psychologist" <%= user.role === 'psychologist' ? 'selected' : '' %>>
+                  🩺 Psicólogo - Gestión de artículos y guías propias
+                </option>
+              </select>
+              <div class="form-text">
+                <i class="fas fa-users-cog"></i>
+                Define los permisos y nivel de acceso del usuario
+              </div>
+            </div>
+
+            <div class="form-group">
+              <button type="submit" class="btn-primary" id="submitBtn">
+                <i class="fas <%= user._id ? 'fa-save' : 'fa-user-plus' %>"></i>
+                <%= user._id ? 'Actualizar Usuario' : 'Crear Usuario' %>
+              </button>
+            </div>
+          </form>
+        </div>
+       </div>
+     </div>
+   </div>
+ </div>
+ 
+ <script src="/js/admin-user-form.js"></script>
+
+   <!-- Tu JS primero, para que el callback global exista antes de cargar el script de Google -->
+  <script src="/js/tradux.js"></script>
+  <!-- Script oficial de Google (callback definido en translate.js) -->
+  <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+ <%- include('../partials/footer') %>

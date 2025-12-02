@@ -1,0 +1,169 @@
+<%- include('../partials/header', { title: article._id ? 'Editar Artículo' : 'Crear Artículo' }) %>
+<link rel="stylesheet" href="/css/admin-forms.css">
+
+<div class="row mb-4">
+  <div class="col-md-12">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/articles/admin/dashboard">Administración de Artículos</a></li>
+        <li class="breadcrumb-item active" aria-current="page">
+          <%= article._id ? 'Editar Artículo' : 'Crear Artículo' %>
+        </li>
+      </ol>
+    </nav>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-lg-12">
+    <div class="card shadow">
+      <div class="card-body">
+        <h1 class="card-title mb-4"><%= article._id ? 'Editar Artículo' : 'Crear Artículo' %></h1>
+        
+        <% let errorMsg = null; if (typeof error !== 'undefined') { if (Array.isArray(error)) { if (error.length > 0) { errorMsg = error[0]; } } else if (typeof error === 'string' && error.trim().length > 0) { errorMsg = error; } } %>
+        <% if (errorMsg) { %>
+          <div class="alert alert-danger" role="alert">
+            <%= errorMsg %>
+          </div>
+        <% } %>
+        
+        <form action="<%= article._id ? `/articles/admin/${article._id}` : '/articles/admin' %>" method="POST" enctype="multipart/form-data">
+          <div class="mb-3">
+            <label for="title" class="form-label">Título</label>
+            <input type="text" class="form-control" id="title" name="title" value="<%= article.title || '' %>" required>
+          </div>
+          
+          <div class="mb-3">
+            <label for="topic" class="form-label">Tema</label>
+            <select class="form-select" id="topic" name="topic" required>
+              <option value="" disabled <%= !article.topic ? 'selected' : '' %>>Selecciona un tema</option>
+              <option value="Transtornos" <%= article.topic === 'Transtornos' ? 'selected' : '' %>>Transtornos</option>
+              <option value="Recomendaciones" <%= article.topic === 'Recomendaciones' ? 'selected' : '' %>>Recomendaciones</option>
+              <option value="Tratamientos" <%= article.topic === 'Tratamientos' ? 'selected' : '' %>>Tratamientos</option>
+              <option value="Prevencion" <%= article.topic === 'Prevencion' ? 'selected' : '' %>>Prevención</option>
+              <option value="Investigacion" <%= article.topic === 'Investigacion' ? 'selected' : '' %>>Investigación</option>
+            </select>
+          </div>
+          
+          <div class="mb-3">
+            <label for="content" class="form-label">Contenido</label>
+            <textarea class="form-control" id="content" name="content" rows="10" required><%= article.content || '' %></textarea>
+            <div id="editor-status" class="mt-2"></div>
+            <small class="form-text text-muted">Puedes usar HTML para dar formato al contenido.</small>
+          </div>
+          
+          <div class="mb-3">
+            <label for="image" class="form-label">Imagen</label>
+            <input type="file" class="form-control" id="image" name="image" accept="image/*">
+            <% if (article.image) { %>
+              <div class="mt-2">
+                <p>Imagen actual:</p>
+                <img src="<%= article.image %>" alt="Imagen actual" style="max-height: 200px; max-width: 100%;">
+                <small class="d-block text-muted">Sube una nueva imagen para reemplazar la actual.</small>
+              </div>
+            <% } %>
+          </div>
+          
+          <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+            <a href="/articles/admin/dashboard" class="btn btn-secondary me-md-2">Cancelar</a>
+            <button type="submit" class="btn btn-primary">Guardar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Incluir un editor WYSIWYG para el contenido -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/5.10.5/tinymce.min.js" integrity="sha512-TXT0EzcpK/3HKqUw8HkXUDKnZQf+MvUF7FEJdV4jqGgHJKXwvjFlnJcEJk0UZYNXQntgGgVmgvZJjXqfOcysxg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const editorStatusEl = document.getElementById('editor-status');
+    const contentTextarea = document.getElementById('content');
+    const form = document.querySelector('form');
+    
+    // Mostrar mensaje de carga
+    editorStatusEl.innerHTML = '<div class="alert alert-info">Cargando editor...</div>';
+    
+    try {
+      tinymce.init({
+        selector: '#content',
+        height: 400,
+        plugins: [
+          'advlist autolink lists link image charmap print preview anchor',
+          'searchreplace visualblocks code fullscreen',
+          'insertdatetime media table paste code help wordcount'
+        ],
+        toolbar: 'undo redo | formatselect | bold italic backcolor | \
+          alignleft aligncenter alignright alignjustify | \
+          bullist numlist outdent indent | removeformat | help',
+        content_style: 'body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 16px; }',
+        setup: function(editor) {
+          editor.on('init', function() {
+            editorStatusEl.innerHTML = '<div class="alert alert-success">Editor cargado correctamente</div>';
+            // Ocultar el mensaje después de 3 segundos
+            setTimeout(function() {
+              editorStatusEl.innerHTML = '';
+            }, 3000);
+          });
+          
+          editor.on('change', function() {
+            editor.save(); // Guarda el contenido en el textarea original
+          });
+        }
+      });
+      
+      // Asegurarse de que el formulario envíe el contenido del editor
+      form.addEventListener('submit', function(e) {
+        // Verificar si el editor está inicializado
+        if (tinymce.activeEditor) {
+          tinymce.activeEditor.save();
+          
+          // Verificar si hay contenido
+          if (!contentTextarea.value.trim()) {
+            e.preventDefault();
+            editorStatusEl.innerHTML = '<div class="alert alert-danger">Por favor, ingresa contenido para el artículo</div>';
+            return false;
+          }
+        } else {
+          // Si el editor no está inicializado, verificar el textarea directamente
+          if (!contentTextarea.value.trim()) {
+            e.preventDefault();
+            editorStatusEl.innerHTML = '<div class="alert alert-danger">Por favor, ingresa contenido para el artículo</div>';
+            return false;
+          }
+        }
+      });
+    } catch (error) {
+      // Si hay un error al inicializar TinyMCE, mostrar un mensaje y habilitar el textarea normal
+      console.error('Error al inicializar TinyMCE:', error);
+      editorStatusEl.innerHTML = '<div class="alert alert-warning">No se pudo cargar el editor avanzado. Puedes usar el editor básico.</div>';
+      contentTextarea.style.display = 'block';
+    }
+  });
+</script>
+
+  <!-- Tu JS primero, para que el callback global exista antes de cargar el script de Google -->
+  <script src="/js/tradux.js"></script>
+  <!-- Script oficial de Google (callback definido en translate.js) -->
+  <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+<%- include('../partials/footer') %>
+<% if (errorMsg) { %>
+<div class="modal" id="articleErrorModal" style="display:block; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1050;">
+  <div class="modal-dialog" style="margin:10% auto; max-width:500px;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Error al subir imagen</h5>
+        <button type="button" class="btn-close" onclick="document.getElementById('articleErrorModal').style.display='none'"></button>
+      </div>
+      <div class="modal-body">
+        <p><%= errorMsg %></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="document.getElementById('articleErrorModal').style.display='none'">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
+<% } %>

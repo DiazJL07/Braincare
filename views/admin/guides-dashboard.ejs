@@ -1,0 +1,619 @@
+<%- include('../partials/header', { title: 'Administración de Guías' }) %>
+<link rel="stylesheet" href="/css/admin-guides-dashboard.css">
+<link rel="stylesheet" href="/css/admin-articles-dashboard.css">
+<link rel="stylesheet" href="/css/admin-responsive.css">
+<script src="/js/admin-guides-dashboard.js"></script>
+<style>
+  body{
+    padding-top: 5%;
+  }
+</style>
+
+<div class="guides-admin-dashboard">
+  <div class="guides-dashboard-header">
+    <h1>Panel de Administración de Guías</h1>
+    <p class="subtitle">Gestiona y supervisa todas las guías de psicología</p>
+    <div class="guides-header-actions">
+      <button type="button" class="guides-action-btn" onclick="openGuideModal()">
+        <i class="fas fa-plus"></i> Nueva Guía
+      </button>
+    </div>
+  </div>
+  
+
+  <!-- Contenido Principal -->
+  <div class="guides-main-content">
+    <div class="guides-content-header">
+      <h2 class="guides-content-title">Gestión de Guías</h2>
+    </div>
+    
+    <!-- Filtros y Controles -->
+    <div class="articles-filters-section">
+      <div class="articles-filters-header">
+        <h2 class="articles-filters-title">
+          <i class="fas fa-filter"></i>
+          Filtros y Búsqueda
+        </h2>
+        <button class="articles-filters-toggle guides-filters-toggle">
+          <i class="fas fa-cog"></i>
+          Filtros Avanzados
+        </button>
+      </div>
+      
+      <div class="articles-filters-grid">
+        <div class="articles-filter-group">
+          <label class="articles-filter-label">
+            <i class="fas fa-search"></i>
+            Buscar Guías
+          </label>
+          <input type="text" 
+                class="articles-filter-input" 
+                id="guidesSearchInput" 
+                placeholder="Buscar por título, autor o contenido..."
+                onkeyup="filterGuides()">
+        </div>
+        
+        <div class="articles-filter-group">
+          <label for="guidesTopicFilter" class="articles-filter-label">
+            <i class="fas fa-tag me-1"></i> Filtrar por categoría:
+          </label>
+          <select class="articles-filter-select" id="guidesTopicFilter" onchange="filterGuides()">
+            <option value="all">Todas las categorías</option>
+            <% if (typeof allCategories !== 'undefined' && allCategories && allCategories.length > 0) { %>
+              <% allCategories.forEach(category => { %>
+                <option value="<%= category %>"><%= category %></option>
+              <% }); %>
+            <% } %>
+          </select>
+        </div>
+        
+        
+      </div>
+      
+      <div class="articles-advanced-filters" id="guidesAdvancedFilters" style="display:none;">
+        <div class="articles-advanced-grid">
+          <div class="articles-filter-group">
+            <label class="articles-filter-label">
+              <i class="fas fa-calendar-alt"></i>
+              Fecha de Publicación
+            </label>
+            <div class="articles-date-range">
+              <input type="date" class="articles-filter-input" id="guidesDateFrom" onchange="filterGuides()">
+              <span class="articles-date-separator">hasta</span>
+              <input type="date" class="articles-filter-input" id="guidesDateTo" onchange="filterGuides()">
+            </div>
+          </div>
+          
+          <div class="articles-filter-group">
+            <label class="articles-filter-label">
+              <i class="fas fa-eye"></i>
+              Rango de Vistas
+            </label>
+            <div class="articles-range-inputs">
+              <input type="number" class="articles-filter-input" id="guidesViewsMin" placeholder="Mín" onchange="filterGuides()">
+              <input type="number" class="articles-filter-input" id="guidesViewsMax" placeholder="Máx" onchange="filterGuides()">
+            </div>
+          </div>
+          
+          <div class="articles-filter-group">
+            <label class="articles-filter-label">
+              <i class="fas fa-user-edit"></i>
+              Autor
+            </label>
+            <select class="articles-filter-select" id="guidesAuthorFilter" onchange="filterGuides()">
+              <option value="">Todos los autores</option>
+              <% if (guides && guides.length > 0) { %>
+                <% const uniqueAuthors = [...new Set(guides.map(guide => guide.author ? guide.author.name : 'Desconocido'))]; %>
+                <% uniqueAuthors.forEach(author => { %>
+                  <option value="<%= author %>"><%= author %></option>
+                <% }); %>
+              <% } %>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <div class="guides-table-container">
+      <table class="guides-table">
+        <thead>
+          <tr>
+            <th>Título</th>
+            <th>Categoría</th>
+            <th>Autor</th>
+            <th>Fecha</th>
+            <th>Vistas</th>
+            <th>Descargas</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (guides && guides.length > 0) { %>
+            <% guides.forEach(guide => { %>
+              <tr data-guide-id="<%= guide._id %>" class="guides-table-row">
+                <td>
+                  <div class="guides-info">
+                    <% if (guide.thumbnail) { %>
+                      <img src="<%= guide.thumbnail %>" alt="<%= guide.title %>" class="guides-thumbnail">
+                    <% } else { %>
+                      <div class="guides-thumbnail" style="background: var(--gradient-primary); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600;">
+                        <i class="fas fa-book"></i>
+                      </div>
+                    <% } %>
+                    <div class="guides-details">
+                      <h4>
+                        <a href="/guides/<%= guide._id %>" class="guides-title-link" target="_blank">
+                          <%= guide.title %>
+                        </a>
+                      </h4>
+                      <p>
+                        <i class="fas fa-clock guides-reading-time-icon"></i>
+                        <span class="guides-reading-time">Lectura: ~<%= Math.ceil((guide.content ? guide.content.length : 1000) / 200) %> min</span>
+                      </p>
+                      <div class="guides-content-tags">
+                        <% if (guide.tags && guide.tags.length > 0) { %>
+                          <% guide.tags.slice(0, 3).forEach(tag => { %>
+                            <span class="guides-content-tag"><%= tag %></span>
+                          <% }); %>
+                        <% } %>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <span class="guides-category-badge"><%= guide.topic %></span>
+                  <% if (guide.featured) { %>
+                    <span class="guides-featured-badge">Destacado</span>
+                  <% } %>
+                </td>
+                <td>
+                  <div class="guides-author-info">
+                    <div class="guides-author-avatar">
+                      <%= guide.author ? guide.author.name.charAt(0).toUpperCase() : 'U' %>
+                    </div>
+                    <div class="guides-author-details">
+                      <span class="guides-author-name">
+                        <%= guide.author ? guide.author.name : 'Desconocido' %>
+                      </span>
+                      <span class="guides-author-role">
+                        <%= guide.author && guide.author.role ? guide.author.role : 'Autor' %>
+                      </span>
+                    </div>
+                  </div>
+                </td>
+                <td class="guides-date-cell">
+                  <div class="guides-date-info">
+                    <span class="guides-date-main">
+                      <%= new Date(guide.publicationDate).toLocaleDateString('es-ES', { 
+                        year: 'numeric', 
+                        month: 'short', 
+                        day: 'numeric' 
+                      }) %>
+                    </span>
+                    <span class="guides-date-time">
+                      <%= new Date(guide.publicationDate).toLocaleTimeString('es-ES', { 
+                        hour: '2-digit', 
+                        minute: '2-digit' 
+                      }) %>
+                    </span>
+                  </div>
+                </td>
+                <td class="guides-stats-cell">
+                  <div class="guides-stat-item">
+                    <i class="fas fa-eye"></i>
+                    <span><%= guide.views || 0 %></span>
+                  </div>
+                  <!-- Barra de popularidad -->
+                  
+                </td>
+                <td class="guides-stats-cell">
+                  <div class="guides-stat-item">
+                    <i class="fas fa-download"></i>
+                    <span><%= guide.downloads || 0 %></span>
+                  </div>
+                  <!-- Barra de popularidad -->
+                  
+                </td>
+                <td>
+                  <div class="guides-actions-group">
+                    <a href="/guides/<%= guide._id %>" 
+                       class="guides-action-button guides-btn-view" 
+                       target="_blank"
+                       data-tooltip="Ver guía"
+                       data-id="<%= guide._id %>">
+                      <i class="fas fa-eye"></i>
+                    </a>
+                    <a href="/guides/admin/<%= guide._id %>/edit" 
+                       class="guides-action-button guides-btn-edit"
+                       data-tooltip="Editar guía"
+                       data-id="<%= guide._id %>">
+                      <i class="fas fa-edit"></i>
+                    </a>
+                    <button type="button" 
+                            class="guides-action-button guides-btn-delete" 
+                            data-tooltip="Eliminar guía"
+                            data-id="<%= guide._id %>"
+                            data-name="<%= guide.title %>">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            <% }); %>
+          <% } else { %>
+            <tr>
+              <td colspan="7" class="guides-empty-state">
+                <div class="guides-empty-content">
+                  <div class="guides-empty-illustration">
+                    <div class="guides-empty-circle">
+                      <i class="fas fa-book-open guides-empty-icon"></i>
+                    </div>
+                    <div class="guides-empty-dots">
+                      <span></span>
+                      <span></span>
+                      <span></span>
+                    </div>
+                  </div>
+                  <h3>No hay guías disponibles</h3>
+                  <p>Comienza creando tu primera guía para compartir conocimiento con la comunidad. Las guías son una excelente manera de educar y ayudar a otros usuarios.</p>
+                 
+                </div>
+              </td>
+            </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="articles-pagination" id="guidesPagination"></div>
+
+<!-- Modal de confirmación nativo -->
+<div class="guides-delete-modal" id="deleteGuideModal" style="display: none;">
+  <div class="guides-modal-content">
+    <div class="guides-modal-header">
+      <div class="guides-modal-icon">
+        <i class="fas fa-exclamation-triangle"></i>
+      </div>
+      <h3 class="guides-modal-title">Confirmar Eliminación</h3>
+      <button type="button" class="guides-modal-close" data-bs-dismiss="modal">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    
+    <div class="guides-modal-body">
+      <p class="guides-modal-message">
+        ¿Estás seguro de que deseas eliminar la guía 
+        <strong class="guide-name" id="guideTitle"></strong>?
+      </p>
+      <p class="guides-modal-warning">
+        <i class="fas fa-info-circle"></i>
+        Esta acción no se puede deshacer y se perderán todos los datos asociados.
+      </p>
+    </div>
+    
+    <div class="guides-modal-footer">
+      <button type="button" class="guides-modal-btn guides-btn-cancel" data-bs-dismiss="modal">
+        <i class="fas fa-times"></i> Cancelar
+      </button>
+      <form id="deleteGuideForm" method="POST" action="" style="display: inline;">
+        <button type="submit" class="guides-modal-btn guides-btn-confirm">
+          <i class="fas fa-trash"></i> Eliminar Guía
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<style>
+.guides-delete-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(5px);
+  transition: all 0.3s ease;
+}
+
+.guides-modal-content {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  max-width: 500px;
+  width: 90%;
+  overflow: hidden;
+  transform: scale(0.9);
+  transition: transform 0.3s ease;
+}
+
+.guides-delete-modal[style*="opacity: 1"] .guides-modal-content {
+  transform: scale(1);
+}
+
+.guides-modal-header {
+  background: linear-gradient(135deg, #FF6B6B, #FF5252);
+  color: white;
+  padding: 25px;
+  text-align: center;
+  position: relative;
+}
+
+.guides-modal-icon {
+  font-size: 3rem;
+  margin-bottom: 15px;
+  animation: pulse 2s infinite;
+}
+
+.guides-modal-title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.guides-modal-close {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: white;
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.guides-modal-close:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.guides-modal-body {
+  padding: 30px;
+  text-align: center;
+}
+
+.guides-modal-message {
+  font-size: 1.1rem;
+  color: #333;
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+
+.guide-name {
+  color: #50C878;
+  font-weight: 700;
+}
+
+.guides-modal-warning {
+  background: #FFF3CD;
+  border: 1px solid #FFEAA7;
+  color: #856404;
+  padding: 15px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.guides-modal-footer {
+  padding: 20px 30px;
+  background: #F8F9FA;
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+}
+
+.guides-modal-btn {
+  padding: 12px 25px;
+  border: none;
+  border-radius: 25px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.95rem;
+}
+
+.guides-btn-cancel {
+  background: #6C757D;
+  color: white;
+}
+
+.guides-btn-cancel:hover {
+  background: #5A6268;
+  transform: translateY(-2px);
+}
+
+.guides-btn-confirm {
+  background: linear-gradient(135deg, #FF6B6B, #FF5252);
+  color: white;
+}
+
+.guides-btn-confirm:hover {
+  background: linear-gradient(135deg, #FF5252, #FF4444);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function(){
+    var btn = document.getElementById('guidesFilterButton');
+    var menu = document.getElementById('guidesFilterMenu');
+    if (btn && menu) {
+      btn.addEventListener('click', function(e){
+        e.preventDefault(); e.stopPropagation();
+        menu.style.display = (menu.style.display === 'none' || !menu.style.display) ? 'block' : 'none';
+      });
+      document.addEventListener('click', function(e){
+        if (!menu.contains(e.target) && !btn.contains(e.target)) {
+          menu.style.display = 'none';
+        }
+      });
+    }
+  });
+  function applyGuidesFilters(){
+    var t = document.getElementById('guidesTopicFilter').value;
+    var a = document.getElementById('guidesAuthorFilter').value;
+    var q = document.getElementById('guidesQ').value;
+    var f = document.getElementById('guidesFrom').value;
+    var to = document.getElementById('guidesTo').value;
+    var url = '/guides/admin/dashboard?topic=' + encodeURIComponent(t) + '&author=' + encodeURIComponent(a) + '&q=' + encodeURIComponent(q) + '&from=' + encodeURIComponent(f) + '&to=' + encodeURIComponent(to);
+    window.location.href = url;
+  }
+  function confirmDeleteGuide(guideId, guideTitle) {
+    document.getElementById('guideTitle').textContent = guideTitle;
+    document.getElementById('deleteGuideForm').action = `/guides/admin/${guideId}/delete`;
+    
+    // Mostrar el modal nativo con animación
+    const modal = document.getElementById('deleteGuideModal');
+    modal.style.display = 'flex';
+    modal.style.opacity = '0';
+    
+    setTimeout(() => {
+      modal.style.opacity = '1';
+    }, 10);
+  }
+  
+  // Cerrar el modal cuando se hace clic en el botón de cerrar o cancelar
+  document.querySelectorAll('[data-bs-dismiss="modal"]').forEach(button => {
+    button.addEventListener('click', function() {
+      const modal = document.getElementById('deleteGuideModal');
+      modal.style.opacity = '0';
+      
+      setTimeout(() => {
+        modal.style.display = 'none';
+      }, 300);
+    });
+  });
+  
+  // Cerrar modal al hacer clic fuera de él
+  document.getElementById('deleteGuideModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+      const modal = this;
+      modal.style.opacity = '0';
+      
+      setTimeout(() => {
+        modal.style.display = 'none';
+      }, 300);
+    }
+  });
+</script>
+
+</div> <!-- Cierre de guides-admin-dashboard -->
+
+<!-- Modal para crear nueva guía -->
+<div id="guideModal" class="guide-modal">
+  <div class="guide-modal-content">
+    <div class="guide-modal-header">
+      <h2 class="guide-modal-title">
+        <i class="fas fa-book-open"></i>
+        Nueva Guía de Psicología
+      </h2>
+      <button type="button" class="guide-modal-close" onclick="closeGuideModal()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="guide-modal-body">
+      <form id="guideForm" action="/guides/admin" method="POST" enctype="multipart/form-data">
+        <div class="guide-form-row">
+          <!-- Columna izquierda: Información básica -->
+          <div class="guide-form-column">
+            <div class="guide-form-group">
+              <label for="guideTitle" class="guide-form-label">
+                <i class="fas fa-heading"></i>
+                Título de la Guía
+              </label>
+              <input type="text" class="guide-form-input" id="guideTitle" name="title" placeholder="Ingresa el título de la guía" required>
+            </div>
+            
+            <div class="guide-form-group">
+              <label for="guideTopic" class="guide-form-label">
+                <i class="fas fa-tags"></i>
+                Categoría
+              </label>
+              <select class="guide-form-select" id="guideTopic" name="topic" required>
+                <option value="" disabled selected>Selecciona una categoría</option>
+                <option value="Transtornos">Transtornos</option>
+                <option value="Recomendaciones">Recomendaciones</option>
+                <option value="Tratamientos">Tratamientos</option>
+                <option value="Prevencion">Prevención</option>
+                <option value="Investigacion">Investigación</option>
+              </select>
+            </div>
+          </div>
+          
+          <!-- Columna derecha: Archivos -->
+          <div class="guide-form-column">
+            <div class="guide-form-group">
+              <label for="guideImage" class="guide-form-label">
+                <i class="fas fa-image"></i>
+                Imagen de Portada
+              </label>
+              <div class="guide-file-upload">
+                <input type="file" class="guide-form-file" id="guideImage" name="image" accept="image/*">
+                <div class="guide-file-preview" id="imagePreview">
+                  <i class="fas fa-cloud-upload-alt"></i>
+                  <span>Arrastra una imagen o haz clic para seleccionar</span>
+                  <small>Máximo 5MB - JPG, PNG, GIF</small>
+                </div>
+              </div>
+            </div>
+            
+            <div class="guide-form-group">
+              <label for="guidePdf" class="guide-form-label">
+                <i class="fas fa-file-pdf"></i>
+                Archivo PDF (Requerido)
+              </label>
+              <div class="guide-file-upload">
+                <input type="file" class="guide-form-file" id="guidePdf" name="pdfFile" accept="application/pdf" required>
+                <div class="guide-file-preview" id="pdfPreview">
+                  <i class="fas fa-file-pdf"></i>
+                  <span>Selecciona el archivo PDF de la guía</span>
+                  <small>Máximo 10MB - Solo archivos PDF</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="guide-form-actions">
+          <button type="button" class="guide-btn guide-btn-cancel" onclick="closeGuideModal()">
+            <i class="fas fa-times"></i>
+            Cancelar
+          </button>
+          <button type="submit" class="guide-btn guide-btn-primary">
+            <i class="fas fa-save"></i>
+            Crear Guía
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+    <script src="/js/guides-dashboard-animations.js"></script>
+
+  <!-- Tu JS primero, para que el callback global exista antes de cargar el script de Google -->
+<script src="/js/tradux.js"></script>
+  <!-- Script oficial de Google (callback definido en translate.js) -->
+  <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+  
+
+<%- include('../partials/footer') %>

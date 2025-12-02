@@ -1,0 +1,712 @@
+<%- include('../partials/header') %>
+<!-- Bootstrap CSS específico para esta página -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<!-- CSS personalizado para detail-cards -->
+<link rel="stylesheet" href="/css/admin-detail-cards.css">
+
+<style>
+/* Estilos específicos para la página de reportes */
+.report-detail-page {
+  background-color: #f8f9fa;
+  min-height: 100vh;
+  padding: 1rem 0;
+  margin-top: 70px; /* Compensar el navbar fijo */
+}
+
+.report-header {
+  background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+  color: white;
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  position: relative;
+  z-index: 1;
+}
+
+.report-header h1 {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 600;
+}
+
+/* Estilos específicos para elementos con descripción que necesitan layout vertical */
+.col-lg-8 .detail-card .detail-item:has(.content-preview) {
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.col-lg-8 .detail-card .detail-item:has(.content-preview) .detail-value {
+  text-align: left;
+  width: 100%;
+}
+
+.detail-description {
+  background-color: white;
+  padding: 1rem;
+  border-radius: 0.375rem;
+  border: 1px solid #dee2e6;
+  color: #212529;
+  margin-top: 0.5rem;
+}
+
+.content-preview {
+  background-color: #f8f9fa;
+  padding: 1rem;
+  border-radius: 0.375rem;
+  border: 1px solid #dee2e6;
+  color: #212529;
+  margin-top: 0.5rem;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.meta-info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #6c757d;
+  font-size: 0.875rem;
+}
+
+.review-section {
+  background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+  border: 1px solid #c3e6cb;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.user-info-card {
+  background: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.process-form {
+  background: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-top: 1rem;
+}
+
+/* Badges personalizados */
+.badge-custom {
+  padding: 8px 16px;
+  border-radius: 25px;
+  font-size: 0.85em;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  display: inline-block;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+}
+
+.badge-custom:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.badge-primary-custom {
+  background: linear-gradient(135deg, #0d6efd 0%, #6610f2 100%);
+  color: white;
+  border-color: rgba(13, 110, 253, 0.3);
+}
+
+.badge-warning-custom {
+  background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);
+  color: #212529;
+  border-color: rgba(255, 193, 7, 0.3);
+  font-weight: 700;
+}
+
+.badge-success-custom {
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  color: white;
+  border-color: rgba(40, 167, 69, 0.3);
+}
+
+.badge-danger-custom {
+  background: linear-gradient(135deg, #dc3545 0%, #e74c3c 100%);
+  color: white;
+  border-color: rgba(220, 53, 69, 0.3);
+}
+
+.badge-info-custom {
+  background: linear-gradient(135deg, #17a2b8 0%, #6f42c1 100%);
+  color: white;
+  border-color: rgba(23, 162, 184, 0.3);
+}
+
+.badge-secondary-custom {
+  background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+  color: white;
+  border-color: rgba(108, 117, 125, 0.3);
+}
+
+/* Botones personalizados */
+.btn-custom {
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  font-weight: 500;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+}
+
+.btn-outline-custom {
+  border: 2px solid #6c757d;
+  color: #6c757d;
+  background: transparent;
+}
+
+.btn-outline-custom:hover {
+  background-color: #6c757d;
+  color: white;
+}
+
+/* Responsive específico para esta página */
+@media (max-width: 992px) {
+  .col-lg-8, .col-lg-4 {
+    margin-bottom: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .report-detail-page {
+    padding: 1rem 0;
+  }
+  
+  .report-header {
+    padding: 1.5rem;
+  }
+  
+  .report-header h1 {
+    font-size: 1.5rem;
+  }
+  
+  .meta-info {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .btn {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+  
+  .d-flex.justify-content-between {
+    flex-direction: column;
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .report-detail-page {
+    margin-top: 60px;
+    padding: 0.5rem 0;
+  }
+  
+  .report-header {
+    padding: 1rem;
+    margin-bottom: 1rem;
+  }
+  
+  .report-header h1 {
+    font-size: 1.5rem;
+  }
+  
+  .report-header .d-flex {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+  }
+}
+
+@media (max-width: 576px) {
+  .report-detail-page {
+    margin-top: 50px;
+  }
+  
+  .report-header {
+    padding: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+  
+  .content-preview {
+    padding: 0.75rem;
+    max-height: 150px;
+  }
+}
+</style>
+
+<div class="report-detail-page">
+  <div class="container">
+    <!-- Header de la sección -->
+    <div class="report-header">
+      <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+        <h1>
+          <i class="fas fa-flag me-2"></i>
+          Detalles del Reporte
+        </h1>
+        <a href="/admin/reports" class="btn btn-light">
+          <i class="fas fa-arrow-left me-1"></i> Volver a Reportes
+        </a>
+      </div>
+    </div>
+
+    <!-- Información del reporte -->
+    <div class="detail-card mb-4">
+      <div class="detail-card-header">
+        <h2 class="mb-0">
+          <i class="fas fa-info-circle me-2"></i>
+          Información del Reporte
+        </h2>
+      </div>
+      <div class="detail-card-body">
+        <div class="row">
+          <div class="col-md-6">
+            <div class="detail-item">
+              <span class="detail-label">📅 Fecha:</span>
+              <span class="detail-value"><%= new Date(report.createdAt).toLocaleString('es-ES') %></span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">👤 Reportado por:</span>
+              <span class="detail-value">
+                <% if (report.reporter) { %>
+                  <%= report.reporter.name %> (<%= report.reporter.email %>)
+                <% } else { %>
+                  <span class="text-muted">Usuario eliminado</span>
+                <% } %>
+              </span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">🎯 Usuario reportado:</span>
+              <span class="detail-value">
+                <% if (report.reportedUser) { %>
+                  <%= report.reportedUser.name %> (<%= report.reportedUser.email %>)
+                <% } else { %>
+                  <span class="text-muted">Usuario eliminado</span>
+                <% } %>
+              </span>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="detail-item">
+              <span class="detail-label">📝 Tipo de contenido:</span>
+              <span class="badge-custom <%= report.contentType === 'foro' ? 'badge-primary-custom' : 'badge-secondary-custom' %>">
+                <i class="fas <%= report.contentType === 'foro' ? 'fa-comments' : 'fa-comment' %> me-1"></i>
+                <%= report.contentType === 'foro' ? 'Foro' : 'Comentario' %>
+              </span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">⚠️ Razón:</span>
+              <span class="badge-custom badge-warning-custom"><%= report.reason %></span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">📊 Estado:</span>
+              <% 
+                let statusClass = 'badge-secondary-custom';
+                let statusText = report.status;
+                let statusIcon = 'fa-question';
+                if (report.status === 'pending') { 
+                  statusClass = 'badge-warning-custom'; 
+                  statusText = 'Pendiente';
+                  statusIcon = 'fa-clock';
+                    } 
+                    else if (report.status === 'reviewed') { 
+                      statusClass = 'badge-info-custom'; 
+                      statusText = 'Revisado';
+                      statusIcon = 'fa-eye';
+                    }
+                    else if (report.status === 'resolved') { 
+                      statusClass = 'badge-success-custom'; 
+                      statusText = 'Resuelto';
+                      statusIcon = 'fa-check';
+                    }
+                    else if (report.status === 'dismissed') { 
+                      statusClass = 'badge-danger-custom'; 
+                      statusText = 'Descartado';
+                      statusIcon = 'fa-times';
+                    }
+                  %>
+                  <span class="badge-custom <%= statusClass %>">
+                    <i class="fas <%= statusIcon %> me-1"></i>
+                    <%= statusText %>
+                  </span>
+                </div>
+              </div>
+            </div>
+           
+           <% if (report.description) { %>
+             <div class="mt-4 pt-4 border-top">
+               <div class="detail-item">
+                 <span class="detail-label">📄 Descripción:</span>
+                 <div class="detail-value w-300">
+                   <div class="content-preview">
+                     <%= report.description %>
+                   </div>
+                 </div>
+               </div>
+             </div>
+           <% } %>
+
+           <% if (report.reviewedBy || report.reviewedAt || report.adminAction || report.adminNotes) { %>
+             <div class="mt-4 pt-4 border-top">
+               <h3 class="mb-3">
+                 <i class="fas fa-clipboard-check me-2 text-success"></i>
+                 Información de Revisión
+               </h3>
+               <div class="row">
+                 <% if (report.reviewedBy) { %>
+                 <div class="col-md-6">
+                   <div class="detail-item">
+                     <span class="detail-label">👨‍💼 Revisado por:</span>
+                     <span class="detail-value"><%= report.reviewedBy.name %></span>
+                   </div>
+                 </div>
+                 <% } %>
+                 <% if (report.reviewedAt) { %>
+                 <div class="col-md-6">
+                   <div class="detail-item">
+                     <span class="detail-label">📅 Fecha de revisión:</span>
+                     <span class="detail-value"><%= new Date(report.reviewedAt).toLocaleString('es-ES') %></span>
+                   </div>
+                 </div>
+                 <% } %>
+                 <% if (report.adminAction) { %>
+                 <div class="col-md-6">
+                   <div class="detail-item">
+                     <span class="detail-label">⚖️ Acción administrativa:</span>
+                     <span class="badge-custom badge-info-custom"><%= report.adminAction %></span>
+                   </div>
+                 </div>
+                 <% } %>
+                 <% if (report.adminNotes) { %>
+                 <div class="col-12">
+                   <div class="detail-item">
+                     <span class="detail-label">📝 Notas del administrador:</span>
+                     <div class="detail-value w-100">
+                       <div class="content-preview">
+                         <%= report.adminNotes %>
+                       </div>
+                     </div>
+                   </div>
+                 </div>
+                 <% } %>
+               </div>
+             </div>
+           <% } %>
+          </div>
+        </div>
+
+      <!-- Contenido reportado -->
+      <div class="detail-card">
+        <div class="detail-card-header">
+          <h2 class="mb-0">
+            <i class="fas fa-file-alt me-2"></i>
+            Contenido Reportado
+          </h2>
+        </div>
+        <div class="detail-card-body">
+          <% if (reportedContent) { %>
+            <% if (report.contentType === 'foro') { %>
+              <div class="row">
+                <div class="col-12">
+                  <h3 class="h5 mb-3"><%= reportedContent.title %></h3>
+                  <div class="meta-info">
+                    <div class="meta-item">
+                      <i class="fas fa-tag text-primary"></i>
+                      <span><strong>Tema:</strong> <%= reportedContent.topic %></span>
+                    </div>
+                    <div class="meta-item">
+                      <i class="fas fa-user text-success"></i>
+                      <span><strong>Autor:</strong> <%= reportedContent.author.name %></span>
+                    </div>
+                    <div class="meta-item">
+                      <i class="fas fa-calendar text-info"></i>
+                      <span><strong>Fecha:</strong> <%= new Date(reportedContent.publicationDate).toLocaleDateString('es-ES') %></span>
+                    </div>
+                  </div>
+                  <div class="d-flex justify-content-end mb-3">
+                    <a href="/foro/<%= reportedContent._id %>" target="_blank" class="btn btn-outline-primary btn-sm">
+                      <i class="fas fa-external-link-alt me-1"></i> Ver publicación
+                    </a>
+                  </div>
+                  <div class="mt-3">
+                    <strong>Contenido:</strong>
+                    <div class="content-preview mt-2">
+                      <%- reportedContent.content.substring(0, 500) %>
+                      <% if (reportedContent.content.length > 500) { %>
+                        <span class="text-muted">... (contenido truncado)</span>
+                      <% } %>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            <% } else { %>
+              <div class="d-flex justify-content-between align-items-start mb-3 flex-wrap gap-3">
+                <div class="flex-grow-1">
+                  <p class="mb-1"><strong>Autor:</strong> <%= reportedContent.author.name %></p>
+                  <p class="mb-0"><strong>Fecha:</strong> <%= new Date(reportedContent.createdAt).toLocaleDateString('es-ES') %></p>
+                </div>
+                <a href="/foro/<%= reportedContent.post %>" target="_blank" class="btn btn-outline-primary btn-sm">
+                  <i class="fas fa-external-link-alt me-1"></i> Ver en contexto
+                </a>
+              </div>
+              <div class="mt-3">
+                <strong>Comentario:</strong>
+                <div class="content-preview mt-2">
+                  <%= reportedContent.content %>
+                </div>
+              </div>
+            <% } %>
+          <% } else { %>
+            <div class="text-center py-4">
+              <i class="fas fa-exclamation-circle text-warning fs-2 mb-2"></i>
+              <p class="text-muted">El contenido reportado ya no está disponible.</p>
+            </div>
+          <% } %>
+        </div>
+      </div>
+
+    </div>
+    
+    <!-- Información del Usuario Reportado -->
+    <div class="row mt-4">
+      <div class="col-lg-6">
+        <div class="detail-card compact">
+          <div class="detail-card-header">
+            <h5 class="mb-0">
+              <i class="fas fa-user me-2"></i>
+              Información del Usuario Reportado
+            </h5>
+          </div>
+          <div class="detail-card-body">
+            <% if (report.reportedUser) { %>
+              <div class="user-info">
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="detail-item">
+                      <span class="detail-label">👤 Nombre:</span>
+                      <span class="detail-value"><%= report.reportedUser.name %></span>
+                    </div>
+                    <div class="detail-item">
+                      <span class="detail-label">📧 Email:</span>
+                      <span class="detail-value"><%= report.reportedUser.email %></span>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="detail-item">
+                      <span class="detail-label">📊 Reportes recibidos:</span>
+                      <span class="detail-value">
+                        <span class="badge-custom <%= report.reportedUser.reportsReceived > 5 ? 'badge-danger-custom' : report.reportedUser.reportsReceived > 2 ? 'badge-warning-custom' : 'badge-success-custom' %>">
+                          <%= report.reportedUser.reportsReceived %>
+                        </span>
+                      </span>
+                    </div>
+                    <div class="detail-item">
+                      <span class="detail-label">📈 Estado:</span>
+                      <span class="detail-value">
+                        <% if (report.reportedUser.isBanned) { %>
+                          <span class="badge-custom badge-danger-custom">BANEADO</span>
+                        <% } else { %>
+                          <span class="badge-custom badge-success-custom">ACTIVO</span>
+                        <% } %>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            <% } else { %>
+              <div class="text-center text-muted py-3">
+                <i class="fas fa-user-slash fa-2x mb-2"></i>
+                <p class="mb-1"><strong>Usuario eliminado</strong></p>
+                <p class="mb-0 small">El usuario reportado ya no existe en el sistema</p>
+              </div>
+            <% } %>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Panel de procesamiento -->
+      <div class="col-lg-6">
+
+        <% if (report.status === 'pending') { %>
+          <div class="detail-card">
+            <div class="detail-card-header">
+              <h5 class="mb-0">
+                <i class="fas fa-gavel me-2"></i>
+                Procesar Reporte
+              </h5>
+            </div>
+            <div class="detail-card-body">
+              <form id="processReportForm">
+                <div class="mb-3">
+                  <label for="action" class="form-label fw-bold">Decisión del Reporte</label>
+                  <select name="action" id="action" class="form-select" required>
+                    <option value="">Seleccionar decisión</option>
+                    <option value="approved">Aprobar reporte</option>
+                    <option value="rejected">Rechazar reporte</option>
+                  </select>
+                </div>
+
+                <div class="mb-3" id="sanctionDiv" style="display: none;">
+                  <label for="sanction" class="form-label fw-bold">Sanción a Aplicar</label>
+                  <select name="sanction" id="sanction" class="form-select">
+                    <option value="none">Sin sanción</option>
+                    <option value="warning">Advertencia</option>
+                    <option value="temporary_ban">Baneo temporal</option>
+                    <option value="permanent_ban">Baneo permanente</option>
+                  </select>
+                </div>
+
+                <div class="mb-3" id="warningMessageDiv" style="display: none;">
+                  <label for="warningMessage" class="form-label fw-bold">Mensaje de Advertencia *</label>
+                  <textarea name="warningMessage" id="warningMessage" class="form-control" rows="3" placeholder="Escribe el mensaje de advertencia que recibirá el usuario..."></textarea>
+                  <div class="form-text">Este mensaje será enviado al usuario como notificación</div>
+                </div>
+
+                <div class="mb-3" id="banDurationDiv" style="display: none;">
+                  <label for="banDuration" class="form-label fw-bold">Duración del baneo (días)</label>
+                  <input type="number" name="banDuration" id="banDuration" class="form-control" min="1" max="365" value="7">
+                  <div class="form-text">Ingresa el número de días para el baneo temporal</div>
+                </div>
+
+                <div class="mb-3">
+                  <label for="adminNotes" class="form-label fw-bold">Notas del administrador</label>
+                  <textarea name="adminNotes" id="adminNotes" class="form-control" rows="3" placeholder="Notas sobre la decisión tomada..."></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100">
+                  <i class="fas fa-check me-1"></i>
+                  Procesar Reporte
+                </button>
+              </form>
+            </div>
+          </div>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Bootstrap JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const actionSelect = document.getElementById('action');
+  const sanctionDiv = document.getElementById('sanctionDiv');
+  const sanctionSelect = document.getElementById('sanction');
+  const warningMessageDiv = document.getElementById('warningMessageDiv');
+  const banDurationDiv = document.getElementById('banDurationDiv');
+  const processForm = document.getElementById('processReportForm');
+
+  if (actionSelect) {
+    actionSelect.addEventListener('change', function() {
+      if (this.value === 'approved') {
+        sanctionDiv.style.display = 'block';
+      } else {
+        sanctionDiv.style.display = 'none';
+        warningMessageDiv.style.display = 'none';
+        banDurationDiv.style.display = 'none';
+        document.getElementById('warningMessage').required = false;
+        document.getElementById('banDuration').required = false;
+      }
+    });
+  }
+
+  if (sanctionSelect) {
+    sanctionSelect.addEventListener('change', function() {
+      // Ocultar todos los campos primero
+      warningMessageDiv.style.display = 'none';
+      banDurationDiv.style.display = 'none';
+      document.getElementById('warningMessage').required = false;
+      document.getElementById('banDuration').required = false;
+      
+      // Mostrar campos según la sanción seleccionada
+      if (this.value === 'warning') {
+        warningMessageDiv.style.display = 'block';
+        document.getElementById('warningMessage').required = true;
+      } else if (this.value === 'temporary_ban') {
+        banDurationDiv.style.display = 'block';
+        document.getElementById('banDuration').required = true;
+      }
+    });
+  }
+
+  if (processForm) {
+    processForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const formData = new FormData(this);
+      const data = Object.fromEntries(formData);
+      
+      try {
+        const response = await fetch(`/admin/reports/<%= report._id %>/process`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data)
+        });
+        
+        const result = await response.json();
+        
+        if (response.ok) {
+          // Mostrar alerta de éxito con Bootstrap
+          const alertDiv = document.createElement('div');
+          alertDiv.className = 'alert alert-success alert-dismissible fade show';
+          alertDiv.innerHTML = `
+            <strong>¡Éxito!</strong> Reporte procesado exitosamente.
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+          `;
+          document.querySelector('.container').insertBefore(alertDiv, document.querySelector('.container').firstChild);
+          
+          setTimeout(() => {
+            window.location.reload();
+          }, 2000);
+        } else {
+          // Mostrar alerta de error con Bootstrap
+          const alertDiv = document.createElement('div');
+          alertDiv.className = 'alert alert-danger alert-dismissible fade show';
+          alertDiv.innerHTML = `
+            <strong>Error:</strong> ${result.message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+          `;
+          document.querySelector('.container').insertBefore(alertDiv, document.querySelector('.container').firstChild);
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        // Mostrar alerta de error con Bootstrap
+        const alertDiv = document.createElement('div');
+        alertDiv.className = 'alert alert-danger alert-dismissible fade show';
+        alertDiv.innerHTML = `
+          <strong>Error:</strong> Error al procesar el reporte
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        document.querySelector('.container').insertBefore(alertDiv, document.querySelector('.container').firstChild);
+      }
+    });
+  }
+});
+</script>
+
+  <!-- Tu JS primero, para que el callback global exista antes de cargar el script de Google -->
+  <script src="/js/tradux.js"></script>
+  <!-- Script oficial de Google (callback definido en translate.js) -->
+  <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+<%- include('../partials/footer') %>

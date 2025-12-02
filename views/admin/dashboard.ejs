@@ -1,0 +1,192 @@
+<%- include('../partials/header', { title: 'Panel de Administrador' }) %>
+<link rel="stylesheet" href="/css/admin-dashboard.css">
+<link rel="stylesheet" href="/css/admin-animations.css">
+    <link rel="stylesheet" href="/css/dashboard-specific-animations.css">
+<style>
+    body{
+      padding-top: 5%;
+    }
+  </style>
+<div class="admin-dashboard">
+  <div class="dashboard-header">
+    <div class="dashboard-welcome">
+      <div class="welcome-info">
+        <h2>Panel de Administrador</h2>
+        <p>Gestiona usuarios, contenido y configuraciones del sistema</p>
+      </div>
+      
+    </div>
+    <div class="admin-header-actions">
+      <a href="/admin/users/new" class="admin-action-btn">
+        <i class="fas fa-plus"></i>
+        Crear Usuario
+      </a>
+    </div>
+  </div>
+
+
+
+  <div class="chart-container">
+    <div class="chart-header">
+      <h3 class="chart-title">Gestión de Usuarios</h3>
+    </div>
+    
+    <div class="users-table-container">
+      <table class="users-table">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Email</th>
+          <th>Rol</th>
+          <th>Fecha de registro</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (users && users.length > 0) { %>
+          <% users.forEach(user => { %>
+            <tr>
+              <td><%= user.name %></td>
+              <td><%= user.email %></td>
+              <td>
+                <span class="role-badge <%= user.role === 'admin' ? 'role-admin' : (user.role === 'psychologist' ? 'role-psych' : 'role-user') %>">
+                  <%= user.role === 'admin' ? 'Administrador' : (user.role === 'psychologist' ? 'Psicólogo' : 'Usuario') %>
+                </span>
+              </td>
+              <td><%= new Date(user.createdAt).toLocaleDateString() %></td>
+              <td>
+                <div class="action-buttons">
+                  <a href="/admin/users/<%= user._id %>" class="action-btn btn-view">
+                    <i class="fas fa-eye"></i>
+                  </a>
+                  <a href="/admin/users/<%= user._id %>/edit" class="action-btn btn-edit">
+                    <i class="fas fa-edit"></i>
+                  </a>
+                  <button type="button" class="action-btn btn-ban" 
+                          onclick="confirmDelete('<%= user._id %>', '<%= user.name %>')">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          <% }) %>
+        <% } else { %>
+          <tr>
+            <td colspan="5" style="text-align: center">No hay usuarios registrados</td>
+          </tr>
+        <% } %>
+      </tbody>
+      </table>
+    </div>
+    <div id="usersPagination" class="articles-pagination"></div>
+  </div>
+</div>
+
+<div class="modal-fondo" id="deleteModal">
+  <div class="modal-contenido">
+    <div class="modal-cabecera">
+      <h5 class="modal-titulo">Confirmar eliminación</h5>
+      <button type="button" class="boton-cerrar" data-bs-dismiss="modal" aria-label="Close">&times;</button>
+    </div>
+    <div class="modal-cuerpo">
+      <p>¿Estás seguro de que deseas eliminar al usuario <span id="userName"></span>?</p>
+      <p style="color: #dc3545">Esta acción no se puede deshacer.</p>
+    </div>
+    <div class="modal-pie">
+      <button type="button" class="boton-cancelar" data-bs-dismiss="modal">Cancelar</button>
+      <form id="deleteForm" method="POST">
+        <button type="submit" class="boton-accion" title="Eliminar usuario" style="width: 150px; height: 50px; padding: 10px;">
+          <svg viewBox="0 0 24 24">
+            <path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6h14zM10 11v6M14 11v6"/>
+          </svg>
+          Eliminar
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Función para mostrar la hora actual
+  function updateTime() {
+    const now = new Date();
+    const timeString = now.toLocaleTimeString('es-ES', {
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit'
+    });
+    const dateString = now.toLocaleDateString('es-ES', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+    
+    const timeElement = document.getElementById('current-time');
+    const dateElement = document.getElementById('current-date');
+    
+    if (timeElement) timeElement.textContent = timeString;
+    if (dateElement) dateElement.textContent = dateString;
+  }
+  
+  // Actualizar la hora cada segundo
+  setInterval(updateTime, 1000);
+  updateTime(); // Llamar inmediatamente
+  
+  function openActionModal(action) {
+    if (action === 'users') {
+      window.location.href = '/admin/users/new';
+    }
+  }
+  
+  function confirmDelete(userId, name) {
+    document.getElementById('userName').textContent = name;
+    document.getElementById('deleteForm').action = `/admin/users/${userId}/delete`;
+    
+    const deleteModal = document.getElementById('deleteModal');
+    deleteModal.style.display = 'flex';
+    deleteModal.classList.add('show');
+    document.body.classList.add('modal-open');
+  }
+  
+  // Configurar botones para cerrar el modal
+  document.querySelector('#deleteModal .boton-cerrar').addEventListener('click', function() {
+    const modal = document.getElementById('deleteModal');
+    modal.style.display = 'none';
+    modal.classList.remove('show');
+    document.body.classList.remove('modal-open');
+  });
+  
+  document.querySelector('#deleteModal .boton-cancelar').addEventListener('click', function() {
+    const modal = document.getElementById('deleteModal');
+    modal.style.display = 'none';
+    modal.classList.remove('show');
+    document.body.classList.remove('modal-open');
+  });
+  
+  // Cerrar modal al hacer clic fuera
+  document.getElementById('deleteModal').addEventListener('click', function(event) {
+    if (event.target === this) {
+      this.style.display = 'none';
+      this.classList.remove('show');
+      document.body.classList.remove('modal-open');
+    }
+  });
+
+  (function(){
+    let usersCurrentPage=1; const usersPageSize=15;
+    function getRows(){ return Array.from(document.querySelectorAll('.users-table tbody tr')).filter(r=>r.style.display!=='none'); }
+    function applyPage(){ const all=Array.from(document.querySelectorAll('.users-table tbody tr')); const vis=getRows(); all.forEach(r=>{ if(!vis.includes(r)) r.style.display='none'; }); const s=(usersCurrentPage-1)*usersPageSize, e=s+usersPageSize; vis.forEach((r,i)=>{ r.style.display=(i>=s && i<e)?'':'none'; }); }
+    function renderPag(){ const c=document.getElementById('usersPagination'); if(!c) return; const total=getRows().length; const pages=Math.max(1, Math.ceil(total/usersPageSize)); if(usersCurrentPage>pages) usersCurrentPage=pages; c.innerHTML=''; for(let i=1;i<=pages;i++){ const b=document.createElement('button'); b.className='page-btn'+(i===usersCurrentPage?' active':''); b.textContent=i; b.onclick=function(){ usersCurrentPage=i; applyPage(); renderPag(); }; c.appendChild(b);} }
+    document.addEventListener('DOMContentLoaded', function(){ renderPag(); applyPage(); });
+  })();
+</script>
+
+<script src="/js/admin-dashboard-animations.js"></script>
+
+  <!-- Tu JS primero, para que el callback global exista antes de cargar el script de Google -->
+  <script src="/js/tradux.js"></script>
+  <!-- Script oficial de Google (callback definido en translate.js) -->
+  <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+<%- include('../partials/footer') %>

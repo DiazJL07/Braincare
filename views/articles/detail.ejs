@@ -1,0 +1,63 @@
+<%- include('../partials/header', { title: article.title }) %>
+
+
+<div class="main-content-container">
+  
+  <div class="articles-container1">
+        <!-- Breadcrumbs -->
+        <div class="breadcrumb-container">
+          <div class="breadcrumb-wrapper">
+            <ol class="breadcrumb">
+              <li class="breadcrumb-item">
+                <a href="" class="breadcrumb-link">
+                  <i class="bi bi-house-door"></i>
+                  Inicio
+                </a>
+              </li>
+              <li class="breadcrumb-item">
+                <a href="/articles" class="breadcrumb-link">Artículos</a>
+              </li>
+              <li class="breadcrumb-item active" aria-current="page">
+                <%= article.title %>
+              </li>
+            </ol>
+          </div>
+        </div>
+        
+    <article class="article-card">
+      
+      <div class="article-info">
+         <h1 class="guides-header-title1"><%= article.title %></h1>
+        
+    
+        
+        <div class="article-meta">
+          
+          <span class="article-topic"><%= article.topic %></span>
+          <span class="article-author">Por <%= article.author ? article.author.name : 'Autor desconocido' %></span>
+          <span class="article-date"><%= new Date(article.publicationDate).toLocaleDateString() %></span>
+          <span class="article-views"><i class="bi bi-eye"></i> <%= article.views %> vistas</span>
+        </div>
+         <% if (article.image) { %>
+        <img src="<%= article.image %>" class="article-image1" alt="<%= article.title %>">
+      <% } else { %>
+        <div class="article-no-image">
+          <i class="article-image-icon bi bi-image"></i>
+          <p>Sin imagen</p>
+        </div>
+      <% } %>
+        <div class="article-detail-content">
+          <%- article.content %>
+        </div>
+      </div>
+    </article>
+  </div>
+  
+
+</div>
+
+  <!-- Tu JS primero, para que el callback global exista antes de cargar el script de Google -->
+  <script src="/js/tradux.js"></script>
+  <!-- Script oficial de Google (callback definido en translate.js) -->
+  <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+<%- include('../partials/footer') %>

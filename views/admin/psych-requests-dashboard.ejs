@@ -1,0 +1,132 @@
+<%- include('../partials/header', { title: 'Administración de Solicitudes' }) %>
+<link rel="stylesheet" href="/css/admin-articles-dashboard.css">
+<link rel="stylesheet" href="/css/admin-responsive.css">
+
+<div class="articles-admin-dashboard">
+  <div class="articles-dashboard-header">
+    <h1>Dashboard de Solicitudes de Psicólogo</h1>
+    <p class="subtitle">Revisa y procesa las solicitudes de verificación profesional</p>
+    
+  </div>
+
+    <div class="articles-header-actions" style="position:relative; display:flex; gap:8px; align-items:center;">
+      <div class="dropdown">
+        <button class="articles-action-btn dropdown-toggle" type="button" id="filterDropdownButton" style="background:#6c63ff; color:#fff; border:1px solid #4a32d4; border-radius:8px; padding:8px 12px;">
+          <i class="fas fa-filter" style="color:#fff"></i> Filtrar
+        </button>
+        <ul class="dropdown-menu" id="filterDropdownMenu" style="display:none; position:absolute; top:100%; left:0; z-index:1000; background:#6c63ff; color:#fff; border:1px solid #4a32d4; border-radius:10px; overflow:hidden;">
+          <li><a class="dropdown-item" href="/admin/requests?status=all" style="color:#fff"><i class="fas fa-list" style="color:#fff"></i> Todas</a></li>
+          <li><a class="dropdown-item" href="/admin/requests?status=pending" style="color:#fff"><i class="fas fa-hourglass-half" style="color:#fff"></i> Pendientes</a></li>
+          <li><a class="dropdown-item" href="/admin/requests?status=approved" style="color:#fff"><i class="fas fa-check" style="color:#fff"></i> Aprobadas</a></li>
+          <li><a class="dropdown-item" href="/admin/requests?status=rejected" style="color:#fff"><i class="fas fa-times" style="color:#fff"></i> Denegadas</a></li>
+        </ul>
+      </div>
+    </div>
+    <style>
+      #filterDropdownMenu .dropdown-item { background: transparent !important; color: #fff !important; }
+      #filterDropdownMenu .dropdown-item:hover, #filterDropdownMenu .dropdown-item:focus { background: #8e8ad8 !important; color: #ffffff !important; }
+    </style>
+
+  <div class="articles-main-content">
+    <div class="articles-content-header">
+      <h2 class="articles-content-title">Solicitudes</h2>
+      <div class="articles-real-time-indicator">
+        <div class="articles-real-time-dot"></div>
+      </div>
+    </div>
+
+    <div class="articles-table-container">
+      <table class="articles-table">
+        <thead>
+          <tr>
+            <th>Usuario</th>
+            <th>Correo</th>
+            <th>Estado</th>
+            <th>Fecha</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (requests && requests.length > 0) { %>
+            <% requests.forEach(function(req){ %>
+              <tr>
+                <td>
+                  <div class="articles-author-info">
+                    <div class="articles-author-avatar">
+                      <% const avatar = (req.user && req.user.profileImage) ? req.user.profileImage : '/img/default-avatar.svg'; %>
+                      <img src="<%= avatar %>" alt="Avatar" style="width:32px;height:32px;border-radius:50%;object-fit:cover;">
+                    </div>
+                    <div class="articles-author-details">
+                      <span class="articles-author-name"><%= req.fullName %></span>
+                      <span class="articles-author-role"><%= req.user ? req.user.name : '' %></span>
+                    </div>
+                  </div>
+                </td>
+                <td class="articles-author-name" style="color: #6B7280;"><%= req.email %></td>
+                <td><span class="articles-category-badge"><%= ({pending:'Pendiente', approved:'Aprobada', rejected:'Denegada'})[req.status] %></span></td>
+                <td>
+                  <div class="articles-date-info">
+                    <span class="articles-date-main"><%= new Date(req.createdAt).toLocaleDateString('es-ES') %></span>
+                    <span class="articles-date-time"><%= new Date(req.createdAt).toLocaleTimeString('es-ES', {hour:'2-digit', minute:'2-digit'}) %></span>
+                  </div>
+                </td>
+                <td>
+                  <div class="articles-actions-group">
+                    <a href="/admin/requests/<%= req._id %>" class="articles-action-button articles-btn-view" data-tooltip="Ver solicitud">
+                      <i class="fas fa-eye"></i>
+                    </a>
+                  </div>
+                </td>
+              </tr>
+            <% }) %>
+          <% } else { %>
+            <tr>
+              <td colspan="5" class="articles-empty-state">
+                <div class="articles-empty-content">
+                  <div class="articles-empty-illustration">
+                    <div class="articles-empty-circle">
+                      <i class="fas fa-id-card articles-empty-icon"></i>
+                    </div>
+                    <div class="articles-empty-dots"><span></span><span></span><span></span></div>
+                  </div>
+                  <h3>No hay solicitudes</h3>
+                  <p>Cuando los usuarios soliciten verificación como psicólogos, aparecerán aquí.</p>
+                </div>
+              </td>
+            </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+    <div id="requestsPagination" class="articles-pagination"></div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function(){
+    var btn = document.getElementById('filterDropdownButton');
+    var menu = document.getElementById('filterDropdownMenu');
+    if (btn && menu) {
+      btn.addEventListener('click', function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+      });
+      document.addEventListener('click', function(e){
+        if (!menu.contains(e.target) && !btn.contains(e.target)) {
+          menu.style.display = 'none';
+        }
+      });
+    }
+  });
+
+  (function(){
+    let reqCurrentPage=1; const reqPageSize=15;
+    function rows(){ return Array.from(document.querySelectorAll('.articles-table tbody tr')).filter(r=>r.style.display!=='none'); }
+    function apply(){ const all=Array.from(document.querySelectorAll('.articles-table tbody tr')); const vis=rows(); all.forEach(r=>{ if(!vis.includes(r)) r.style.display='none'; }); const s=(reqCurrentPage-1)*reqPageSize, e=s+reqPageSize; vis.forEach((r,i)=>{ r.style.display=(i>=s && i<e)?'':'none'; }); }
+    function render(){ const c=document.getElementById('requestsPagination'); if(!c) return; const total=rows().length; const pages=Math.max(1, Math.ceil(total/reqPageSize)); if(reqCurrentPage>pages) reqCurrentPage=pages; c.innerHTML=''; for(let i=1;i<=pages;i++){ const b=document.createElement('button'); b.className='page-btn'+(i===reqCurrentPage?' active':''); b.textContent=i; b.onclick=function(){ reqCurrentPage=i; apply(); render(); }; c.appendChild(b);} }
+    document.addEventListener('DOMContentLoaded', function(){ render(); apply(); });
+  })();
+</script>
+
+<%- include('../partials/footer') %>

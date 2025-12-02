@@ -1,0 +1,266 @@
+<%- include('../partials/header') %>
+<link rel="stylesheet" href="/css/admin-reports.css">
+<style>
+    body{
+      padding-top: 5%;
+    }
+  </style>
+<div class="reports-container animate-fade-in">
+  <!-- Header de la sección -->
+  <div class="reports-header">
+    <h1 class="reports-title">
+      <!--<i class="fas fa-flag"></i>--> 
+      Gestión de Reportes
+    </h1>
+    <div>
+      <a href="/admin/dashboard" class="btn-report btn-report-secondary">
+        <i class="fas fa-arrow-left"></i> Volver al Dashboard
+      </a>
+    </div>
+  </div>
+
+  <!-- Filtros -->
+  <div class="reports-filters animate-slide-in">
+    <h2 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+      <i class="fas fa-filter text-blue-600"></i>
+      Filtros de Búsqueda
+    </h2>
+    <form method="GET" class="filter-group">
+      <div class="flex-1">
+        <label for="status" class="filter-label">Estado del Reporte</label>
+        <select name="status" id="status" class="filter-select">
+          <option value="all" <%= currentStatus === 'all' ? 'selected' : '' %>>Todos los Estados</option>
+          <option value="pending" <%= currentStatus === 'pending' ? 'selected' : '' %>>Pendientes</option>
+          <option value="reviewed" <%= currentStatus === 'reviewed' ? 'selected' : '' %>>Revisados</option>
+          <option value="resolved" <%= currentStatus === 'resolved' ? 'selected' : '' %>>Resueltos</option>
+          <option value="dismissed" <%= currentStatus === 'dismissed' ? 'selected' : '' %>Descartados</option>
+        </select>
+      </div>
+      <div>
+        <button type="submit" class="btn-report btn-report-primary">
+          <i class="fas fa-search"></i> Aplicar Filtros
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Estadísticas -->
+  <div class="reports-stats animate-slide-in">
+    <div class="stat-card stat-card-primary">
+      <div class="stat-card-content">
+        <div>
+          <div class="stat-number"><%= total %></div>
+          <div class="stat-label">Total de Reportes</div>
+        </div>
+        <div class="stat-icon">
+          <i class="fas fa-flag"></i>
+        </div>
+      </div>
+    </div>
+    
+    <div class="stat-card stat-card-warning">
+      <div class="stat-card-content">
+        <div>
+          <div class="stat-number"><%= pendingCount %></div>
+          <div class="stat-label">Reportes Pendientes</div>
+        </div>
+        <div class="stat-icon">
+          <i class="fas fa-clock"></i>
+        </div>
+      </div>
+    </div>
+    
+    <div class="stat-card stat-card-success">
+      <div class="stat-card-content">
+        <div>
+          <div class="stat-number"><%= total - pendingCount %></div>
+          <div class="stat-label">Reportes Procesados</div>
+        </div>
+        <div class="stat-icon">
+          <i class="fas fa-check-circle"></i>
+        </div>
+      </div>
+    </div>
+    
+    <div class="stat-card stat-card-danger">
+      <div class="stat-card-content">
+        <div>
+          <div class="stat-number"><%= Math.round((pendingCount / total) * 100) || 0 %>%</div>
+          <div class="stat-label">Tasa de Pendientes</div>
+        </div>
+        <div class="stat-icon">
+          <i class="fas fa-percentage"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lista de reportes -->
+  <div class="reports-list animate-slide-in">
+    <div class="reports-list-header">
+      <h2 class="text-xl font-bold text-gray-900 flex items-center gap-2">
+        <i class="fas fa-list text-blue-600"></i>
+        Lista de Reportes (<%= reports.length %>)
+      </h2>
+    </div>
+    
+    <% if (reports.length === 0) { %>
+      <div class="empty-state">
+        <div class="empty-state-icon">
+          <i class="fas fa-inbox"></i>
+        </div>
+        <div class="empty-state-content">
+          <h3>No hay reportes</h3>
+          <p>No se encontraron reportes que coincidan con los filtros seleccionados.</p>
+        </div>
+      </div>
+    <% } else { %>
+      <div class="reports-table-container">
+        <table class="reports-table">
+          <thead class="reports-table-header">
+            <tr>
+              <th class="table-cell-header">ID</th>
+              <th class="table-cell-header">Tipo</th>
+              <th class="table-cell-header">Reportado por</th>
+              <th class="table-cell-header">Contenido</th>
+              <th class="table-cell-header">Motivo</th>
+              <th class="table-cell-header">Estado</th>
+              <th class="table-cell-header">Fecha</th>
+              <th class="table-cell-header">Acciones</th>
+            </tr>
+          </thead>
+          <tbody class="reports-table-body">
+            <% reports.forEach(report => { %>
+              <tr class="table-row">
+                <td class="table-cell">
+                  <span class="report-id">#<%= report._id.toString().slice(-6) %></span>
+                </td>
+                <td class="table-cell">
+                  <span class="badge <%= report.contentType === 'foro' ? 'badge-primary' : 'badge-secondary' %>">
+                    <i class="fas <%= report.contentType === 'foro' ? 'fa-file-alt' : 'fa-comment' %>"></i>
+                    <%= report.contentType === 'foro' ? 'Publicación' : 'Comentario' %>
+                  </span>
+                </td>
+                <td class="table-cell">
+                   <div class="user-info">
+                     <% if (report.reporter) { %>
+                       <img src="<%= report.reporter.profileImage || '/img/default-avatar.svg' %>" 
+                            alt="<%= report.reporter.name %>" 
+                            class="user-avatar"
+                            onerror="this.src='/img/default-avatar.svg'">
+                       <span><%= report.reporter.name %></span>
+                     <% } else { %>
+                       <img src="/img/default-avatar.svg" 
+                            alt="Usuario eliminado" 
+                            class="user-avatar">
+                       <span class="text-gray-500">Usuario eliminado</span>
+                     <% } %>
+                   </div>
+                 </td>
+                <td class="table-cell">
+                  <div class="content-preview">
+                    <% if (report.contentType === 'foro' && report.reportedContent) { %>
+                      <%= report.reportedContent.title ? report.reportedContent.title.substring(0, 50) + '...' : 'Contenido no disponible' %>
+                    <% } else if (report.contentType === 'comment' && report.reportedContent) { %>
+                      <%= report.reportedContent.content ? report.reportedContent.content.substring(0, 50) + '...' : 'Contenido no disponible' %>
+                    <% } else { %>
+                      Contenido no disponible
+                    <% } %>
+                  </div>
+                </td>
+                <td class="table-cell">
+                  <span class="reason-text"><%= report.reason %></span>
+                </td>
+                <td class="table-cell">
+                  <span class="badge <%= 
+                    report.status === 'pending' ? 'badge-warning' : 
+                    report.status === 'reviewed' ? 'badge-info' :
+                    report.status === 'resolved' ? 'badge-success' : 'badge-danger' %>">
+                    <i class="fas <%= 
+                      report.status === 'pending' ? 'fa-clock' : 
+                      report.status === 'reviewed' ? 'fa-eye' :
+                      report.status === 'resolved' ? 'fa-check' : 'fa-times' %>"></i>
+                    <%= 
+                      report.status === 'pending' ? 'Pendiente' : 
+                      report.status === 'reviewed' ? 'Revisado' :
+                      report.status === 'resolved' ? 'Resuelto' : 'Descartado' %>
+                  </span>
+                </td>
+                <td class="table-cell">
+                  <span class="date-text"><%= new Date(report.createdAt).toLocaleDateString() %></span>
+                </td>
+                <td class="table-cell">
+                  <a href="/admin/reports/<%= report._id %>" class="btn-report btn-report-outline">
+                    <i class="fas fa-eye"></i> Ver Detalles
+                  </a>
+                </td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+      <div id="reportsPagination" class="articles-pagination"></div>
+    <% } %>
+</div>
+
+<!-- Auto-refresh script -->
+
+<script>
+function filterReports() {
+  const statusFilter = document.getElementById('statusFilter').value;
+  const typeFilter = document.getElementById('typeFilter').value;
+  const rows = document.querySelectorAll('tbody tr');
+  
+  rows.forEach(row => {
+    const status = row.querySelector('.badge').textContent.toLowerCase();
+    const type = row.cells[2].textContent.toLowerCase();
+    
+    let showRow = true;
+    
+    if (statusFilter && !status.includes(statusFilter)) {
+      showRow = false;
+    }
+    
+    if (typeFilter && !type.includes(typeFilter === 'foro' ? 'publicación' : 'comentario')) {
+      showRow = false;
+    }
+    
+    row.style.display = showRow ? '' : 'none';
+  });
+}
+
+// Auto-refresh cada 30 segundos para nuevos reportes
+setInterval(() => {
+  if (document.querySelector('.badge-warning')) {
+    location.reload();
+  }
+}, 30000);
+</script>
+<script>
+  (function(){
+    let reportsCurrentPage = 1; const reportsPageSize = 15;
+    function getRows(){ return Array.from(document.querySelectorAll('.reports-table-body tr.table-row')).filter(r=>r.style.display!=='none'); }
+    function applyPage(){
+      const all = Array.from(document.querySelectorAll('.reports-table-body tr.table-row'));
+      const vis = getRows();
+      all.forEach(r=>{ if(!vis.includes(r)) r.style.display='none'; });
+      const start=(reportsCurrentPage-1)*reportsPageSize, end=start+reportsPageSize;
+      vis.forEach((r,i)=>{ r.style.display=(i>=start && i<end)?'':'none'; });
+    }
+    function renderPag(){
+      const c=document.getElementById('reportsPagination'); if(!c) return;
+      const total=getRows().length; const pages=Math.max(1, Math.ceil(total/reportsPageSize));
+      if(reportsCurrentPage>pages) reportsCurrentPage=pages; c.innerHTML='';
+      for(let i=1;i<=pages;i++){ const b=document.createElement('button'); b.className='page-btn'+(i===reportsCurrentPage?' active':''); b.textContent=i; b.onclick=function(){ reportsCurrentPage=i; applyPage(); renderPag(); }; c.appendChild(b); }
+    }
+    document.addEventListener('DOMContentLoaded', function(){ renderPag(); applyPage(); });
+    window.filterReportsPage = function(){ renderPag(); applyPage(); };
+  })();
+</script>
+
+  <!-- Tu JS primero, para que el callback global exista antes de cargar el script de Google -->
+  <script src="/js/tradux.js"></script>
+  <!-- Script oficial de Google (callback definido en translate.js) -->
+  <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+<%- include('../partials/footer') %>

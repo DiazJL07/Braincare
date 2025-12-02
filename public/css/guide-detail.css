@@ -1,0 +1,411 @@
+/* ===== CSS PARA VISTA DE DETALLE DE GUÍAS ===== */
+
+/* Variables CSS para consistencia */
+:root {
+  --guide-detail-primary: #6c757d;
+  --guide-detail-secondary: #8B7EC8;
+  --guide-detail-accent: #667eea;
+  --guide-detail-light: #f8f9fa;
+  --guide-detail-white: #ffffff;
+  --guide-detail-border: #dee2e6;
+  --guide-detail-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  --guide-detail-shadow-lg: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+  --guide-detail-transition: all 0.3s ease;
+  --guide-detail-border-radius: 12px;
+}
+
+/* ===== CONTENEDOR PRINCIPAL ===== */
+.guide-detail-container {
+  background-color: var(--guide-detail-light);
+  min-height: 100vh;
+  padding: 5rem 5rem;
+}
+
+/* ===== TARJETA PRINCIPAL DE LA GUÍA ===== */
+.guide-main-card {
+  background: var(--guide-detail-white);
+  border-radius: var(--guide-detail-border-radius);
+  box-shadow: var(--guide-detail-shadow-lg);
+  overflow: hidden;
+  margin-bottom: 2rem;
+  transition: var(--guide-detail-transition);
+  border: 1px solid var(--guide-detail-border);
+}
+
+.guide-main-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.1);
+}
+
+/* ===== IMAGEN DE LA GUÍA ===== */
+.guide-detail-image {
+  width: 100%;
+  height: 350px;
+  object-fit: cover;
+  border-radius: var(--guide-detail-border-radius) var(--guide-detail-border-radius) 0 0;
+}
+
+/* ===== CONTENIDO DE LA TARJETA ===== */
+.guide-detail-body {
+  padding: 2rem;
+}
+
+.guide-detail-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--guide-detail-primary);
+  margin-bottom: 1.5rem;
+  line-height: 1.3;
+}
+
+.guide-detail-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.guide-detail-badge {
+  background: #8B7EC8;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 25px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.guide-detail-stats {
+  display: flex;
+  gap: 1rem;
+  color: var(--guide-detail-primary);
+  font-size: 0.875rem;
+}
+
+.guide-detail-stats i {
+  margin-right: 0.25rem;
+  color: var(--guide-detail-secondary);
+}
+
+.guide-detail-author-info {
+  background: var(--guide-detail-light);
+  padding: 1rem;
+  border-radius: var(--guide-detail-border-radius);
+  margin-bottom: 1.5rem;
+  border-left: 4px solid var(--guide-detail-secondary);
+}
+
+.guide-detail-author-info small {
+  color: var(--guide-detail-primary);
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+/* ===== SIDEBAR CARDS ===== */
+.guide-sidebar-card {
+  background: var(--guide-detail-white);
+  border-radius: var(--guide-detail-border-radius);
+  box-shadow: var(--guide-detail-shadow);
+  border: 1px solid var(--guide-detail-border);
+  margin-bottom: 1.5rem;
+  overflow: hidden;
+  transition: var(--guide-detail-transition);
+}
+
+.guide-sidebar-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--guide-detail-shadow-lg);
+}
+
+.guide-sidebar-card .card-body {
+  padding: 1.5rem;
+}
+
+.guide-sidebar-card .card-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--guide-detail-primary);
+  margin-bottom: 1rem;
+  border-bottom: 2px solid var(--guide-detail-secondary);
+  padding-bottom: 0.5rem;
+}
+
+/* ===== VISOR DE PDF MEJORADO ===== */
+.guide-pdf-section {
+  margin-top: 3rem;
+}
+
+.guide-pdf-card {
+  background: var(--guide-detail-white);
+  border-radius: var(--guide-detail-border-radius);
+  box-shadow: var(--guide-detail-shadow-lg);
+  overflow: hidden;
+  border: 1px solid var(--guide-detail-border);
+}
+
+.guide-pdf-header {
+  background: linear-gradient(135deg, var(--guide-detail-secondary), var(--guide-detail-accent));
+  color: white;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.guide-pdf-header h5 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.guide-pdf-viewer {
+  position: relative;
+  background: #f5f5f5;
+}
+
+/* TAMAÑO DEL PDF AGRANDADO */
+.guide-pdf-container {
+  position: relative;
+  width: 100%;
+  height: 800px; /* Aumentado de 600px a 800px */
+  min-height: 800px;
+}
+
+.guide-pdf-iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: white;
+}
+
+/* ===== BOTONES MEJORADOS ===== */
+.guide-detail-btn {
+  background: linear-gradient(135deg, var(--guide-detail-secondary), var(--guide-detail-accent));
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 25px;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: var(--guide-detail-transition);
+  box-shadow: var(--guide-detail-shadow);
+  margin-top: 15px;
+}
+
+.guide-detail-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0.5rem 1rem rgba(139, 126, 200, 0.3);
+  color: white;
+  text-decoration: none;
+}
+
+.guide-detail-btn-outline {
+  background: transparent;
+  color: var(--guide-detail-secondary);
+  border: 2px solid var(--guide-detail-secondary);
+  padding: 0.75rem 1.5rem;
+  border-radius: 25px;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: var(--guide-detail-transition);
+  margin-bottom: 10px;
+}
+
+.guide-detail-btn-outline:hover {
+  background: var(--guide-detail-secondary);
+  color: white;
+  transform: translateY(-2px);
+  text-decoration: none;
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+@media (max-width: 768px) {
+  .guide-detail-container {
+    padding: 1rem 0;
+  }
+  
+  .guide-detail-body {
+    padding: 1.5rem;
+  }
+  
+  .guide-detail-title {
+    font-size: 1.5rem;
+  }
+  
+  .guide-detail-meta {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .guide-pdf-container {
+    height: 600px; /* Reducido en móvil */
+    min-height: 600px;
+  }
+  
+  .guide-pdf-header {
+    padding: 1rem;
+  }
+  
+  .guide-sidebar-card .card-body {
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .guide-detail-image {
+    height: 250px;
+  }
+  
+  .guide-detail-title {
+    font-size: 1.25rem;
+  }
+  
+  .guide-pdf-container {
+    height: 500px;
+    min-height: 500px;
+  }
+}
+
+/* ===== ANIMACIONES ===== */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.guide-main-card,
+.guide-sidebar-card,
+.guide-pdf-card {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.guide-main-card {
+  animation-delay: 0.1s;
+}
+
+.guide-sidebar-card:nth-child(1) {
+  animation-delay: 0.2s;
+}
+
+.guide-sidebar-card:nth-child(2) {
+  animation-delay: 0.3s;
+}
+
+.guide-pdf-card {
+  animation-delay: 0.4s;
+}
+
+/* ===== UTILIDADES ESPECÍFICAS ===== */
+.guide-text-center {
+  text-align: center;
+}
+
+.guide-text-muted {
+  color: var(--guide-detail-primary) !important;
+}
+
+.guide-mb-4 {
+  margin-bottom: 1.5rem;
+}
+
+.guide-mt-4 {
+  margin-top: 1.5rem;
+}
+
+/* ===== MEJORAS PARA EL LAYOUT ===== */
+.guide-layout-row {
+  display: flex;
+  gap: 2rem;
+  align-items: flex-start;
+}
+
+.guide-main-content {
+  flex: 2;
+}
+
+.guide-sidebar-content {
+  flex: 1;
+  min-width: 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Sidebar */
+.guide-sidebar {
+  background: white;
+  border-radius: var(--guide-detail-border-radius);
+  padding: 1.5rem;
+  box-shadow: var(--guide-detail-shadow);
+  height: fit-content;
+  position: sticky;
+  top: 20px;
+  border: 1px solid var(--guide-detail-border);
+  transition: var(--guide-detail-transition);
+}
+
+.guide-sidebar:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.guide-sidebar h5 {
+  color: var(--guide-detail-primary);
+  margin-bottom: 1rem;
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.guide-sidebar .card {
+  border: none;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  margin-bottom: 1.5rem;
+  border-radius: var(--guide-detail-border-radius);
+  transition: var(--guide-detail-transition);
+}
+
+.guide-sidebar .card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--guide-detail-shadow-lg);
+}
+
+.guide-sidebar .card:last-child {
+  margin-bottom: 0;
+}
+
+.guide-sidebar .card-body {
+  padding: 1.5rem;
+}
+
+.guide-sidebar .card-text {
+  color: var(--guide-detail-primary);
+  line-height: 1.6;
+  margin-bottom: 0;
+}
+
+@media (max-width: 992px) {
+  .guide-layout-row {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  
+  .guide-sidebar-content {
+    min-width: auto;
+  }
+  
+  .guide-sidebar {
+    position: static;
+  }
+}

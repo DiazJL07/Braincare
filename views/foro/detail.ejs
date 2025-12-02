@@ -1,0 +1,1098 @@
+<%- include('../partials/header', { title: foro.title }) %>
+<link rel="stylesheet" href="/css/cssPro1/comments.css">
+<link rel="stylesheet" href="/css/modern-comments.css">
+<link rel="stylesheet" href="/css/variables-espacios.css">
+
+<style>
+/* Estilos para el breadcrumb */
+.breadcrumb {
+  background: transparent;
+  padding: 0.75rem 1rem;
+  border-radius: 0.25rem;
+  font-size: 0.9rem;
+  display: flex;
+  flex-wrap: wrap;
+  list-style: none;
+  margin: 0;
+  padding-left: 0;
+}
+
+.breadcrumb-item {
+  display: flex;
+  align-items: center;
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+  content: "›";
+  color: #6c757d;
+  font-size: 1.2rem;
+  line-height: 1;
+  margin: 0 0.5rem;
+}
+
+.breadcrumb-item a {
+  color: #667eea;
+  transition: color 0.3s ease;
+  text-decoration: none;
+}
+
+.breadcrumb-item a:hover {
+  color: #764ba2;
+  text-decoration: underline;
+}
+
+.breadcrumb-item.active {
+  color: #6c757d;
+  font-weight: 500;
+}
+
+/* Breadcrumb personalizado sin Bootstrap */
+.custom-breadcrumb {
+  padding: 0.75rem 1rem;
+  font-size: 0.95rem;
+  margin-bottom: 1.5rem;
+}
+.custom-breadcrumb ul {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 0;
+  margin: 0;
+}
+.custom-breadcrumb li {
+  display: flex;
+  align-items: center;
+  color: #667eea;
+  font-weight: 500;
+}
+.custom-breadcrumb li a {
+  color: #667eea;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.custom-breadcrumb li a:hover {
+  color: #764ba2;
+  text-decoration: underline;
+}
+.custom-breadcrumb .separator {
+  color: #6c757d;
+  margin: 0 0.5rem;
+  font-size: 1.1em;
+  user-select: none;
+}
+.custom-breadcrumb .active {
+  color: #6c757d;
+  font-weight: 600;
+  cursor: default;
+}
+
+/* From Uiverse.io by adamgiebl */
+button {
+  font-family: inherit;
+  font-size: 15px;
+  padding: 0.5rem 1rem;
+  background: royalblue;
+  color: white;
+  display: flex;
+  align-items: center;
+  border: none;
+  border-radius: 6px;
+  overflow: hidden;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+button span {
+  display: block;
+  margin-left: 0.3em;
+  transition: all 0.3s ease-in-out;
+}
+
+button svg {
+  display: block;
+  transform-origin: center center;
+  transition: transform 0.3s ease-in-out;
+}
+
+
+.delete-btn {
+  position: relative;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  padding: 8px;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.delete-btn svg {
+  width: 18px;
+  height: 18px;
+  transition: all 0.3s ease;
+  fill: #6c757d;
+}
+
+
+
+
+/* Efectos hover para iconos modernos */
+.fas:hover {
+  transform: scale(1.1);
+  transition: transform 0.2s ease;
+}
+
+/* Animaciones para botones */
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  transition: all 0.3s ease;
+}
+
+
+
+/* Animación para el indicador de estado en línea */
+.bg-success {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(40, 167, 69, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(40, 167, 69, 0);
+  }
+}
+
+/* Efectos para estadísticas */
+.bg-white.bg-opacity-20:hover {
+  background-color: rgba(255, 255, 255, 0.3) !important;
+  transform: scale(1.05);
+  transition: all 0.3s ease;
+}
+
+/* Gradientes animados para headers */
+.card-header[style*="linear-gradient"] {
+  background-size: 200% 200%;
+  animation: gradientShift 3s ease infinite;
+}
+
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Efectos para botones redondeados */
+.rounded-pill:hover {
+  transform: scale(1.05);
+  transition: all 0.3s ease;
+}
+
+/* Animación suave para comentarios */
+.card[id^="comment-"]:hover {
+  border-left-width: 6px !important;
+  transition: border-left-width 0.3s ease;
+}
+
+</style>
+
+
+<div class="container mt-4">
+  <div class="row mb-2">
+    <div class="col-md-12">
+      <a href="/foro" class="btn btn-outline-secondary d-inline-flex align-items-center">
+        <i class="fas fa-arrow-left me-2"></i>
+        Regresar
+      </a>
+    </div>
+  </div>
+  <!-- Breadcrumb -->
+  <div class="row mb-4">
+    <div class="col-md-12">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="/">Inicio</a></li>
+          <li class="breadcrumb-item"><a href="/foro">Foro</a></li>
+          <li class="breadcrumb-item active" aria-current="page"><%= foro.title %></li>
+        </ol>
+      </nav>
+    </div>
+  </div>
+
+
+  <!-- Contenedor de alertas -->
+  <div class="row justify-content-center">
+    <div class="col-12 col-xl-10">
+      <div id="alertContainer"></div>
+    </div>
+  </div>
+
+  <div class="row justify-content-center">
+    <div class="col-12 col-xl-11">
+      <div class="row g-5">
+        <!-- Contenido Principal -->
+        <div class="col-lg-9 mt-8">
+          <article class="card  border-0 p-4">
+            <% if (foro.image) { %>
+              <div class="position-relative">
+                <img src="<%= foro.image %>" class="card-img-top" alt="<%= foro.title %>" style="max-height: 450px; object-fit: cover; border-radius: 0.5rem 0.5rem 0 0;">
+                <div class="position-absolute top-0 start-0 w-100 h-100" style="background: linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.3) 100%); border-radius: 0.5rem 0.5rem 0 0;"></div>
+              </div>
+            <% } %>
+         
+              <!-- Título y Tema -->
+              <div class="mb-4">
+                <div class="d-flex align-items-center mb-3">
+                  <span class="badge bg-gradient" style="background: linear-gradient(45deg, #667eea 0%, #764ba2 100%); font-size: 0.85rem; padding: 0.5rem 1rem;">
+                    <i class="fas fa-tag me-1"></i><%= (foro.topic && foro.topic.name) ? foro.topic.name : 'Sin tema' %>
+                  </span>
+                  
+                </div>
+                <h1 class="card-title display-6 fw-bold mb-2" style="color: #2c3e50; line-height: 1.2;"><%= foro.title %></h1>
+                <div class="card-body p-1">
+                  <div class="mt-4 mb-3">
+                    <div class="row g-4">
+                      <div class="col-auto">
+                        <div class="d-flex align-items-center gap-2">
+                          <small class="text-muted">Comentarios</small>
+                          <span class="fw-bold"><%= foro.comments ? foro.comments.length : 0 %></span>
+                        </div>
+                      </div>
+                      <div class="col-auto">
+                        <div class="d-flex align-items-center gap-2">
+                          <small class="text-muted">Vistas</small>
+                          <span class="fw-bold"><%= foro.views %></span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                  <div class="text-muted small">
+                    <i class="fas fa-calendar-alt me-1"></i>
+                    Publicado el <%= new Date(foro.publicationDate).toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' }) %>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Botones de Acción -->
+              <div class="d-flex flex-wrap gap-2 mb-4 rounded-3">
+                <button class="btn <%= user && foro.likes && foro.likes.includes(user._id.toString()) ? 'btn-danger' : 'btn-outline-danger' %> like-btn d-flex align-items-center" data-post-id="<%= foro._id %>">
+                  <i class="fas fa-heart me-2"></i>
+                  <span class="likes-count"><%= foro.likes ? foro.likes.length : 0 %></span>
+                  <span class="ms-1">Me gusta</span>
+                </button> 
+                <% if (user && foro.author && user._id.toString() !== foro.author._id.toString()) { %>
+                  <button class="btn btn-outline-warning report-btn d-flex align-items-center" data-post-id="<%= foro._id %>" data-content-type="foro" title="Reportar publicación" data-bs-toggle="modal" data-bs-target="#reportModal">
+                    <i class="fas fa-flag me-2"></i>Reportar
+                  </button>
+                <% } %>
+                <% if (user && user.role === 'admin') { %>
+                  <button class="btn btn-outline-danger d-flex align-items-center" onclick="confirmDeleteForoDetail('<%= foro._id %>', '<%= foro.title %>')" title="Eliminar publicación">
+                    <i class="fas fa-trash me-2"></i>Eliminar
+                  </button>
+                <% } %>
+            
+              </div>
+              
+              <!-- Contenido del Artículo -->
+               <div class="article-content" style="word-wrap: break-word; overflow-wrap: break-word; line-height: 1.8; font-size: 17px; color: #2c3e50;">
+                 <div>
+                   <%- foro.content %>
+                 </div>
+               </div>
+               
+               <!-- Estadísticas del Post -->
+      
+            </div>
+          </article>
+        </div>
+
+       
+      </div>
+      
+    <!-- Sección de Comentarios -->
+    <div class="row mt-4">
+      <div class="col-12">
+          <div class="comments-section">
+            <div class="comments-header">
+              <div class="d-flex align-items-center justify-content-between">
+                <h5 class="comments-title">
+                  <i class="fas fa-comments"></i>
+                  Comentarios 
+                  <span class="comments-count-badge">
+                    <i class="fas fa-hashtag me-1"></i>
+                    <%= foro.comments ? foro.comments.length : 0 %>
+                  </span>
+                </h5>
+                <div class="d-flex align-items-center">
+                  <i class="fas fa-users me-2"></i>
+                  <small>Únete a la conversación</small>
+                </div>
+              </div>
+            </div>
+            <div class="card-body p-0">
+              <% if (user) { %>
+                <div class="main-comment-form">
+                  <form id="main-comment-form" action="/foro/<%= foro._id %>/comments" method="POST">
+                    <div class="mb-3">
+                      <div class="d-flex align-items-center mb-3">
+                        <% if (user.profileImage) { %>
+                          <img src="<%= user.profileImage %>" class="rounded-circle me-3" style="width: 45px; height: 45px; object-fit: cover; border: 3px solid #667eea;" alt="Tu foto">
+                        <% } else { %>
+                          <div class="rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 45px; height: 45px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; font-weight: bold; border: 3px solid #667eea;">
+                            <i class="fas fa-user"></i>
+                          </div>
+                        <% } %>
+                        <div>
+                          <h6 class="mb-0 fw-bold" style="color: #667eea;"><%= user.name %></h6>
+                          <small class="text-muted"><i class="fas fa-pen-fancy me-1"></i>Escribe tu comentario</small>
+                        </div>
+                      </div>
+                      <textarea class="form-control comment-textarea" name="content" rows="4" placeholder="Comparte tus pensamientos, experiencias o preguntas..." required></textarea>
+                      <input type="hidden" name="postId" value="<%= foro._id %>">
+                    </div>
+                    <div class="text-end">
+                      <button type="submit" class="modern-submit-btn">
+                        <i class="fas fa-paper-plane"></i>
+                        <span>Publicar Comentario</span>
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              <% } else { %>
+                <div class="main-comment-form text-center">
+                  <div class="mb-3">
+                    <i class="fas fa-lock text-muted" style="font-size: 2rem; opacity: 0.5;"></i>
+                  </div>
+                  <h6 class="text-muted mb-3">¡Únete a la conversación!</h6>
+                  <a href="/login" class="modern-submit-btn text-decoration-none">
+                    <i class="fas fa-sign-in-alt"></i>
+                    <span>Iniciar Sesión para Comentar</span>
+                  </a>
+                </div>
+              <% } %>
+
+        <div class="mt-4">
+          <% if (foro.comments && foro.comments.length > 0) { %>
+            <% foro.comments.forEach(comment => { %>
+              <% if (!comment.isReply) { %>
+                <div class="modern-comment" id="comment-<%= comment._id %>">
+                  <div class="comment-header-modern">
+                    <% if (comment.author) { %>
+                      <div class="comment-avatar">
+                        <a href="/user/public/<%= comment.author._id %>" class="text-decoration-none">
+                          <% if (comment.author.profileImage) { %>
+                            <img src="<%= comment.author.profileImage %>" alt="Foto de perfil">
+                          <% } else { %>
+                            <div class="comment-avatar-placeholder">
+                              <i class="fas fa-user"></i>
+                            </div>
+                          <% } %>
+                          <div class="online-indicator"></div>
+                        </a>
+                      </div>
+                      <div class="comment-author-info">
+                        <a href="/user/public/<%= comment.author._id %>" class="text-decoration-none">
+                          <h6 class="comment-author-name">
+                            
+                            <%= comment.author.name %>
+                          </h6>
+                        </a>
+                        <div class="comment-meta">
+                          <i class="fas fa-clock me-1"></i>
+                          <%= new Date(comment.createdAt).toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' }) %>
+                          <span class="mx-2">•</span>
+                          <i class="fas fa-comment-dots me-1"></i>
+                          <small>Comentario principal</small>
+                          <% if (comment.edited) { %>
+                            <span class="mx-2">•</span>
+                            <span class="comment-edited">
+                              <i class="fas fa-edit"></i>
+                              Editado
+                            </span>
+                          <% } %>
+                        </div>
+                      </div>
+                    <% } else { %>
+                      <div class="comment-avatar">
+                        <div class="comment-avatar-placeholder" style="background: #6c757d;">
+                          <i class="fas fa-user-slash"></i>
+                        </div>
+                      </div>
+                      <div class="comment-author-info">
+                        <h6 class="comment-author-name text-muted">
+                          <i class="fas fa-exclamation-triangle me-1"></i>
+                          Usuario eliminado
+                        </h6>
+                        <div class="comment-meta">
+                          <i class="fas fa-clock me-1"></i>
+                          <small><%= new Date(comment.createdAt).toLocaleString() %></small>
+                        </div>
+                      </div>
+                    <% } %>
+                    <% if (user && user.role === 'admin' && comment.author) { %>
+                      <form action="/admin/users/<%= comment.author._id %>/ban" method="POST" class="d-inline ms-auto ban-form">
+                        <button type="button" class="modern-action-btn report-btn-modern ban-user-btn" data-user-id="<%= comment.author._id %>" data-user-name="<%= comment.author.name %>">
+                          <i class="fas fa-ban"></i>
+                          <span class="d-none d-sm-inline">Banear</span>
+                        </button>
+                      </form>
+                    <% } %>
+                  </div>
+                    
+                    <div class="comment-content-modern">
+                      <p><%= comment.content %></p>
+                    </div>
+                    
+                    <div class="comment-actions-modern">
+                      <div class="comment-actions-left">
+                        <button class="action-btn-modern like-btn <%= user && comment.likes && comment.likes.includes(user._id.toString()) ? 'liked' : '' %> like-comment-btn" data-comment-id="<%= comment._id %>">
+                          <i class="fas fa-heart"></i>
+                          <span class="like-count"><%= comment.likes ? comment.likes.length : 0 %></span>
+                          <span>Me gusta</span>
+                        </button>
+                        <% if (user && comment.author && user._id.toString() !== comment.author._id.toString()) { %>
+                          <button class="action-btn-modern report-btn" data-comment-id="<%= comment._id %>" data-content-type="comment" title="Reportar comentario" data-bs-toggle="modal" data-bs-target="#reportModal">
+                            <i class="fas fa-flag"></i>
+                            <span>Reportar</span>
+                          </button>
+                        <% } %>
+                      </div>
+                      <div class="comment-actions-right">
+                        <% if (user) { %>
+                          <button class="modern-action-btn reply-btn-modern reply-btn" data-comment-id="<%= comment._id %>">
+                            <i class="fas fa-reply"></i>
+                            <span class="d-none d-sm-inline">Responder</span>
+                          </button>
+                        <% } %>
+                      </div>
+                    </div>
+
+                  <!-- Formulario de edición (oculto) -->
+                  <div class="edit-form" id="edit-form-<%= comment._id %>" style="display: none;">
+                    <div class="d-flex align-items-center mb-3">
+                      <i class="fas fa-edit text-warning me-2"></i>
+                      <h6 class="mb-0 text-warning fw-bold">Editando comentario</h6>
+                    </div>
+                    <form class="edit-comment-form" action="/foro/<%= foro._id %>/comments/<%= comment._id %>" method="POST" data-comment-id="<%= comment._id %>">
+                      <div class="mb-3">
+                        <textarea class="form-control comment-textarea" name="content" rows="3" required><%= comment.content %></textarea>
+                      </div>
+                      <div class="form-actions">
+                        <button type="submit" class="btn-save">
+                          <i class="fas fa-save me-1"></i>
+                          Guardar cambios
+                        </button>
+                        <button type="button" class="btn-cancel cancel-edit-btn">
+                          <i class="fas fa-times me-1"></i>
+                          Cancelar
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+
+                  <!-- Formulario de respuesta (oculto) -->
+                  <div class="reply-form" id="reply-form-<%= comment._id %>" style="display: none;">
+                    <div class="d-flex align-items-center mb-3">
+                      <i class="fas fa-reply text-info me-2"></i>
+                      <h6 class="mb-0 text-info fw-bold">Respondiendo a <%= comment.author ? comment.author.name : 'Usuario eliminado' %></h6>
+                    </div>
+                    <form class="reply-comment-form" action="/foro/<%= foro._id %>/comments" method="POST" data-parent-id="<%= comment._id %>">
+                      <div class="mb-3">
+                        <textarea class="form-control comment-textarea" name="content" rows="3" placeholder="Escribe tu respuesta..." required></textarea>
+                        <input type="hidden" name="postId" value="<%= foro._id %>">
+                        <input type="hidden" name="parentCommentId" value="<%= comment._id %>">
+                      </div>
+                      <div class="form-actions">
+                        <button type="submit" class="btn-save">
+                          <i class="fas fa-paper-plane me-1"></i>
+                          Enviar respuesta
+                        </button>
+                        <button type="button" class="btn-cancel cancel-reply-btn">
+                          <i class="fas fa-times me-1"></i>
+                          Cancelar
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+
+                  <!-- Respuestas -->
+                  <% if (comment.replies && comment.replies.length > 0) { %>
+                    <div class="replies-section">
+                      <div class="replies-header">
+                        <i class="fas fa-comments me-2"></i>
+                        <span><%= comment.replies.length %> respuesta<%= comment.replies.length !== 1 ? 's' : '' %></span>
+                      </div>
+                      <div class="replies-container">
+                        <% comment.replies.forEach(reply => { %>
+                          <div class="modern-comment reply-item" id="reply-<%= reply._id %>">
+                            <div class="comment-header-modern">
+                              <% if (reply.author) { %>
+                                <div class="comment-avatar">
+                                  <a href="/user/public/<%= reply.author._id %>" class="text-decoration-none">
+                                    <% if (reply.author.profileImage) { %>
+                                      <img src="<%= reply.author.profileImage %>" alt="Foto de perfil">
+                                    <% } else { %>
+                                      <div class="comment-avatar-placeholder">
+                                        <i class="fas fa-user"></i>
+                                      </div>
+                                    <% } %>
+                                    <div class="online-indicator"></div>
+                                  </a>
+                                </div>
+                            <div class="comment-author-info">
+                                  <a href="/user/public/<%= reply.author._id %>" class="text-decoration-none">
+                                    <h6 class="comment-author-name">
+                                      <%= reply.author.name %>
+                                    </h6>
+                                  </a>
+                                  <div class="comment-meta">
+                                    <i class="fas fa-clock me-1"></i>
+                                    <small><%= new Date(reply.createdAt).toLocaleString() %></small>
+                                    <span class="mx-2">•</span>
+                                    <i class="fas fa-reply me-1"></i>
+                                    <small>Respuesta</small>
+                                    <% if (reply.edited) { %>
+                                      <span class="mx-2">•</span>
+                                      <span class="comment-edited">
+                                        <i class="fas fa-edit"></i>
+                                        Editado
+                                      </span>
+                                    <% } %>
+                                  </div>
+                                </div>
+                              <% } else { %>
+                                <div class="comment-avatar">
+                                  <div class="comment-avatar-placeholder" style="background: #6c757d;">
+                                    <i class="fas fa-user-slash"></i>
+                                  </div>
+                                </div>
+                                <div class="comment-author-info">
+                                  <h6 class="comment-author-name text-muted">
+                                    <i class="fas fa-exclamation-triangle me-1"></i>
+                                    Usuario eliminado
+                                  </h6>
+                                  <div class="comment-meta">
+                                    <i class="fas fa-clock me-1"></i>
+                                    <small><%= new Date(reply.createdAt).toLocaleString() %></small>
+                                    <span class="mx-2">•</span>
+                                    <i class="fas fa-reply me-1"></i>
+                                    <small>Respuesta</small>
+                                  </div>
+                                </div>
+                              <% } %>
+                                <% /* Se elimina el botón de editar en respuestas por ahora */ %>
+                                <% if (user && user.role === 'admin' && reply.author) { %>
+                                  <form action="/admin/users/<%= reply.author._id %>/ban" method="POST" class="d-inline ban-form">
+                                    <button type="button" class="btn btn-danger btn-sm ban-user-btn" data-user-id="<%= reply.author._id %>" data-user-name="<%= reply.author.name %>">
+                                      <i class="fas fa-ban"></i> Banear
+                                    </button>
+                                  </form>
+                                <% } %>
+                              </div>
+                              
+                              <!-- Contenido del comentario -->
+                              <div class="comment-content-modern">
+                                <p><%= reply.content %></p>
+                              </div>
+                              
+                              <!-- Acciones del comentario -->
+                              <div class="comment-actions-modern">
+                                <div class="comment-actions-left">
+                                  <button class="action-btn-modern like-btn <%= user && reply.likes && reply.likes.includes(user._id.toString()) ? 'liked' : '' %> like-comment-btn" data-comment-id="<%= reply._id %>">
+                                    <i class="fas fa-heart"></i>
+                                    <span class="like-count"><%= reply.likes ? reply.likes.length : 0 %></span>
+                                    <span>Me gusta</span>
+                                  </button>
+                                  <% if (user && reply.author && user._id.toString() !== reply.author._id.toString()) { %>
+                                    <button class="action-btn-modern report-btn" data-comment-id="<%= reply._id %>" data-content-type="comment" title="Reportar respuesta" data-bs-toggle="modal" data-bs-target="#reportModal">
+                                      <i class="fas fa-flag"></i>
+                                      <span>Reportar</span>
+                                    </button>
+                                  <% } %>
+                                </div>
+                                <div class="comment-actions-right"></div>
+                              </div>
+                            
+                            <!-- Formulario de edición para respuestas (oculto) -->
+                            <div class="edit-form" id="edit-form-<%= reply._id %>" style="display: none;">
+                              <form class="edit-comment-form" action="/foro/<%= foro._id %>/comments/<%= reply._id %>" method="POST" data-comment-id="<%= reply._id %>">
+                                <div class="mb-2">
+                                  <textarea class="form-control" name="content" rows="2" required><%= reply.content %></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary btn-sm">Guardar</button>
+                                <button type="button" class="btn btn-secondary btn-sm cancel-edit-btn">Cancelar</button>
+                              </form>
+                            </div>
+                          </div>
+                        <% }); %>
+                      </div>
+                    </div>
+                  <% } %>
+                </div>
+              <% } %>
+            <% }); %>
+          <% } else { %>
+            <div class="alert alert-light text-center">
+              No hay comentarios aún. ¡Sé el primero en comentar!
+            </div>
+          <% } %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Reporte -->
+<div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content pad10">
+      <div class="modal-header">
+        <h5 class="modal-title" id="reportModalLabel">
+          <i class="fas fa-flag text-warning"></i> Reportar Contenido
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form id="reportForm">
+        <div class="modal-body">
+          <div class="alert alert-info">
+            <i class="fas fa-info-circle"></i>
+            <strong>¿Por qué reportas este contenido?</strong>
+            <p class="mb-0 mt-2">Tu reporte nos ayuda a mantener una comunidad segura y respetuosa.</p>
+          </div>
+          
+          <div class="mb-3">
+            <label for="reportReason" class="form-label">Razón del reporte *</label>
+            <select class="form-select" id="reportReason" name="reason" required>
+              <option value="">Selecciona una razón...</option>
+              <option value="Contenido inapropiado">Contenido inapropiado</option>
+              <option value="Spam">Spam</option>
+              <option value="Acoso o bullying">Acoso o bullying</option>
+              <option value="Lenguaje ofensivo">Lenguaje ofensivo</option>
+              <option value="Información falsa">Información falsa</option>
+              <option value="Violación de términos">Violación de términos</option>
+              <option value="Otro">Otro</option>
+            </select>
+          </div>
+          
+          <div class="mb-3">
+            <label for="reportDescription" class="form-label">Descripción adicional (opcional)</label>
+            <textarea class="form-control" id="reportDescription" name="description" rows="3" 
+                      placeholder="Proporciona más detalles sobre el problema..." maxlength="500"></textarea>
+            <div class="form-text">Máximo 500 caracteres</div>
+          </div>
+          
+          <div class="alert alert-warning">
+            <i class="fas fa-exclamation-triangle"></i>
+            <strong>Importante:</strong> Los reportes falsos o malintencionados pueden resultar en acciones contra tu cuenta.
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+            <i class="fas fa-times"></i> Cancelar
+          </button>
+          <button type="submit" class="btn btn-warning">
+            <i class="fas fa-flag"></i> Enviar Reporte
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de confirmación para banear usuario -->
+<div class="modal fade" id="banUserModal" tabindex="-1" aria-labelledby="banUserModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header bg-danger text-white border-0">
+        <h5 class="modal-title" id="banUserModalLabel">
+          <i class="fas fa-exclamation-triangle me-2"></i>Confirmar Baneo
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body text-center py-4">
+        <div class="mb-3">
+          <i class="fas fa-ban text-danger" style="font-size: 3rem;"></i>
+        </div>
+        <h6 class="mb-3">¿Estás seguro de banear a este usuario?</h6>
+        <p class="fw-bold text-primary mb-2" id="banUserName"></p>
+        <p class="text-muted small mb-0">Esta acción suspenderá permanentemente al usuario y no podrá acceder a la plataforma.</p>
+      </div>
+      <div class="modal-footer justify-content-center border-0">
+        <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">
+          <i class="fas fa-times me-1"></i>Cancelar
+        </button>
+        <button type="button" class="btn btn-danger px-4 ms-2" id="confirmBanBtn">
+          <i class="fas fa-ban me-1"></i>Banear Usuario
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="/js/comments.js"></script>
+
+<script>
+  // Manejar botones de baneo
+  let currentBanForm = null;
+  
+  document.addEventListener('DOMContentLoaded', function() {
+    const banButtons = document.querySelectorAll('.ban-user-btn');
+    const banModal = new bootstrap.Modal(document.getElementById('banUserModal'));
+    const confirmBanBtn = document.getElementById('confirmBanBtn');
+    const banUserNameElement = document.getElementById('banUserName');
+    
+    // Manejar click en botones de baneo
+    banButtons.forEach(button => {
+      button.addEventListener('click', function() {
+        const userId = this.getAttribute('data-user-id');
+        const userName = this.getAttribute('data-user-name');
+        currentBanForm = this.closest('.ban-form');
+        
+        // Establecer el nombre del usuario en el modal
+        banUserNameElement.textContent = userName;
+        
+        // Mostrar el modal
+        banModal.show();
+      });
+    });
+    
+    // Manejar confirmación de baneo
+    confirmBanBtn.addEventListener('click', async function() {
+      if (!currentBanForm) return;
+      
+      try {
+        // Enviar el formulario
+        currentBanForm.submit();
+        
+        // Cerrar el modal
+        banModal.hide();
+      } catch (error) {
+        console.error('Error al banear usuario:', error);
+        showAlert('danger', 'Error al banear usuario');
+      }
+    });
+  });
+</script>
+
+<!-- Modal de confirmación para eliminar -->
+<div class="modal fade" id="deleteForoDetailModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title"><i class="fas fa-exclamation-triangle me-2"></i>Confirmar eliminación</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body text-center py-4">
+        <div class="mb-3">
+          <i class="fas fa-trash-alt text-danger" style="font-size: 3rem;"></i>
+        </div>
+        <h6 class="mb-3">¿Estás seguro de eliminar esta publicación?</h6>
+        <p class="fw-bold text-primary mb-2" id="foroDetailTitle"></p>
+        <p class="text-muted small mb-0">Esta acción no se puede deshacer y eliminará permanentemente la publicación y todos sus comentarios.</p>
+      </div>
+      <div class="modal-footer justify-content-center border-0">
+        <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">
+          <i class="fas fa-times me-1"></i>Cancelar
+        </button>
+        <button type="button" class="btn btn-danger px-4 ms-2" id="confirmDeleteDetailBtn">
+          <i class="fas fa-trash me-1"></i>Eliminar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  let currentForoDetailId = null;
+  
+  function confirmDeleteForoDetail(foroId, title) {
+    currentForoDetailId = foroId;
+    
+    // Establecer el título de la publicación en el modal
+    document.getElementById('foroDetailTitle').textContent = title;
+    
+    // Mostrar el modal de confirmación
+    const deleteModal = new bootstrap.Modal(document.getElementById('deleteForoDetailModal'));
+    deleteModal.show();
+    
+    return false;
+  }
+  
+  // Manejar la confirmación de eliminación
+  document.getElementById('confirmDeleteDetailBtn').addEventListener('click', async function() {
+    if (!currentForoDetailId) return;
+    
+    try {
+      const response = await fetch(`/admin/foros/${currentForoDetailId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        // Cerrar el modal
+        const deleteModal = bootstrap.Modal.getInstance(document.getElementById('deleteForoDetailModal'));
+        deleteModal.hide();
+        
+        // Mostrar mensaje de éxito
+        showAlert('success', result.message);
+        
+        // Redirigir al foro después de un breve delay
+        setTimeout(() => {
+          window.location.href = '/foro';
+        }, 1500);
+      } else {
+        showAlert('danger', result.message || 'Error al eliminar la publicación');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      showAlert('danger', 'Error de conexión al eliminar la publicación');
+    }
+  });
+  
+  function showAlert(type, message) {
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+    alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+    alertDiv.innerHTML = `
+      ${message}
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    document.body.appendChild(alertDiv);
+    
+    // Auto-remove after 5 seconds
+    setTimeout(() => {
+      if (alertDiv.parentNode) {
+        alertDiv.remove();
+      }
+    }, 5000);
+  }
+
+  // Manejar formulario principal de comentarios
+  const mainForm = document.getElementById('main-comment-form');
+  console.log('Formulario encontrado:', mainForm);
+  
+  if (mainForm) {
+    mainForm.addEventListener('submit', async function(e) {
+      console.log('=== FORMULARIO ENVIADO ===');
+      console.log('Evento:', e);
+      console.log('Formulario:', this);
+      console.log('Action:', this.action);
+      console.log('Method:', this.method);
+      
+      e.preventDefault();
+    
+    const form = this;
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const textarea = form.querySelector('textarea[name="content"]');
+    
+    // Deshabilitar botón durante envío
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Enviando...';
+    
+    try {
+      const formData = new URLSearchParams();
+      formData.append('content', textarea.value);
+      formData.append('postId', form.querySelector('input[name="postId"]').value);
+      
+      console.log('=== DATOS A ENVIAR ===');
+      console.log('Content:', textarea.value);
+      console.log('PostId:', form.querySelector('input[name="postId"]').value);
+      console.log('URL destino:', form.action);
+      console.log('URLSearchParams entries:');
+      for (let [key, value] of formData.entries()) {
+        console.log(key, value);
+      }
+      
+      const response = await fetch(form.action, {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'X-Requested-With': 'XMLHttpRequest'
+        }
+      });
+      
+      const result = await response.json();
+      
+      if (response.ok) {
+        showAlert('success', result.message || 'Comentario agregado exitosamente');
+        textarea.value = ''; // Limpiar textarea
+        // Recargar la página para mostrar el nuevo comentario
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
+      } else {
+        if (response.status === 403 && window.handleFetchError) {
+          window.handleFetchError(response, result);
+        } else {
+          showAlert('danger', result.message || 'Error al agregar comentario');
+        }
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      showAlert('danger', 'Error de conexión al agregar comentario');
+    } finally {
+      // Rehabilitar botón
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Comentar';
+    }
+  });
+  }
+
+  // Manejar formularios de edición de comentarios
+  document.querySelectorAll('.edit-comment-form').forEach(form => {
+    form.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const submitBtn = this.querySelector('button[type="submit"]');
+      const textarea = this.querySelector('textarea[name="content"]');
+      const commentId = this.dataset.commentId;
+      
+      // Deshabilitar botón durante envío
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Guardando...';
+      
+      try {
+        const formData = new FormData(this);
+        const response = await fetch(this.action, {
+          method: 'POST',
+          body: formData,
+          headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+          }
+        });
+        
+        const result = await response.json();
+        
+        if (response.ok) {
+          showAlert('success', result.message || 'Comentario actualizado exitosamente');
+          // Recargar la página para mostrar los cambios
+          setTimeout(() => {
+            window.location.reload();
+          }, 1000);
+        } else {
+          if (response.status === 403 && window.handleFetchError) {
+            window.handleFetchError(response, result);
+          } else {
+            showAlert('danger', result.message || 'Error al actualizar comentario');
+          }
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        showAlert('danger', 'Error de conexión al actualizar comentario');
+      } finally {
+        // Rehabilitar botón
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Guardar';
+      }
+    });
+  });
+
+  // Manejar formularios de respuesta
+  document.querySelectorAll('.reply-comment-form').forEach(form => {
+    form.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const submitBtn = this.querySelector('button[type="submit"]');
+      const textarea = this.querySelector('textarea[name="content"]');
+      
+      // Deshabilitar botón durante envío
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Enviando...';
+      
+      try {
+        const formData = new FormData(this);
+        const response = await fetch(this.action, {
+          method: 'POST',
+          body: formData,
+          headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+          }
+        });
+        
+        const result = await response.json();
+        
+        if (response.ok) {
+          showAlert('success', result.message || 'Respuesta agregada exitosamente');
+          textarea.value = ''; // Limpiar textarea
+          
+          // Ocultar el formulario de respuesta
+          const replyForm = this.closest('.reply-form');
+          replyForm.style.display = 'none';
+          
+          // Recargar solo después de un breve delay para mostrar la nueva respuesta
+          setTimeout(() => {
+            window.location.reload();
+          }, 500);
+        } else {
+          if (response.status === 403 && window.handleFetchError) {
+            window.handleFetchError(response, result);
+          } else {
+            showAlert('danger', result.message || 'Error al agregar respuesta');
+          }
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        showAlert('danger', 'Error de conexión al agregar respuesta');
+      } finally {
+        // Rehabilitar botón
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Enviar';
+      }
+    });
+  });
+</script>
+
+  <!-- Tu JS primero, para que el callback global exista antes de cargar el script de Google -->
+  <script src="/js/tradux.js"></script>
+  <!-- Script oficial de Google (callback definido en translate.js) -->
+  <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+  
+  <!-- Script para cargar estadísticas del usuario -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const authorId = '<%= foro.author._id %>';
+      const forumsCountElement = document.getElementById('user-forums-count');
+      
+      // Hacer petición para obtener el número de foros del usuario
+      fetch(`/api/user/${authorId}/forums-count`)
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            forumsCountElement.textContent = data.count;
+          } else {
+            forumsCountElement.textContent = '0';
+          }
+        })
+        .catch(error => {
+          console.error('Error al cargar estadísticas del usuario:', error);
+          forumsCountElement.textContent = '0';
+        });
+    });
+  </script>
+
+<%- include('../partials/footer') %>

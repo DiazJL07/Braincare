@@ -1,0 +1,500 @@
+<%- include('../partials/header', { title: 'Administración del Foro' }) %>
+<link rel="stylesheet" href="/css/admin-responsive.css">
+<link rel="stylesheet" href="/css/admin-articles-dashboard.css">
+
+<!--Falta añadir un apartado de filtro para el foro porque no lo tiene-->
+<!-- CSS y JS específicos para el dashboard de foro -->
+<link rel="stylesheet" href="/css/admin-foro-dashboard.css">
+<link rel="stylesheet" href="/css/forum-modals-pastel.css">
+<link rel="stylesheet" href="/css/foro-modal.css">
+<script src="/js/admin-foro-dashboard.js" defer></script>
+<style>
+    body{
+      padding-top: 50px;
+    }
+  </style>
+<div class="foro-admin-dashboard">
+  <!-- Header del Dashboard -->
+  <div class="foro-dashboard-header">
+    <h1>Dashboard de Administración del Foro</h1>
+    <p class="subtitle">Gestiona publicaciones, temas y estadísticas del foro de psicología</p>
+    <div class="foro-header-actions">
+      <a href="/admin/topics" class="foro-action-btn" data-action="topics">
+        <i class="fas fa-tags"></i> Gestionar Topics
+      </a>
+      <button class="foro-action-btn" data-action="new-topic" onclick="openNewPostModal()">
+        <i class="fas fa-plus"></i> Nueva Publicación
+      </button>
+    </div>
+  </div>
+
+  <!-- Filtros y Controles -->
+  <div class="articles-filters-section">
+    <div class="articles-filters-header">
+      <h2 class="articles-filters-title">
+        <i class="fas fa-filter"></i>
+        Filtros y Búsqueda
+      </h2>
+      <button class="articles-filters-toggle" onclick="toggleForumAdvancedFilters()">
+        <i class="fas fa-cog"></i>
+        Filtros Avanzados
+      </button>
+    </div>
+    
+    <div class="articles-filters-grid">
+      <div class="articles-filter-group">
+        <label class="articles-filter-label">
+          <i class="fas fa-search"></i>
+          Buscar Publicaciones
+        </label>
+        <input type="text" 
+               class="articles-filter-input" 
+               id="foroSearchInput" 
+               placeholder="Buscar por título, autor o contenido..."
+               onkeyup="filterForum()">
+      </div>
+      
+      <div class="articles-filter-group">
+        <label for="foroTopicFilter" class="articles-filter-label">
+          <i class="fas fa-tag me-1"></i> Filtrar por tema:
+        </label>
+        <select class="articles-filter-select" id="foroTopicFilter" onchange="filterForum()">
+          <option value="all">Todos los temas</option>
+          <% if (allTopics && allTopics.length > 0) { %>
+            <% allTopics.forEach(topic => { %>
+              <option value="<%= topic.name ? topic.name : topic %>"><%= topic.name ? topic.name : topic %></option>
+            <% }); %>
+          <% } %>
+        </select>
+      </div>
+    </div>
+    
+    <div class="articles-advanced-filters" id="foroAdvancedFilters">
+      <div class="articles-advanced-grid">
+        <div class="articles-filter-group">
+          <label class="articles-filter-label">
+            <i class="fas fa-calendar-alt"></i>
+            Fecha de Publicación
+          </label>
+          <div class="articles-date-range">
+            <input type="date" class="articles-filter-input" id="foroDateFrom" onchange="filterForum()">
+            <span class="articles-date-separator">hasta</span>
+            <input type="date" class="articles-filter-input" id="foroDateTo" onchange="filterForum()">
+          </div>
+        </div>
+        
+        <div class="articles-filter-group">
+          <label class="articles-filter-label">
+            <i class="fas fa-eye"></i>
+            Rango de Vistas
+          </label>
+          <div class="articles-range-inputs">
+            <input type="number" class="articles-filter-input" id="foroViewsMin" placeholder="Mín" onchange="filterForum()">
+            <input type="number" class="articles-filter-input" id="foroViewsMax" placeholder="Máx" onchange="filterForum()">
+          </div>
+        </div>
+        
+        <div class="articles-filter-group">
+          <label class="articles-filter-label">
+            <i class="fas fa-user-edit"></i>
+            Autor
+          </label>
+          <select class="articles-filter-select" id="foroAuthorFilter" onchange="filterForum()">
+            <option value="all">Todos los autores</option>
+            <% if (foros && foros.length > 0) { %>
+              <% const uniqueAuthors = [...new Set(foros.map(f => f.author && f.author.name ? f.author.name : 'Desconocido'))]; %>
+              <% uniqueAuthors.forEach(author => { %>
+                <option value="<%= author %>"><%= author %></option>
+              <% }); %>
+            <% } %>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contenido Principal -->
+  <div class="foro-main-content">
+    <div class="foro-content-header">
+      <h2 class="foro-content-title">Gestión de Publicaciones</h2>
+      <div class="foro-real-time-indicator" id="realTimeIndicator">
+        <div class="foro-real-time-dot"></div>
+        <span>En tiempo real</span>
+      </div>
+    </div>
+
+    <div class="foro-table-container">
+      <table class="foro-posts-table">
+        <thead>
+          <tr>
+            <th data-sortable data-column="title">Título</th>
+            <th data-sortable data-column="topic">Tema</th>
+            <th data-sortable data-column="author">Autor</th>
+            <th data-sortable data-column="date">Fecha</th>
+            <th data-sortable data-column="views">Vistas</th>
+            <th data-sortable data-column="likes">Likes</th>
+            <th data-sortable data-column="comments">Comentarios</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (foros && foros.length > 0) { %>
+            <% foros.forEach(foro => { %>
+              <tr data-foro-id="<%= foro._id %>">
+                <td>
+                  <a href="/foro/<%= foro._id %>" class="foro-post-title"><%= foro.title %></a>
+                </td>
+                <td>
+                  <span class="foro-topic-badge"><%= foro.topic ? (foro.topic.name || foro.topic) : 'Sin tema' %></span>
+                </td>
+                <td>
+                  <div class="foro-author-info">
+                    <% if (foro.author && foro.author.name) { %>
+                      <div class="foro-author-avatar"><%= foro.author.name.charAt(0).toUpperCase() %></div>
+                      <span class="foro-author-name"><%= foro.author.name %></span>
+                    <% } else { %>
+                      <div class="foro-author-avatar">?</div>
+                      <span class="foro-author-name">Usuario desconocido</span>
+                    <% } %>
+                  </div>
+                </td>
+                <td class="foro-date-cell"><%= new Date(foro.publicationDate).toLocaleDateString() %></td>
+                <td class="foro-stats-cell views-badge"><%= foro.views || 0 %></td>
+                <td class="foro-stats-cell likes-badge"><%= foro.likes ? foro.likes.length : 0 %></td>
+                <td class="foro-stats-cell comments-badge"><%= foro.comments ? foro.comments.length : 0 %></td>
+                <td>
+                  <div class="foro-actions-group">
+                    <a href="/foro/<%= foro._id %>" class="foro-action-button foro-btn-view" data-action="view" data-post-id="<%= foro._id %>">
+                      <i class="fas fa-eye"></i>
+                    </a>
+                   
+                    <button type="button" class="foro-action-button foro-btn-delete" 
+                              data-action="delete" data-post-id="<%= foro._id %>"
+                              data-post-title="<%= foro.title %>">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                    <!-- Formulario oculto para eliminación como respaldo -->
+
+                  </div>
+                </td>
+              </tr>
+            <% }) %>
+          <% } else { %>
+            <tr>
+              <td colspan="8" style="text-align: center; padding: 40px; color: #5D6D7E;">
+                <i class="fas fa-comments" style="font-size: 3rem; margin-bottom: 15px; opacity: 0.3;"></i><br>
+                No hay publicaciones en el foro
+              </td>
+            </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="articles-pagination" id="foroPagination"></div>
+  <script>
+    document.addEventListener('DOMContentLoaded', function(){
+      if (typeof renderForoPagination === 'function') { renderForoPagination(); }
+      if (typeof applyForoPage === 'function') { applyForoPage(); }
+    });
+  </script>
+</div>
+
+<!-- Modal de confirmación mejorado con estilos nativos -->
+<div class="foro-modal" id="deleteForoModal" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.6); backdrop-filter: blur(4px); z-index: 1050; justify-content: center; align-items: center;">
+  <div class="foro-modal-content" style="background: white; border-radius: 16px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); max-width: 500px; width: 90%; overflow: hidden; transform: scale(0.95); transition: transform 0.3s ease;">
+    <div class="foro-modal-header">
+      <h5 class="foro-modal-title">
+        <i class="fas fa-exclamation-triangle"></i>
+        Confirmar eliminación
+      </h5>
+      <button type="button" class="foro-modal-close" id="closeDeleteModal">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="foro-modal-body">
+      <div class="foro-modal-icon">
+        <i class="fas fa-trash-alt"></i>
+      </div>
+      <h6>¿Estás seguro de que deseas eliminar esta publicación?</h6>
+      <p class="foro-modal-title-text" id="foroTitle"></p>
+      <div class="foro-modal-warning">
+        <i class="fas fa-exclamation-circle"></i>
+        <span>Esta acción no se puede deshacer y eliminará permanentemente la publicación y todos sus comentarios asociados.</span>
+      </div>
+    </div>
+    <div class="foro-modal-footer">
+        <button id="cancelDeleteBtn" class="foro-modal-btn foro-modal-btn-secondary" type="button">
+          <i class="fas fa-times"></i> Cancelar
+        </button>
+        <button id="confirmDeleteBtn" class="foro-modal-btn foro-modal-btn-danger" type="button">
+            <i class="fas fa-trash-alt"></i> Eliminar
+        </button>
+      </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+</script>
+
+<!-- Modal para Nueva Publicación -->
+<!-- Modal de Creación de Foro Admin - Diseño Pastel -->
+<div class="modal-pastel-overlay" id="newPostModal" style="display: none;">
+  <div class="modal-pastel-content">
+    <div class="modal-pastel-header">
+      <h2 class="modal-pastel-title">
+        <i class="fas fa-plus-circle"></i>
+        Nueva Publicación
+      </h2>
+      <button type="button" class="modal-pastel-close" onclick="closeNewPostModal()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    
+    <div class="modal-pastel-body">
+      <div id="foroAlert"></div>
+      
+      <form id="newForoForm" class="modal-pastel-form" enctype="multipart/form-data">
+        <div class="modal-form-group">
+          <label for="modalTitle" class="modal-form-label">
+            <i class="fas fa-heading"></i>
+            Título de la Publicación
+          </label>
+          <input type="text" class="modal-form-input" id="modalTitle" name="title" required 
+                 placeholder="Escribe un título atractivo para la publicación...">
+        </div>
+        
+        <div class="modal-form-group">
+          <label for="modalTopic" class="modal-form-label">
+            <i class="fas fa-tag"></i>
+            Categoría
+          </label>
+          <select class="modal-form-select" id="modalTopic" name="topic" required>
+            <option value="" disabled selected>Cargando categorías...</option>
+          </select>
+        </div>
+        
+        <div class="modal-form-group">
+          <label for="modalContent" class="modal-form-label">
+            <i class="fas fa-edit"></i>
+            Contenido
+          </label>
+          
+          <!-- Barra de herramientas de edición de texto -->
+          <div class="text-editor-toolbar">
+            <!-- Grupo de fuentes -->
+            <div class="toolbar-group">
+              <select class="toolbar-select" id="adminFontFamily" onchange="changeAdminFontFamily()">
+                <option value="Arial">Arial</option>
+                <option value="Times New Roman">Times New Roman</option>
+                <option value="Courier New">Courier New</option>
+                <option value="Helvetica">Helvetica</option>
+                <option value="Georgia">Georgia</option>
+                <option value="Verdana">Verdana</option>
+              </select>
+            </div>
+            
+            <!-- Grupo de tamaño de fuente -->
+            <div class="toolbar-group font-size-controls">
+              <button type="button" class="toolbar-button" onclick="decreaseAdminFontSize()" title="Disminuir tamaño">
+                <i class="fas fa-minus"></i>
+              </button>
+              <input type="number" class="toolbar-input" id="adminFontSize" value="14" min="8" max="72" onchange="changeAdminFontSize()">
+              <button type="button" class="toolbar-button" onclick="increaseAdminFontSize()" title="Aumentar tamaño">
+                <i class="fas fa-plus"></i>
+              </button>
+            </div>
+            
+            <!-- Grupo de formato -->
+            <div class="toolbar-group">
+              <button type="button" class="toolbar-button" onclick="toggleAdminBold()" title="Negrita">
+                <i class="fas fa-bold"></i>
+              </button>
+              <button type="button" class="toolbar-button" onclick="toggleAdminItalic()" title="Cursiva">
+                <i class="fas fa-italic"></i>
+              </button>
+              <button type="button" class="toolbar-button" onclick="toggleAdminUnderline()" title="Subrayado">
+                <i class="fas fa-underline"></i>
+              </button>
+            </div>
+            
+            <!-- Grupo de color -->
+            <div class="toolbar-group">
+              <input type="color" class="color-picker" id="adminTextColor" value="#000000" onchange="changeAdminTextColor()" title="Color de texto">
+            </div>
+            
+            <!-- Grupo de alineación -->
+            <div class="toolbar-group alignment-buttons">
+              <button type="button" class="toolbar-button" onclick="alignAdminText('left')" title="Alinear izquierda">
+                <i class="fas fa-align-left"></i>
+              </button>
+              <button type="button" class="toolbar-button" onclick="alignAdminText('center')" title="Centrar">
+                <i class="fas fa-align-center"></i>
+              </button>
+              <button type="button" class="toolbar-button" onclick="alignAdminText('right')" title="Alinear derecha">
+                <i class="fas fa-align-right"></i>
+              </button>
+              <button type="button" class="toolbar-button" onclick="alignAdminText('justify')" title="Justificar">
+                <i class="fas fa-align-justify"></i>
+              </button>
+            </div>
+          </div>
+          
+          <textarea class="modal-form-textarea" id="modalContent" name="content" required 
+                    placeholder="Comparte información relevante, experiencias o reflexiones profesionales. Usa las herramientas de arriba para dar formato..."
+                    style="font-family: Arial; font-size: 14px; color: #000000; text-align: left;"></textarea>
+          <small class="modal-form-help">💡 Tip: Usa las herramientas de edición para dar formato profesional al contenido</small>
+        </div>
+        
+        <div class="modal-form-group">
+          <label for="modalImage" class="modal-form-label">
+            <i class="fas fa-image"></i>
+            Imagen (opcional)
+          </label>
+          <input type="file" class="modal-form-file" id="modalImage" name="image" accept="image/*">
+          <small class="modal-form-help">📸 Formatos permitidos: JPG, PNG, GIF. Tamaño máximo: 5MB</small>
+        </div>
+      </form>
+    </div>
+    
+    <div class="modal-pastel-footer">
+      <button type="button" class="modal-btn modal-btn-cancel" onclick="closeNewPostModal()">
+        <i class="fas fa-times"></i>
+        Cancelar
+      </button>
+      <button type="submit" form="newForoForm" class="modal-btn modal-btn-primary" id="submitForoBtn">
+        <span class="modal-spinner d-none" id="submitSpinner"></span>
+        <i class="fas fa-paper-plane" id="submitIcon"></i>
+        Publicar
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function(){
+    var btn = document.getElementById('foroFilterButton');
+    var menu = document.getElementById('foroFilterMenu');
+    if (btn && menu) {
+      btn.addEventListener('click', function(e){
+        e.preventDefault(); e.stopPropagation();
+        menu.style.display = (menu.style.display === 'none' || !menu.style.display) ? 'block' : 'none';
+      });
+      document.addEventListener('click', function(e){
+        if (!menu.contains(e.target) && !btn.contains(e.target)) {
+          menu.style.display = 'none';
+        }
+      });
+    }
+  });
+  function applyForoFilters(){
+    var t = document.getElementById('foroTopicFilter').value;
+    var a = document.getElementById('foroAuthorFilter').value;
+    var q = document.getElementById('foroQ').value;
+    var f = document.getElementById('foroFrom').value;
+    var to = document.getElementById('foroTo').value;
+    var url = '/foro/admin/dashboard?topic=' + encodeURIComponent(t) + '&author=' + encodeURIComponent(a) + '&q=' + encodeURIComponent(q) + '&from=' + encodeURIComponent(f) + '&to=' + encodeURIComponent(to);
+    window.location.href = url;
+  }
+      // Funciones de edición de texto para modal de administrador
+      function changeAdminFontFamily() {
+        const fontSelect = document.getElementById('adminFontFamily');
+        const textarea = document.getElementById('modalContent');
+        textarea.style.fontFamily = fontSelect.value;
+      }
+      
+      function changeAdminFontSize() {
+        const fontSizeInput = document.getElementById('adminFontSize');
+        const textarea = document.getElementById('modalContent');
+        textarea.style.fontSize = fontSizeInput.value + 'px';
+      }
+      
+      function increaseAdminFontSize() {
+        const fontSizeInput = document.getElementById('adminFontSize');
+        let currentSize = parseInt(fontSizeInput.value);
+        if (currentSize < 72) {
+          fontSizeInput.value = currentSize + 1;
+          changeAdminFontSize();
+        }
+      }
+      
+      function decreaseAdminFontSize() {
+        const fontSizeInput = document.getElementById('adminFontSize');
+        let currentSize = parseInt(fontSizeInput.value);
+        if (currentSize > 8) {
+          fontSizeInput.value = currentSize - 1;
+          changeAdminFontSize();
+        }
+      }
+      
+      function toggleAdminBold() {
+        const textarea = document.getElementById('modalContent');
+        const button = event.target.closest('.toolbar-button');
+        if (textarea.style.fontWeight === 'bold') {
+          textarea.style.fontWeight = 'normal';
+          button.classList.remove('active');
+        } else {
+          textarea.style.fontWeight = 'bold';
+          button.classList.add('active');
+        }
+      }
+      
+      function toggleAdminItalic() {
+        const textarea = document.getElementById('modalContent');
+        const button = event.target.closest('.toolbar-button');
+        if (textarea.style.fontStyle === 'italic') {
+          textarea.style.fontStyle = 'normal';
+          button.classList.remove('active');
+        } else {
+          textarea.style.fontStyle = 'italic';
+          button.classList.add('active');
+        }
+      }
+      
+      function toggleAdminUnderline() {
+        const textarea = document.getElementById('modalContent');
+        const button = event.target.closest('.toolbar-button');
+        if (textarea.style.textDecoration === 'underline') {
+          textarea.style.textDecoration = 'none';
+          button.classList.remove('active');
+        } else {
+          textarea.style.textDecoration = 'underline';
+          button.classList.add('active');
+        }
+      }
+      
+      function changeAdminTextColor() {
+        const colorPicker = document.getElementById('adminTextColor');
+        const textarea = document.getElementById('modalContent');
+        textarea.style.color = colorPicker.value;
+      }
+      
+      function alignAdminText(alignment) {
+        const textarea = document.getElementById('modalContent');
+        const buttons = document.querySelectorAll('.alignment-buttons .toolbar-button');
+        
+        // Remover clase active de todos los botones de alineación
+        buttons.forEach(btn => btn.classList.remove('active'));
+        
+        // Agregar clase active al botón seleccionado
+        event.target.closest('.toolbar-button').classList.add('active');
+        
+        // Aplicar alineación
+        textarea.style.textAlign = alignment;
+      }
+
+    </script>
+    
+    <script src="/js/foro-dashboard-animations.js"></script>
+
+      <!-- Tu JS primero, para que el callback global exista antes de cargar el script de Google -->
+  <script src="/js/tradux.js"></script>
+  <!-- Script oficial de Google (callback definido en translate.js) -->
+  <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+<%- include('../partials/footer') %>

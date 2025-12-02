@@ -1,0 +1,47 @@
+/* --- Ocultar/neutralizar UI inyectada por Google Translate (usa con precaución) --- */
+.goog-te-banner-frame.skiptranslate { display: none !important; }
+body { top: 0 !important; }
+.goog-logo-link, .goog-te-gadget img { display: none !important; }
+.goog-te-gadget { height: 0 !important; overflow: hidden !important; }
+.skiptranslate iframe { display: none !important; }
+
+body {
+  top: 0px !important;
+}
+
+.translator {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-start;
+  align-items: center;
+  position: fixed;
+  left: 10px;   
+  z-index: 9999;
+  top: -1rem;
+}
+
+#languageSelector {
+  padding: 0.5rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+}
+
+#translateBtn {
+  background: #4a90e2;
+  color: #fff;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+#translateBtn:hover {
+  background: #357ab8;
+}
+
+.translator{
+  margin-top: 100px;
+}

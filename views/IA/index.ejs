@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= title %> | BrainCare</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/styles.css" />
+  <link rel="stylesheet" href="/IA/styles.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    body{
+      padding-top: 50px;
+    }
+  </style>
+</head>
+<body>
+  <%- include('../partials/header') %>
+  
+  <div class="container mt-4">
+    <div class="row">
+      <div class="col-md-12">
+        <div id="custom-alert-container"></div>
+  <div class="ia-container" data-username="<%= locals.user.name %>">
+          <!-- Sección izquierda: Mascota y botones -->
+          <div class="mascot-section">
+            <div id="character-image" class="character-image">
+                <img src="/public/images/Perrito.png" alt="">
+            </div>
+            <h3 class="character-name">Coki</h3>
+            
+            <div class="mascot-buttons">
+              <button id="clear-chat-btn" class="mascot-btn" title="Borrar conversación">
+                <i class="fas fa-trash-alt"></i>
+              </button>
+              <button id="info-btn" class="mascot-btn" title="Información sobre BrainBot">
+                <i class="fas fa-info-circle"></i>
+              </button>
+            </div>
+          </div>
+          
+          <!-- Sección derecha: Conversación estilo WhatsApp -->
+          <div class="conversation-section">
+            <div class="chat-header">
+              <h4>Chat con Coki</h4>
+            </div>
+            
+            <div id="chat-messages" class="chat-messages">
+              <!-- Aquí se mostrarán los mensajes -->
+            </div>
+            
+            <form id="chat-form" class="chat-input-form">
+              <div class="input-group">
+                <textarea id="prompt" class="form-control" placeholder="Escribe tu mensaje..." required></textarea>
+                <button type="submit" class="send-btn">
+                  <i class="fas fa-paper-plane"></i>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal de información -->
+  <div class="modal fade" id="info-modal" tabindex="-1" aria-labelledby="infoModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="infoModalLabel">Sobre Coki</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p><strong>Coki</strong> es un asistente psicológico virtual que puede ayudarte con:</p>
+          <ul>
+            <li>Información sobre salud mental</li>
+            <li>Consejos para manejar emociones</li>
+            <li>Técnicas de relajación y mindfulness</li>
+            <li>Orientación sobre trastornos psicológicos comunes</li>
+            <li>Estrategias para mejorar relaciones interpersonales</li>
+            <li>Recomendaciones para el autocuidado emocional</li>
+          </ul>
+          <p class="text-warning"><i class="fas fa-exclamation-triangle"></i> <strong>Importante:</strong> BrainBot no sustituye a un profesional de la salud mental. Si necesitas ayuda profesional, busca atención especializada.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
+
+  <script src="/js/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/main.js"></script>
+  <script src="/IA/script.js"></script>
+    <!-- Tu JS primero, para que el callback global exista antes de cargar el script de Google -->
+  <script src="/js/tradux.js"></script>
+  <!-- Script oficial de Google (callback definido en translate.js) -->
+  <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+</body>
+</html>

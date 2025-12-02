@@ -1,0 +1,1093 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>  <%= typeof title !== 'undefined' ? title : 'Cuidado para tu mente' %></title>
+
+  <link rel="icon" type="image/x-icon" href="/public/img/logo.ico">
+
+
+  <!-- CSS Nativo - Sin dependencias externas -->
+  <link rel="stylesheet" href="/css/native-grid.css">
+  <link rel="stylesheet" href="/css/native-components.css">
+  <link rel="stylesheet" href="/css/native-navbar.css">
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="/css/header.css">
+  <link rel="stylesheet" href="/css/header-native.css">
+  <link rel="stylesheet" href="/css/dashboard-general.css">
+  <link rel="stylesheet" href="/css/Articulos.css">
+  <link rel="stylesheet" href="/css/download-button.css">
+  <link rel="stylesheet" href="/css/admin-button.css">
+  <link rel="stylesheet" href="/css/reports-tailwind.css">
+  <link rel="stylesheet" href="/css/tradux.css">
+  <link rel="stylesheet" href="/css/dropdown-fix.css">
+  <link rel="stylesheet" href="/css/custom-dropdown.css">
+  <link rel="stylesheet" href="/css/notifications.css">
+  <link rel="stylesheet" href="/css/horizontal-menu.css">
+  <link rel="stylesheet" href="/css/active-navigation.css">
+  
+  <!-- Font Awesome para iconos -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Scripts necesarios para el funcionamiento correcto de la página -->
+  <script src="/js/preventBackNavigation.js"></script>
+  <script src="/js/menu-initializer.js"></script>
+
+  <style>
+
+
+    .navbar a{
+      color: rgb(0, 0, 0) !important;
+    }
+
+    /* Subir el navbar */
+    .navbar {
+      margin-top: -7px !important;
+      top: 0px !important;
+    }
+
+    .dropdown-menu{
+      background: var(--gradient-primary);
+    }
+
+    /* Estilos para el menú hamburguesa izquierdo */
+    .nav-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+    }
+
+    .hamburger-menu-left {
+      position: relative;
+      display: flex;
+      align-items: center;
+      margin-right: 15px;
+      z-index: 1001;
+    }
+
+    .hamburger-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+      width: 30px;
+      height: 30px;
+      transition: all 0.3s ease;
+    }
+
+    .hamburger-btn:hover {
+      transform: scale(1.1);
+    }
+
+    .hamburger-line {
+      width: 25px;
+      height: 3px;
+      background-color: #ffffff;
+      border-radius: 2px;
+      transition: all 0.3s ease;
+    }
+
+    .hamburger-btn.active .hamburger-line:nth-child(1) {
+      transform: rotate(45deg) translate(6px, 6px);
+    }
+
+    .hamburger-btn.active .hamburger-line:nth-child(2) {
+      opacity: 0;
+    }
+
+    .hamburger-btn.active .hamburger-line:nth-child(3) {
+      transform: rotate(-45deg) translate(6px, -6px);
+    }
+
+    .hamburger-dropdown {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+      min-width: 200px;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-10px);
+      transition: all 0.3s ease;
+      z-index: 9999;
+      border: 1px solid #e0e0e0;
+      margin-top: 5px;
+      display: block;
+      pointer-events: none;
+    }
+
+    .hamburger-dropdown.show {
+      opacity: 1 !important;
+      visibility: visible !important;
+      transform: translateY(0) !important;
+      pointer-events: auto;
+      display: block !important;
+    }
+    
+    /* Estilo de depuración temporal */
+    .hamburger-dropdown.show {
+      background: #fff !important;
+      border: 2px solid #007bff !important;
+    }
+
+    .hamburger-menu-content {
+      padding: 8px 0;
+    }
+
+    .hamburger-item {
+      display: flex;
+      align-items: center;
+      padding: 12px 16px;
+      color: #333;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      border-bottom: 1px solid #f5f5f5;
+    }
+
+    .hamburger-item:last-child {
+      border-bottom: none;
+    }
+
+    .hamburger-item:hover {
+      background-color: #f8f9fa;
+      color: #007bff;
+      transform: translateX(5px);
+    }
+
+    .hamburger-item i {
+      margin-right: 10px;
+      width: 16px;
+      text-align: center;
+      font-size: 14px;
+    }
+
+    .hamburger-item span {
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .hamburger-menu-left {
+        margin-right: 10px;
+      }
+      
+      .hamburger-dropdown {
+        min-width: 180px;
+      }
+    }
+
+    /* Estilos para el modal de notificaciones */
+    .notification-modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(2px);
+    }
+
+    .notification-modal-content {
+      background-color: #fefefe;
+      margin: 5% auto;
+      padding: 0;
+      border: none;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 600px;
+      max-height: 80vh;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      animation: modalSlideIn 0.3s ease-out;
+    }
+
+    @keyframes modalSlideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-50px) scale(0.9);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .notification-modal-header {
+      background: linear-gradient(135deg, #007bff, #0056b3);
+      color: white;
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .notification-modal-title {
+      margin: 0;
+      font-size: 1.3rem;
+      font-weight: 600;
+    }
+
+    .notification-modal-close {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 8px;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      transition: all 0.2s ease;
+    }
+
+    .notification-modal-close:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+      transform: scale(1.1);
+    }
+
+    .notification-modal-body {
+      padding: 0;
+      max-height: 60vh;
+      overflow-y: auto;
+    }
+
+    .notifications-list {
+      padding: 0;
+    }
+
+    .notification-item {
+      display: flex;
+      padding: 16px 20px;
+      border-bottom: 1px solid #f0f0f0;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .notification-item:hover {
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      transform: translateX(5px);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .notification-item.unread {
+      background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+      border-left: 4px solid #007bff;
+    }
+
+    .notification-item.unread:hover {
+      background: linear-gradient(135deg, #bbdefb 0%, #e1bee7 100%);
+      transform: translateX(5px);
+    }
+
+    .unread-indicator {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        color: #2196f3;
+        font-size: 8px;
+        animation: pulse 2s infinite;
+      }
+
+      .notification-item.removing {
+        transform: translateX(100%);
+        opacity: 0;
+        transition: all 0.3s ease-out;
+      }
+
+      .no-notifications {
+        text-align: center;
+        padding: 40px 20px;
+        color: #6c757d;
+      }
+
+      .no-notifications i {
+        font-size: 48px;
+        margin-bottom: 15px;
+        opacity: 0.5;
+      }
+
+      .no-notifications p {
+        margin: 0;
+        font-size: 16px;
+        font-weight: 500;
+      }
+
+    .notification-icon {
+      flex-shrink: 0;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 15px;
+      background-color: #f8f9fa;
+    }
+
+    .notification-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .notification-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 8px;
+    }
+
+    .notification-title {
+      margin: 0;
+      font-size: 1rem;
+      font-weight: 600;
+      color: #333;
+      line-height: 1.3;
+    }
+
+    .notification-time {
+      color: #6c757d;
+      font-size: 0.85rem;
+      white-space: nowrap;
+      margin-left: 10px;
+    }
+
+    .notification-message {
+      margin: 0 0 10px 0;
+      color: #555;
+      font-size: 0.9rem;
+      line-height: 1.4;
+    }
+
+    .mark-read-btn {
+      font-size: 0.8rem;
+      padding: 4px 12px;
+      border-radius: 20px;
+    }
+
+    .no-notifications {
+      text-align: center;
+      padding: 60px 20px;
+      color: #6c757d;
+    }
+
+    .no-notifications i {
+      font-size: 4rem;
+      margin-bottom: 20px;
+      opacity: 0.3;
+    }
+
+    .no-notifications p {
+      margin: 0;
+      font-size: 1.1rem;
+    }
+
+    /* Estilos para el badge de notificaciones */
+    .notification-badge {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      background: linear-gradient(135deg, #dc3545, #c82333);
+      color: white;
+      border-radius: 50%;
+      padding: 2px 6px;
+      font-size: 0.75rem;
+      font-weight: bold;
+      min-width: 18px;
+      height: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 4px rgba(220, 53, 69, 0.3);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.1);
+      }
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    .nav-link {
+      position: relative;
+      font-size: 0.85rem !important; /* Tamaño de fuente más pequeño */
+    }
+
+    /* Estilos específicos para hacer el navbar más pequeño */
+    .navbar-nav .nav-link {
+      font-size: 0.85rem !important;
+      padding: 0.4rem 0.8rem !important;
+    }
+
+    .navbar .nav-item .nav-link {
+      font-size: 0.85rem !important;
+    }
+
+    /* Hacer más pequeño el texto del usuario */
+    .user-name-display {
+      font-size: 0.8rem !important;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .notification-modal-content {
+        margin: 10% auto;
+        width: 95%;
+        max-height: 85vh;
+      }
+      
+      .notification-item {
+        padding: 12px 15px;
+      }
+      
+      .notification-icon {
+        width: 35px;
+        height: 35px;
+        margin-right: 12px;
+      }
+      
+      .notification-title {
+        font-size: 0.9rem;
+      }
+      
+      .notification-message {
+        font-size: 0.85rem;
+      }
+    }
+
+
+    
+  </style>
+
+</head>
+<body>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+    *{
+      font-family: "Poppins", sans-serif;
+    }
+  </style>
+  <!-- Barra de navegación -->
+  <nav class="navbar">
+    <div class="nav-container">
+
+
+
+
+
+      <div class="nav-collapse" id="navbarNav">
+        <!-- Menú móvil hamburguesa horizontal -->
+        <div class="mobile-menu horizontal-menu" id="mobileMenu">
+          <div class="mobile-menu-content horizontal-content">
+            
+            <!-- Sección Principal -->
+            <div class="menu-section main-section">
+              <div class="section-header">
+                <i class="fas fa-home"></i>
+                <span class="section-title">Principal</span>
+              </div>
+              <div class="section-items">
+                <% if (locals.user && locals.user.isBannedUser && locals.user.isPermanentlyBanned) { %>
+                  <span class="menu-item disabled"><i class="fas fa-lock"></i> Artículos</span>
+                  <span class="menu-item disabled"><i class="fas fa-lock"></i> Foro</span>
+                  <span class="menu-item disabled"><i class="fas fa-lock"></i> Guías</span>
+                  <span class="menu-item disabled"><i class="fas fa-lock"></i> Chat bot Coki</span>
+                <% } else { %>
+                  <a href="/articles" class="menu-item" data-section="articles"><i class="fas fa-newspaper"></i> Artículos</a>
+                  <a href="/foro" class="menu-item" data-section="foro"><i class="fas fa-comments"></i> Foro</a>
+                  <a href="/guides" class="menu-item" data-section="guides"><i class="fas fa-book"></i> Guías</a>
+                  <a href="/psychologists" class="menu-item" data-section="psychologists"><i class="fas fa-user-md"></i> Psicólogos</a>
+                  <% if (locals.user) { %>
+                    <a href="/ia" class="menu-item" data-section="coki"><i class="fas fa-robot"></i> Chat bot Coki</a>
+                  <% } else { %>
+                    <span class="menu-item disabled"><i class="fas fa-robot"></i> Chat bot Coki</span>
+                  <% } %>
+                <% } %>
+              </div>
+            </div>
+
+            <!-- Sección de Información -->
+            <div class="menu-section info-section">
+              <div class="section-header">
+                <i class="fas fa-info-circle"></i>
+                <span class="section-title">Información</span>
+              </div>
+              <div class="section-items">
+                <a href="/ruta2" class="menu-item" data-section="legal"><i class="fas fa-route"></i> Ruta 2</a>
+                <a href="/ruta3" class="menu-item" data-section="about"><i class="fas fa-route"></i> Ruta 3</a>
+                <a href="/ruta4" class="menu-item" data-section="coki"><i class="fas fa-route"></i> Ruta 4</a>
+              </div>
+            </div>
+
+            <!-- Sección de Perfil -->
+            <% if (locals.user) { %>
+              <div class="menu-section profile-section">
+                <div class="section-header">
+                  <i class="fas fa-user"></i>
+                  <span class="section-title">Perfil</span>
+                </div>
+                <div class="section-items">
+                  <div class="profile-info">
+                    <div class="profile-avatar">
+                      <% if (locals.user.profileImage) { %>
+                        <img src="<%= locals.user.profileImage %>" alt="Foto de perfil" class="profile-image">
+                      <% } else { %>
+                        <div class="profile-placeholder">
+                          <i class="fas fa-user"></i>
+                        </div>
+                      <% } %>
+                    </div>
+                    <div class="profile-details">
+                      <span class="profile-name" data-sync-field="name" data-user-id="<%= locals.user._id %>">
+                        <%= locals.user.name %>
+                      </span>
+                      <% if (locals.user.isBannedUser) { %>
+                        <span class="profile-status banned">(Suspendido)</span>
+                      <% } %>
+                    </div>
+                  </div>
+                  <% if (!locals.user.isBannedUser) { %>
+                    <a href="/user/profile" class="menu-item profile-link"><i class="fas fa-cog"></i> Ver Perfil</a>
+                  <% } %>
+                  <a href="/auth/logout" class="menu-item logout-link"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a>
+                </div>
+              </div>
+            <% } else { %>
+              <div class="menu-section auth-section">
+                <div class="section-header">
+                  <i class="fas fa-sign-in-alt"></i>
+                  <span class="section-title">Cuenta</span>
+                </div>
+                <div class="section-items">
+                  <a href="/auth/login" class="menu-item"><i class="fas fa-sign-in-alt"></i> Iniciar Sesión</a>
+                  <a href="/auth/register" class="menu-item"><i class="fas fa-user-plus"></i> Registrarse</a>
+                </div>
+              </div>
+            <% } %>
+
+            <!-- Sección de Administración (admins y psicólogos) -->
+            <% if (locals.user && (locals.user.role === 'admin' || locals.user.role === 'psychologist')) { %>
+              <div class="menu-section admin-section">
+                <div class="section-header">
+                  <i class="fas fa-shield-alt"></i>
+                  <span class="section-title">Administración</span>
+                </div>
+                <div class="section-items">
+                  <% if (locals.user.role === 'admin') { %>
+                    <a href="/admin/dashboard" class="menu-item admin-item">Gestión de Usuarios</a>
+                    <a href="/articles/admin/dashboard" class="menu-item admin-item">Gestión de Artículos</a>
+                    <a href="/guides/admin/dashboard" class="menu-item admin-item">Gestión de Guías</a>
+                    <a href="/foro/admin/dashboard" class="menu-item admin-item">Gestión del Foro</a>
+                    <a href="/admin/reports" class="menu-item admin-item"><i class="fas fa-flag"></i> Gestión de Reportes</a>
+                    <a href="/admin/requests" class="menu-item admin-item"><i class="fas fa-id-card"></i> Solicitudes</a>
+                  <% } else { %>
+                    <a href="/articles/admin/dashboard" class="menu-item admin-item">Artículos</a>
+                    <a href="/guides/admin/dashboard" class="menu-item admin-item">Guías</a>
+                  <% } %>
+                </div>
+              </div>
+            <% } %>
+          </div>
+        </div>
+
+        <ul class="nav-list">
+          <% if (locals.user && locals.user.isBannedUser && locals.user.isPermanentlyBanned) { %>
+            <!-- Usuario baneado permanentemente: mostrar inicio y secciones con candados -->
+            <li class="nav-item">
+              <a class="nav-link custom-nav-link" href="/">Inicio</a>
+            </li>
+            <li class="nav-item">
+              <span class="nav-link disabled-section" title="Acceso restringido - Cuenta suspendida permanentemente">
+                <i class="fas fa-lock"></i> Artículos
+              </span>
+            </li>
+            <li class="nav-item">
+              <span class="nav-link text-muted disabled-section" title="Acceso restringido - Cuenta suspendida permanentemente">
+                <i class="fas fa-lock"></i> Foro
+              </span>
+            </li>
+            <li class="nav-item">
+              <span class="nav-link text-muted disabled-section" title="Acceso restringido - Cuenta suspendida permanentemente">
+                <i class="fas fa-lock"></i> Guías
+              </span>
+            </li>
+            <li class="nav-item">
+              <span class="nav-link text-muted disabled-section" title="Acceso restringido - Cuenta suspendida permanentemente">
+                <i class="fas fa-lock"></i> Coki
+              </span>
+            </li>
+          <% } else if (locals.user && locals.user.isBannedUser) { %>
+            <!-- Usuario baneado temporalmente: solo mostrar inicio -->
+            <li class="nav-item">
+              <a class="nav-link" href="/">Inicio</a>
+            </li>
+          <% } else { %>
+            <!-- Usuario normal: mostrar toda la navegación -->
+            <li class="nav-item">
+              <a class="nav-link" href="/" data-section="home">Inicio</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/articles" data-section="articles">Artículos</a>
+            </li>
+             <li class="nav-item">
+              <a class="nav-link" href="/foro" data-section="foro">Foro</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/guides" data-section="guides">Guías</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/psychologists" data-section="psychologists">Psicólogos</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/ruta2" data-section="legal">Información Legal</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/ruta3" data-section="about">Nosotros</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/ruta4" data-section="coki">CoKi IA</a>
+            </li>
+            <% if (locals.user) { %>
+           
+            <% } %>
+          <% } %>
+          <% if (locals.user) { %>
+            <% if (locals.user.isBannedUser && locals.user.isPermanentlyBanned) { %>
+              <!-- Usuario baneado permanentemente: solo mostrar notificaciones -->
+              <li class="nav-item" id="userNotificationsButton">
+                <a class="nav-link" href="#" onclick="openNotificationsModal()" id="userNotificationsBell" title="Notificaciones">
+                  <i class="fas fa-bell"></i>
+                  <span class="notification-badge" id="userNotificationBadge" style="display: none;">0</span>
+                </a>
+              </li>
+              <!-- Mostrar opciones de administración con candados si es admin -->
+              
+              <% if (locals.user.role === 'admin') { %>
+                <li class="nav-dropdown" id="adminDropdown">
+                  <a class="nav-link dropdown-toggle" href="#">
+                    Administración
+                  </a>
+                  <div class="dropdown-menu" aria-labelledby="adminDropdown">
+                    <a class="dropdown-item" href="/admin/dashboard">Gestión de Usuarios</a>
+                    <a class="dropdown-item" href="/articles/admin/dashboard">Gestión de Artículos</a>
+                    <a class="dropdown-item" href="/guides/admin/dashboard">Gestión de Guías</a>
+                    <a class="dropdown-item" href="/foro/admin/dashboard">Gestión del Foro</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="/admin/reports"><i class="fas fa-flag"></i> Gestión de Reportes</a>
+                    <a class="dropdown-item" href="/admin/requests"><i class="fas fa-id-card"></i> Solicitudes</a>
+                  </div>
+                </li>
+                <li class="nav-item" id="adminNotificationsButton">
+                  <a class="nav-link" href="#" onclick="openAdminNotificationsModal()" id="adminNotificationsBell" title="Notificaciones">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-badge" id="adminNotificationBadge" style="display: none;">0</span>
+                  </a>
+                </li>
+              <% } %>
+              <% if (locals.user.role === 'psychologist') { %>
+                <li class="nav-dropdown" id="psychDropdown">
+                  <a class="nav-link dropdown-toggle" href="#">
+                    Administración
+                  </a>
+                  <div class="dropdown-menu" aria-labelledby="psychDropdown">
+                    <a class="dropdown-item" href="/articles/admin/dashboard">Artículos</a>
+                    <a class="dropdown-item" href="/guides/admin/dashboard">Guías</a>
+                  </div>
+                </li>
+              <% } %>
+              <!-- Mi Perfil con candado
+              <li class="nav-item">
+                <span class="nav-link text-muted disabled-section" title="Acceso restringido - Cuenta suspendida permanentemente">
+                  <i class="fas fa-lock me-1"></i> Mi Perfil
+                </span>
+              </li> 
+              -->
+            <% } else if (locals.user.isBannedUser) { %>
+              <!-- Usuario baneado temporalmente: no mostrar opciones adicionales -->
+            <% } else { %>
+              <% if (locals.user.role === 'admin') { %>
+                <li class="nav-dropdown" id="adminDropdown">
+                  <a class="nav-link dropdown-toggle" href="#">
+                    Administración
+                  </a>
+                  <div class="dropdown-menu" aria-labelledby="adminDropdown">
+                    <a class="dropdown-item" href="/admin/dashboard">Gestión de Usuarios</a>
+                    <a class="dropdown-item" href="/articles/admin/dashboard">Gestión de Artículos</a>
+                    <a class="dropdown-item" href="/guides/admin/dashboard">Gestión de Guías</a>
+                    <a class="dropdown-item" href="/foro/admin/dashboard">Gestión del Foro</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="/admin/reports"><i class="fas fa-flag"></i> Gestión de Reportes</a>
+                    <a class="dropdown-item" href="/admin/requests"><i class="fas fa-id-card"></i> Solicitudes</a>
+                  </div>
+                </li>
+                <li class="nav-item" id="adminNotificationsButton">
+                  <a class="nav-link" href="#" onclick="openAdminNotificationsModal()" id="adminNotificationsBell" title="Notificaciones">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-badge" id="adminNotificationBadge" style="display: none;">0</span>
+                  </a>
+                </li>
+              <% } %>
+              <% if (locals.user.role === 'psychologist') { %>
+                <li class="nav-dropdown" id="psychDropdown">
+                  <a class="nav-link dropdown-toggle" href="#">
+                    Administración
+                  </a>
+                  <div class="dropdown-menu" aria-labelledby="psychDropdown">
+                    <a class="dropdown-item" href="/articles/admin/dashboard">Artículos</a>
+                    <a class="dropdown-item" href="/guides/admin/dashboard">Guías</a>
+                  </div>
+                </li>
+              <% } %>
+            <% } %>
+          <% } %>
+        </ul>
+        <ul class="nav-list">
+          <% if (locals.user) { %>
+            <% if (locals.user.isBannedUser && locals.user.isPermanentlyBanned) { %>
+              <!-- Usuario baneado permanentemente: mostrar estado y logout -->
+              <li class="nav-item">
+                <span class="nav-link text-danger">
+                  <i class="fas fa-ban"></i> <span class="user-name-display" data-sync-field="name" data-user-id="<%= locals.user._id %>"><%= locals.user.name %></span> (Suspendido Permanentemente)
+                </span>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link btn-logout" href="/auth/logout">
+                  <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                </a>
+              </li>
+            <% } else if (locals.user.isBannedUser) { %>
+              <!-- Usuario baneado temporalmente: solo mostrar saludo y logout -->
+              <li class="nav-item">
+                <span class="nav-link text-warning">
+                  <i class="fas fa-exclamation-triangle"></i> <span class="user-name-display" data-sync-field="name" data-user-id="<%= locals.user._id %>"><%= locals.user.name %></span> (Cuenta Suspendida)
+                </span>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link btn-logout" href="/auth/logout">
+                  <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                </a>
+              </li>
+            <% } else { %>
+              <!-- Usuario normal: mostrar notificaciones y opciones -->
+              <!-- Notificaciones para usuarios regulares -->
+              <% if (locals.user.role !== 'admin' && !(locals.user.role === 'psychologist' && locals.currentPath && (locals.currentPath.startsWith('/articles/admin') || locals.currentPath.startsWith('/guides/admin')))) { %>
+              <li class="nav-item" id="userNotificationsButton">
+                <a class="nav-link" href="#" onclick="openNotificationsModal()" id="userNotificationsBell" title="Notificaciones">
+                  <i class="fas fa-bell"></i>
+                  <span class="notification-badge" id="userNotificationBadge" style="display: none;">0</span>
+                </a>
+              </li>
+              <% } %>
+              <li class="nav-item">
+                <a class="nav-link profile-link" href="/user/profile">
+                  <% 
+                    let profileImageUrl = '/img/default-avatar.svg';
+                    if (locals.user) {
+                      if (typeof locals.user.getProfileImageUrl === 'function') {
+                        profileImageUrl = locals.user.getProfileImageUrl();
+                      } else if (locals.user.profileImage) {
+                        profileImageUrl = locals.user.profileImage;
+                      }
+                    }
+                  %>
+                  <img src="<%= profileImageUrl %>" 
+                       class="profile-image" 
+                       style="width: 30px; height: 30px; object-fit: cover;" 
+                       alt="Foto de perfil">
+                  <span class="user-name-display" data-sync-field="name" data-user-id="<%= locals.user._id %>"><%= locals.user.name %></span>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/auth/logout" title="Cerrar sesión">
+                  <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                </a>
+              </li>
+            <% } %>
+          <% } else { %>
+            <li class="nav-item">
+              <a class="nav-link" href="/auth/login">Iniciar Sesión</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/auth/register">Registrarse</a>
+            </li>
+          <% } %>
+        </ul>
+        
+      </div>
+    </div>
+  </nav>
+      <!-- Contenedor oculto requerido por Google Translate -->
+     <div id="google_translate_element" style="display:none;"></div>
+
+  <!-- Sistema de notificaciones unificado manejado por notifications.js -->
+
+  <!-- El sistema de notificaciones ahora se maneja con notifications.js -->
+
+  <!-- Modal de Notificaciones -->
+  <% if (locals.user && locals.user.role !== 'admin' && !(locals.user.role === 'psychologist' && locals.currentPath && (locals.currentPath.startsWith('/articles/admin') || locals.currentPath.startsWith('/guides/admin')))) { %>
+  <style>
+    .notification-item {
+      border-left: 4px solid #dee2e6;
+      transition: all 0.3s ease;
+      border-radius: 12px;
+      margin-bottom: 1rem;
+    }
+    .notification-item.unread {
+      border-left-color: #667eea;
+      background: linear-gradient(135deg, #f8f9ff 0%, #ffffff 100%);
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.1);
+    }
+    .notification-item:hover {
+      background-color: #e9ecef;
+      transform: translateX(5px) translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Estilos nativos para modal */
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      display: none;
+      z-index: 1050;
+      overflow-x: hidden;
+      overflow-y: auto;
+    }
+    
+    .modal.show {
+      display: block;
+    }
+    
+    .modal-dialog {
+      position: relative;
+      width: auto;
+      margin: 1.75rem;
+      pointer-events: none;
+    }
+    
+    .modal-content {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      pointer-events: auto;
+      background-color: #fff;
+      background-clip: padding-box;
+      border: 1px solid rgba(0, 0, 0, 0.2);
+      border-radius: 0.3rem;
+      outline: 0;
+    }
+    
+    @media (min-width: 576px) {
+      .modal-dialog {
+        max-width: 500px;
+        margin: 1.75rem auto;
+      }
+    }
+    
+    @media (min-width: 992px) {
+      .modal-lg {
+        max-width: 800px;
+      }
+    }
+    
+    .modal-dialog-scrollable {
+      height: calc(100% - 3.5rem);
+    }
+    
+    .modal-dialog-scrollable .modal-content {
+      max-height: 100%;
+      overflow: hidden;
+    }
+    
+    .modal-dialog-scrollable .modal-body {
+      overflow-y: auto;
+    }
+    
+    body.modal-open {
+      overflow: hidden;
+    }
+  </style>
+  <div class="modal" id="notificationsModal" tabindex="-1" aria-labelledby="notificationsModalLabel" aria-hidden="true" onclick="if(event.target === this) closeNotificationsModal()">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+      <div class="modal-content" style="border-radius: 15px; border: none; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);">
+        <div class="modal-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 15px 15px 0 0; padding: 1.5rem 2rem;">
+          <h5 class="modal-title" id="notificationsModalLabel" style="font-weight: 600; font-size: 1.3rem; margin: 0;">
+            <i class="fas fa-bell me-2"></i> Mis Notificaciones
+          </h5>
+          <button type="button" class="btn-close btn-close-white" onclick="closeNotificationsModal()" aria-label="Close" style="filter: brightness(0) invert(1);"></button>
+        </div>
+        <div class="modal-body" style="padding: 2rem; background: #f8f9fa; max-height: 60vh; overflow-y: auto;">
+          <!-- Spinner de carga -->
+          <div id="modalLoadingSpinner" class="text-center" style="display: none; padding: 3rem 0;">
+            <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+              <span class="visually-hidden">Cargando...</span>
+            </div>
+            <p class="mt-3 text-muted" style="font-size: 1.1rem;">Cargando notificaciones...</p>
+          </div>
+          
+          <!-- Lista de notificaciones -->
+          <div id="modalNotificationsList">
+            <!-- Las notificaciones se cargarán aquí -->
+          </div>
+          
+          <!-- Mensaje cuando no hay notificaciones -->
+          <div id="modalNoNotificationsMessage" class="text-center text-muted" style="display: none; padding: 4rem 2rem;">
+            <i class="fas fa-bell-slash" style="font-size: 4rem; color: #dee2e6; margin-bottom: 1.5rem;"></i>
+            <h6 style="color: #6c757d; font-weight: 500;">No tienes notificaciones</h6>
+            <p style="color: #adb5bd; font-size: 0.9rem; margin-top: 0.5rem;">Cuando recibas nuevas notificaciones aparecerán aquí</p>
+          </div>
+        </div>
+        <div class="modal-footer" style="background: white; border: none; border-radius: 0 0 15px 15px; padding: 1.5rem 2rem; gap: 1rem;">
+          <button type="button" class="btn btn-outline-secondary" onclick="markAllModalNotificationsRead()" style="border-radius: 10px; padding: 0.75rem 1.5rem; font-weight: 500;">
+            <i class="fas fa-check-double me-2"></i> Marcar todas como leídas
+          </button>
+          <button type="button" class="btn btn-primary" onclick="refreshModalNotifications()" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; border-radius: 10px; padding: 0.75rem 1.5rem; font-weight: 500;">
+            <i class="fas fa-sync-alt me-2"></i> Actualizar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <% } %>
+
+
+
+  <!-- JavaScript para menú hamburguesa -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('Inicializando menú hamburguesa...');
+      const hamburgerBtn = document.getElementById('hamburgerBtn');
+      const hamburgerDropdown = document.getElementById('hamburgerDropdown');
+      
+      console.log('Botón hamburguesa:', hamburgerBtn);
+      console.log('Dropdown hamburguesa:', hamburgerDropdown);
+      
+      if (hamburgerBtn && hamburgerDropdown) {
+        console.log('Elementos encontrados, agregando event listeners...');
+        
+        // Toggle del menú hamburguesa
+        hamburgerBtn.addEventListener('click', function(e) {
+          console.log('Click en botón hamburguesa detectado');
+          e.preventDefault();
+          e.stopPropagation();
+          
+          const isActive = hamburgerBtn.classList.contains('active');
+          console.log('Estado actual:', isActive ? 'activo' : 'inactivo');
+          
+          if (isActive) {
+            hamburgerBtn.classList.remove('active');
+            hamburgerDropdown.classList.remove('show');
+            console.log('Menú cerrado');
+          } else {
+            hamburgerBtn.classList.add('active');
+            hamburgerDropdown.classList.add('show');
+            console.log('Menú abierto');
+          }
+          
+          console.log('Clases finales - Botón:', hamburgerBtn.className);
+          console.log('Clases finales - Dropdown:', hamburgerDropdown.className);
+        });
+        
+        // Cerrar menú al hacer clic fuera
+        document.addEventListener('click', function(e) {
+          if (!hamburgerBtn.contains(e.target) && !hamburgerDropdown.contains(e.target)) {
+            hamburgerBtn.classList.remove('active');
+            hamburgerDropdown.classList.remove('show');
+          }
+        });
+        
+        // Cerrar menú al hacer clic en un enlace
+        const hamburgerItems = hamburgerDropdown.querySelectorAll('.hamburger-item');
+        hamburgerItems.forEach(item => {
+          item.addEventListener('click', function() {
+            hamburgerBtn.classList.remove('active');
+            hamburgerDropdown.classList.remove('show');
+          });
+        });
+        
+        // Cerrar menú con tecla Escape
+        document.addEventListener('keydown', function(e) {
+          if (e.key === 'Escape') {
+            hamburgerBtn.classList.remove('active');
+            hamburgerDropdown.classList.remove('show');
+          }
+        });
+      }
+    });
+  </script>
+
+    <!-- Sistema de Validación y Guardado Automático -->
+    <link rel="stylesheet" href="/css/form-validator.css">
+    <script src="/js/form-validator.js"></script>
+    
+    <!-- Sistema de Sincronización en Tiempo Real -->
+    <link rel="stylesheet" href="/css/real-time-sync.css">
+    <script src="/js/real-time-sync.js"></script>
+    
+    <% if (locals.user) { %>
+    <script>
+      // Inicializar sistema de sincronización en tiempo real
+      document.addEventListener('DOMContentLoaded', function() {
+        if (typeof RealTimeSync !== 'undefined') {
+          window.realTimeSync = new RealTimeSync({
+            userId: '<%= locals.user._id %>',
+            userName: '<%= locals.user.name %>',
+            userEmail: '<%= locals.user.email %>',
+            userRole: '<%= locals.user.role %>'
+          });
+        }
+      });
+    </script>
+    <% } %>
+    
+
+    
+    <!-- Bootstrap JavaScript Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Tu JS primero, para que el callback global exista antes de cargar el script de Google -->
+    <script src="/js/notifications.js"></script>
+  <script src="/js/tradux.js"></script>
+  <script src="/js/active-navigation.js"></script>
+  <!-- Script oficial de Google (callback definido en translate.js) -->
+  <script type="text/javascript"
+    src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit">
+  </script>
+  
+<!-- Contenido principal -->
+<main class="container">
+    <style>
+      .articles-pagination{display:flex;gap:8px;justify-content:center;align-items:center;margin:24px auto 40px auto;flex-wrap:wrap}
+    .page-btn{border:1px solid #ced4da;background:#ffffff;color:#333;border-radius:999px;padding:6px 12px;min-width:36px;cursor:pointer;transition:all .2s ease;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+    .page-btn:hover{transform:translateY(-2px);background:linear-gradient(135deg,#f8f9ff 0%,#ffffff 100%)}
+    .page-btn.active{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:#fff;border-color:transparent;box-shadow:0 6px 20px rgba(118,75,162,.25)}
+    .public-top-search{max-width:800px;margin:12px auto 0 auto;background:#fff;border:1px solid #e9ecef;border-radius:16px;padding:12px;max-width:900px}
+    .public-top-search .articles-filter-label{display:block;margin-bottom:6px;color:#495057;font-weight:600}
+    .public-top-search .articles-filter-input{border:1px solid #dee2e6;border-radius:12px;padding:10px 14px;width:100%;box-shadow:0 6px 20px rgba(18,75,162,.25)}
+    </style>
+    

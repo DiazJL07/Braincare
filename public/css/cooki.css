@@ -1,0 +1,352 @@
+    body {
+            background-color: #4553a0;
+            color: #ffffff;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+ 
+ .hero {
+            background-image: url('/img/cooki/coci.png');
+            background-size: cover;
+            background-position: center;
+            margin-top: 80px;
+            padding: 100px 5%;
+            text-align: center;
+            position: relative;
+            min-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+
+       
+        .world-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: rgb(20, 20, 20);
+            border-radius: 50px;
+            margin-bottom: 30px;
+            font-size: 14px;
+            color: #e0e6ff;
+            
+        }
+
+        .hero h1 {
+            font-size: 56px;
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 20px;
+            color: #ffffff;
+            background-clip: text;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero .subtitle {
+            font-size: 18px;
+            color: #f6f8ff;
+            margin-bottom: 40px;
+            max-width: 500px;
+            line-height: 1.6;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .btn-primary {
+            background: linear-gradient(90deg, #4169e1 0%, #6b8cff 100%);
+            color: white;
+            padding: 14px 32px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(65, 105, 225, 0.5);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: #b8c1ec;
+            padding: 14px 32px;
+            border: 1px solid rgba(184, 193, 236, 0.3);
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(184, 193, 236, 0.5);
+            transform: translateY(-3px);
+        }
+
+        /* Features Section */
+        .features {
+            color: #4553a0;
+            padding-top: 5%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .features-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 80px;
+            align-items: center;
+        }
+
+        .features-content img {
+           width: 500px;
+        }
+
+        .features h2 {
+            font-size: 42px;
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 30px;
+        }
+
+        .features p {
+            font-size: 17px;
+            line-height: 1.8;
+            color: #8892b0;
+        }
+
+        /* How it Works Section */
+        .how-it-works {
+            padding: 100px 5%;
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .how-it-works h2 {
+            font-size: 42px;
+            color: #4353a0;
+            font-weight: 700;
+            margin-bottom: 60px;
+        }
+
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 50px;
+            margin-top: 60px;
+        }
+
+        .step {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 40px 30px;
+            transition: transform 0.3s, border-color 0.3s;
+        }
+
+        .step:hover {
+            transform: translateY(-10px);
+            border-color: rgba(65, 105, 225, 0.5);
+        }
+
+        .step-icon {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 20px;
+            background: linear-gradient(135deg, #4169e1, #6b8cff);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+        }
+
+        .step h3 {
+            font-size: 20px;
+            margin-bottom: 15px;
+            color: #4353a0;
+        }
+
+        .step p {
+            font-size: 15px;
+            line-height: 1.6;
+            color: #8892b0;
+        }
+
+        /* FAQ Section */
+        .faq {
+            padding: 100px 5%;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .faq h2 {
+            font-size: 42px;
+            color: #4353a0;
+            font-weight: 700;
+            margin-bottom: 60px;
+        }
+
+        .faq-item {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            margin-bottom: 20px;
+            overflow: hidden;
+            transition: border-color 0.3s;
+        }
+
+        .faq-item:hover {
+            border-color: rgba(65, 105, 225, 0.3);
+        }
+
+        .faq-question {
+            padding: 25px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 17px;
+            font-weight: 500;
+        }
+
+        .faq-arrow {
+            transition: transform 0.3s;
+            font-size: 20px;
+            color: #8892b0;
+        }
+
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+            padding: 0 25px;
+        }
+
+        .faq-answer p {
+            padding-bottom: 25px;
+            color: #8892b0;
+            line-height: 1.6;
+        }
+
+        .faq-item.active .faq-answer {
+            max-height: 200px;
+        }
+
+        .faq-item.active .faq-arrow {
+            transform: rotate(180deg);
+        }
+
+        /* Media Queries */
+        @media (max-width: 768px) {
+            .nav-links,
+            .nav-right a:first-child {
+                display: none;
+            }
+
+            .hamburger {
+                display: flex;
+            }
+
+            .hero h1 {
+                font-size: 36px;
+            }
+
+            .hero .subtitle {
+                font-size: 16px;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+                width: 100%;
+                max-width: 300px;
+            }
+
+            .btn-primary,
+            .btn-secondary {
+                width: 100%;
+            }
+
+            .features-content {
+                grid-template-columns: 1fr;
+                gap: 40px;
+                text-align: center;
+            }
+
+            .features h2 {
+                font-size: 32px;
+            }
+
+            .steps {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+
+            .how-it-works h2 {
+                font-size: 32px;
+            }
+
+            .faq h2 {
+                font-size: 32px;
+                text-align: center;
+            }
+
+            .faq-question {
+                font-size: 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            nav {
+                padding: 15px 20px;
+            }
+
+            .hero {
+                padding: 60px 20px;
+            }
+
+            .hero h1 {
+                font-size: 28px;
+            }
+
+            .hero .subtitle {
+                font-size: 14px;
+            }
+
+            .btn-primary,
+            .btn-secondary {
+                padding: 12px 24px;
+                font-size: 14px;
+            }
+
+            .features,
+            .how-it-works,
+            .faq {
+                padding: 60px 20px;
+            }
+
+            .step {
+                padding: 30px 20px;
+            }
+
+            .faq-question {
+                padding: 20px;
+            }
+        }

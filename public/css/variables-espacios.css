@@ -1,0 +1,12 @@
+.mt-8 {
+  margin-top: 8rem !important; 
+}
+
+.custom-modal-width {
+  max-width: 1200px;
+  width: 100%;
+}
+
+.pad10{
+  padding: 3rem !important;
+}

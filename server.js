@@ -370,7 +370,7 @@ const IA_PORT = 5001;
 const startServers = async () => {
   try {
     const mongoUri = process.env.MONGO_URI || process.env.DATABASE_URL || process.env.URL || 'mongodb://localhost:27017/braincare';
-    await mongoose.connect(mongoUri);
+    await mongoose.connect(mongoUri, { serverSelectionTimeoutMS: 10000 });
     console.log('Conectado a MongoDB');
     // Intentar iniciar el servidor de IA independientemente de si Python está disponible
     console.log('Intentando iniciar servidor de IA...');

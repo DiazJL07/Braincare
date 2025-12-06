@@ -20,11 +20,23 @@ body {
 /* --- Hero Section --- */
 .guides-hero {
     background-image: url(/img/articles/Ps1.png);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    position: relative;
     padding: 3rem 1.5rem;
     text-align: center;
     padding-top: 5%;
-   
     margin-bottom: 3rem;
+}
+
+.guides-hero::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.45);
+    z-index: 1;
+    pointer-events: none;
 }
 
 .guides-hero h1 {
@@ -33,6 +45,8 @@ body {
     color: #ffffff;
     margin-bottom: 0.5rem;
     letter-spacing: -0.02em;
+    position: relative;
+    z-index: 2;
 }
 
 .guides-hero p {
@@ -40,12 +54,15 @@ body {
     color: var(--g-text-light);
     max-width: 600px;
     margin: 0 auto 2rem;
+    position: relative;
+    z-index: 2;
 }
 
 .hero-search-wrapper {
     max-width: 500px;
     margin: 0 auto;
     position: relative;
+    z-index: 2;
 }
 
 .hero-search-input {
@@ -77,9 +94,18 @@ body {
     margin: 0 auto;
     padding: 0 1.5rem 4rem;
     display: grid;
-    grid-template-columns: 1fr 280px; /* Sidebar un poco más estrecho */
+    grid-template-columns: 1fr 280px;
+    grid-template-areas: 'main sidebar';
     gap: 3rem;
     align-items: start;
+}
+
+.guides-main { grid-area: main; }
+.guides-sidebar { grid-area: sidebar; }
+
+@media (min-width: 1025px) {
+  .guides-main { grid-column: 1; }
+  .guides-sidebar { grid-column: 2; }
 }
 
 .guides-grid {
@@ -305,8 +331,9 @@ body {
 
 /* --- Media Queries --- */
 @media (max-width: 1024px) {
-    .guides-layout { grid-template-columns: 1fr; gap: 2rem; }
-    .guides-sidebar { position: static; order: -1; display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; border-bottom: 1px solid #E2E8F0; padding-bottom: 1rem; margin-bottom: 2rem; }
+    .guides-layout { grid-template-columns: 1fr; grid-template-areas: 'sidebar' 'main'; gap: 2rem; }
+    .guides-sidebar { position: static; display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; border-bottom: 1px solid #E2E8F0; padding-bottom: 1rem; margin-bottom: 2rem; }
+}
     .sidebar-card { border: none; margin: 0; padding: 0; }
 }
 

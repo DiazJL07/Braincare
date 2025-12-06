@@ -347,6 +347,10 @@ body {
   }
   .columna-sidebar {
     width: 100%;
+    order: -1;
+  }
+  .columna-sidebar .filtro-card + .filtro-card {
+    margin-top: 12px;
   }
 }
 

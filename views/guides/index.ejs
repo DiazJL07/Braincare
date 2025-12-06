@@ -17,6 +17,61 @@
 <!-- Layout Principal: Grid + Sidebar Sticky -->
 <div class="guides-layout">
   
+  <!-- Columna Lateral (Sidebar Sticky) -->
+  <aside class="guides-sidebar">
+    
+    <!-- Filtros -->
+    <div class="sidebar-card">
+      <h4 class="sidebar-title"><i class="fas fa-filter"></i> Filtrar Guías</h4>
+      <form action="/guides" method="GET">
+        
+        <div class="filter-group">
+          <label class="filter-label">Tema</label>
+          <select class="filter-select" name="topic">
+            <option value="todos" <%= currentTopic === 'todos' ? 'selected' : '' %>>Todos</option>
+            <option value="Transtornos" <%= currentTopic === 'Transtornos' ? 'selected' : '' %>>Transtornos</option>
+            <option value="Recomendaciones" <%= currentTopic === 'Recomendaciones' ? 'selected' : '' %>>Recomendaciones</option>
+            <option value="Tratamientos" <%= currentTopic === 'Tratamientos' ? 'selected' : '' %>>Tratamientos</option>
+            <option value="Prevencion" <%= currentTopic === 'Prevencion' ? 'selected' : '' %>>Prevención</option>
+            <option value="Investigacion" <%= currentTopic === 'Investigacion' ? 'selected' : '' %>>Investigación</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label class="filter-label">Ordenar por</label>
+          <select class="filter-select" name="sort">
+            <option value="fecha" <%= currentSort === 'fecha' ? 'selected' : '' %>>Más recientes</option>
+            <option value="vistas" <%= currentSort === 'vistas' ? 'selected' : '' %>>Más leídas</option>
+            <option value="descargas" <%= currentSort === 'descargas' ? 'selected' : '' %>>Más descargadas</option>
+          </select>
+        </div>
+
+        <button type="submit" class="filter-btn-apply">Actualizar Resultados</button>
+      </form>
+    </div>
+
+    <!-- Populares -->
+    <div class="sidebar-card">
+      <h4 class="sidebar-title"><i class="fas fa-fire" style="color: #F59E0B;"></i> Tendencias (24h)</h4>
+      <div class="popular-list">
+        <% if (typeof popularGuides24h !== 'undefined' && popularGuides24h && popularGuides24h.length > 0) { %>
+          <% popularGuides24h.forEach(p => { %>
+            <div class="popular-item">
+              <a href="/guides/<%= p._id %>" class="popular-link"><%= p.title %></a>
+              <div class="popular-meta">
+                <span><i class="fas fa-eye"></i> <%= p.views24h || 0 %></span>
+                <span><%= p.topic %></span>
+              </div>
+            </div>
+          <% }) %>
+        <% } else { %>
+          <div style="color: #94A3B8; font-size: 0.9rem; text-align: center;">No hay datos recientes</div>
+        <% } %>
+      </div>
+    </div>
+
+  </aside>
+
   <!-- Columna Principal: Grid de Guías -->
   <main class="guides-main">
     <% if (guides && guides.length > 0) { %>
@@ -81,60 +136,6 @@
     <% } %>
   </main>
 
-  <!-- Columna Lateral (Sidebar Sticky) -->
-  <aside class="guides-sidebar">
-    
-    <!-- Filtros -->
-    <div class="sidebar-card">
-      <h4 class="sidebar-title"><i class="fas fa-filter"></i> Filtrar Guías</h4>
-      <form action="/guides" method="GET">
-        
-        <div class="filter-group">
-          <label class="filter-label">Tema</label>
-          <select class="filter-select" name="topic">
-            <option value="todos" <%= currentTopic === 'todos' ? 'selected' : '' %>>Todos</option>
-            <option value="Transtornos" <%= currentTopic === 'Transtornos' ? 'selected' : '' %>>Transtornos</option>
-            <option value="Recomendaciones" <%= currentTopic === 'Recomendaciones' ? 'selected' : '' %>>Recomendaciones</option>
-            <option value="Tratamientos" <%= currentTopic === 'Tratamientos' ? 'selected' : '' %>>Tratamientos</option>
-            <option value="Prevencion" <%= currentTopic === 'Prevencion' ? 'selected' : '' %>>Prevención</option>
-            <option value="Investigacion" <%= currentTopic === 'Investigacion' ? 'selected' : '' %>>Investigación</option>
-          </select>
-        </div>
-
-        <div class="filter-group">
-          <label class="filter-label">Ordenar por</label>
-          <select class="filter-select" name="sort">
-            <option value="fecha" <%= currentSort === 'fecha' ? 'selected' : '' %>>Más recientes</option>
-            <option value="vistas" <%= currentSort === 'vistas' ? 'selected' : '' %>>Más leídas</option>
-            <option value="descargas" <%= currentSort === 'descargas' ? 'selected' : '' %>>Más descargadas</option>
-          </select>
-        </div>
-
-        <button type="submit" class="filter-btn-apply">Actualizar Resultados</button>
-      </form>
-    </div>
-
-    <!-- Populares -->
-    <div class="sidebar-card">
-      <h4 class="sidebar-title"><i class="fas fa-fire" style="color: #F59E0B;"></i> Tendencias (24h)</h4>
-      <div class="popular-list">
-        <% if (typeof popularGuides24h !== 'undefined' && popularGuides24h && popularGuides24h.length > 0) { %>
-          <% popularGuides24h.forEach(p => { %>
-            <div class="popular-item">
-              <a href="/guides/<%= p._id %>" class="popular-link"><%= p.title %></a>
-              <div class="popular-meta">
-                <span><i class="fas fa-eye"></i> <%= p.views24h || 0 %></span>
-                <span><%= p.topic %></span>
-              </div>
-            </div>
-          <% }) %>
-        <% } else { %>
-          <div style="color: #94A3B8; font-size: 0.9rem; text-align: center;">No hay datos recientes</div>
-        <% } %>
-      </div>
-    </div>
-
-  </aside>
 
 </div>
 

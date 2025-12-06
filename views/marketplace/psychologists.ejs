@@ -1,0 +1,112 @@
+ 
+<link rel="stylesheet" href="/css/marketplace.css">
+
+<section class="mp-section">
+  <div class="mp-header">
+    <h1 class="mp-title">Psicólogos</h1>
+    <div class="mp-tools">
+      <div class="mp-search">
+        <input id="mp-search" type="text" placeholder="Buscar por nombre..." value="<%= (typeof q !== 'undefined' ? q : '') %>">
+      </div>
+      <div class="mp-sort">
+        <label for="mp-sort">Ordenar:</label>
+        <select id="mp-sort" data-initial-sort="<%= (typeof sort !== 'undefined' ? sort : 'recent') %>">
+          <option value="recent">Más recientes</option>
+          <option value="rating">Más puntuados</option>
+          <option value="reviews">Más reseñas</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div id="mp-grid" class="mp-grid">
+    <% profiles.forEach(p => { %>
+      <div class="mp-card" 
+           data-name="<%= (p.user && p.user.name) ? p.user.name.toLowerCase() : '' %>" 
+           data-rating="<%= p.ratingAverage || 0 %>" 
+           data-reviews="<%= p.ratingCount || 0 %>" 
+           data-created="<%= (p.createdAt || (p.user && p.user.createdAt) || new Date()).toISOString() %>">
+        <div class="mp-card-left">
+          <img src="<%= p.photoUrl || '/img/default-avatar.svg' %>" alt="Foto" class="mp-avatar">
+        </div>
+        <div class="mp-card-main">
+          <div class="mp-card-title"><%= p.user ? p.user.name : 'Psicólogo' %></div>
+          <div class="mp-card-sub">$ <%= p.price %> • <%= p.durationMinutes %> min</div>
+          <div class="mp-card-meta">
+            <span class="mp-meta-item">⭐ <%= (p.ratingAverage || 0).toFixed(1) %></span>
+            <span class="mp-meta-item">🗒️ <%= p.ratingCount || 0 %> reseñas</span>
+          </div>
+        </div>
+        <div class="mp-card-right">
+          <a class="mp-button" href="/psych/p/<%= p.user._id %>">Ver perfil</a>
+        </div>
+      </div>
+    <% }) %>
+  </div>
+
+  <div class="mp-header" style="margin-top:24px;">
+    <h2 class="mp-title">Sesiones disponibles</h2>
+  </div>
+  <div id="mp-grid-sessions" class="mp-grid">
+    <% (typeof slots !== 'undefined' ? slots : []).forEach(s => { %>
+      <div class="mp-card"
+           data-name="<%= (s.psychologist && s.psychologist.name) ? s.psychologist.name.toLowerCase() : '' %>"
+           data-rating="<%= s.ratingAverage || 0 %>"
+           data-reviews="<%= s.ratingCount || 0 %>"
+           data-created="<%= (s.start || (s.psychologist && s.psychologist.createdAt) || new Date()).toISOString() %>">
+        <div class="mp-card-left">
+          <img src="/img/default-avatar.svg" alt="Foto" class="mp-avatar">
+        </div>
+        <div class="mp-card-main">
+          <div class="mp-card-title"><%= new Date(s.start).toLocaleString('es-ES') %></div>
+          <div class="mp-card-sub">$ <%= (s.price || 0).toFixed(2) %> • <%= s.durationMinutes %> min</div>
+          <div class="mp-card-meta">
+            <span class="mp-meta-item">👤 <%= s.psychologist ? s.psychologist.name : '' %></span>
+          </div>
+        </div>
+        <div class="mp-card-right">
+          <% if (s.psychologist) { %>
+            <a class="mp-button" href="/psych/p/<%= s.psychologist._id %>">Ver psicólogo</a>
+          <% } %>
+        </div>
+      </div>
+    <% }) %>
+  </div>
+
+  <div class="mp-header" style="margin-top:24px;">
+    <h2 class="mp-title">Servicios</h2>
+  </div>
+  <div id="mp-grid-services" class="mp-grid">
+    <% (typeof services !== 'undefined' ? services : []).forEach(s => { %>
+      <div class="mp-card"
+           data-name="<%= (s.psychologist && s.psychologist.name) ? s.psychologist.name.toLowerCase() : '' %>"
+           data-rating="<%= s.ratingAverage || 0 %>"
+           data-reviews="<%= s.ratingCount || 0 %>"
+           data-created="<%= (s.createdAt || (s.psychologist && s.psychologist.createdAt) || new Date()).toISOString() %>">
+        <div class="mp-card-left">
+          <img src="/img/default-avatar.svg" alt="Foto" class="mp-avatar">
+        </div>
+        <div class="mp-card-main">
+          <div class="mp-card-title"><%= s.serviceType %></div>
+          <div class="mp-card-sub">$ <%= (s.price || 0).toFixed(2) %> • <%= s.durationMinutes %> min</div>
+          <div class="mp-card-meta">
+            <span class="mp-meta-item">👤 <%= s.psychologist ? s.psychologist.name : '' %></span>
+            <% if (s.specialty) { %><span class="mp-meta-item">🏷️ <%= s.specialty.name %></span><% } %>
+          </div>
+        </div>
+        <div class="mp-card-right">
+          <% if (s.psychologist) { %>
+            <a class="mp-button" href="/psych/p/<%= s.psychologist._id %>">Ver psicólogo</a>
+          <% } %>
+        </div>
+      </div>
+    <% }) %>
+  </div>
+
+  <div id="mp-empty" class="mp-empty" style="display:none;">
+    <p>No se encontraron psicólogos para tu búsqueda.</p>
+  </div>
+</section>
+
+<script src="/js/marketplace.js"></script>
+<%- include('../partials/footer') %>

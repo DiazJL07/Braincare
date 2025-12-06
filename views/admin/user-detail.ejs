@@ -1,0 +1,933 @@
+ 
+<link rel="stylesheet" href="/css/admin-user-profile.css">
+
+<div class="admin-user-profile">
+  <!-- Navegación y breadcrumb -->
+  <div class="profile-navigation animate-fade-in">
+    <div class="profile-breadcrumb">
+      <a href="/admin/dashboard"><i class="fas fa-home"></i> Dashboard</a>
+      <i class="fas fa-chevron-right"></i>
+      <a href="/admin/users">Usuarios</a>
+      <i class="fas fa-chevron-right"></i>
+      <span>Perfil de <%= targetUser.name %></span>
+    </div>
+    <div class="profile-actions">
+      <a href="/admin/dashboard" class="btn-profile btn-secondary">
+        <i class="fas fa-arrow-left"></i>
+        Volver al Dashboard
+      </a>
+      <a href="/admin/users/<%= targetUser._id %>/edit" class="btn-profile btn-warning">
+        <i class="fas fa-edit"></i>
+        Editar Usuario
+      </a>
+    </div>
+  </div>
+
+  <!-- Tarjeta principal del perfil -->
+  <div class="profile-main-card animate-fade-in">
+    <!-- Imagen de portada -->
+    <div class="profile-cover">
+      <% if (targetUser.getCoverImageUrl && targetUser.getCoverImageUrl() !== '/img/default-cover.svg') { %>
+        <img src="<%= targetUser.getCoverImageUrl() %>" alt="Portada de <%= targetUser.name %>" class="profile-cover-image">
+      <% } %>
+      <div class="profile-cover-overlay">
+        <i class="fas fa-camera" style="font-size: 2rem; opacity: 0.7;"></i>
+      </div>
+      
+      <!-- Avatar del usuario -->
+      <div class="profile-avatar-container">
+        <div class="profile-avatar">
+          <% if (targetUser.getProfileImageUrl && targetUser.getProfileImageUrl() !== '/img/default-avatar.svg') { %>
+            <img src="<%= targetUser.getProfileImageUrl() %>" alt="Avatar de <%= targetUser.name %>">
+          <% } else { %>
+            <%= targetUser.name.charAt(0).toUpperCase() %>
+          <% } %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Información del perfil -->
+    <div class="profile-info">
+      <div class="profile-header">
+        <div class="profile-details">
+          <h1><%= targetUser.name %></h1>
+          <div class="profile-subtitle">
+            <div class="profile-role <%= targetUser.role === 'admin' ? 'role-admin' : (targetUser.role === 'psychologist' ? 'role-psych' : 'role-user') %>">
+              <i class="fas <%= targetUser.role === 'admin' ? 'fa-crown' : (targetUser.role === 'psychologist' ? 'fa-stethoscope' : 'fa-user') %>"></i>
+              <%= targetUser.role === 'admin' ? 'Administrador' : (targetUser.role === 'psychologist' ? 'Psicólogo' : 'Usuario') %>
+            </div>
+            <div class="profile-status <%= targetUser.isBanned ? 'status-banned' : 'status-active' %>">
+              <i class="fas <%= targetUser.isBanned ? 'fa-ban' : 'fa-check-circle' %>"></i>
+              <%= targetUser.isBanned ? 'Baneado' : 'Activo' %>
+            </div>
+          </div>
+          <div class="profile-meta">
+            <i class="fas fa-calendar-alt"></i>
+            Miembro desde <%= new Date(targetUser.createdAt).toLocaleDateString('es-ES', { 
+              year: 'numeric', 
+              month: 'long', 
+              day: 'numeric' 
+            }) %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Estadísticas del usuario -->
+  <div class="user-stats animate-slide-in">
+    <div class="stat-card">
+      <div class="stat-number"><%= userStats.perfilActivo %></div>
+      <div class="stat-label">Perfil Activo</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number"><%= userStats.publicaciones %></div>
+      <div class="stat-label">Publicaciones</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number"><%= userStats.comentarios %></div>
+      <div class="stat-label">Comentarios</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number"><%= userStats.reportes %></div>
+      <div class="stat-label">Reportes</div>
+    </div>
+  </div>
+
+  <!-- Indicadores de actualización -->
+  <div class="stats-update-indicator" style="display: none;">
+    <i class="fas fa-sync-alt fa-spin"></i> Actualizando estadísticas...
+  </div>
+  
+  <div class="activity-update-indicator" style="display: none;">
+    <i class="fas fa-sync-alt fa-spin"></i> Actualizando actividad...
+  </div>
+
+  <!-- Secciones de información -->
+  <div class="profile-sections">
+    <!-- Información personal -->
+    <div class="profile-section animate-fade-in">
+      <div class="section-header">
+        <div class="section-icon">
+          <i class="fas fa-user"></i>
+        </div>
+        <h3 class="section-title">Información Personal</h3>
+      </div>
+      <div class="info-grid">
+        <div class="info-item">
+          <div class="info-label">
+            <i class="fas fa-signature"></i>
+            Nombre completo
+          </div>
+          <div class="info-value"><%= targetUser.name %></div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">
+            <i class="fas fa-envelope"></i>
+            Correo electrónico
+          </div>
+          <div class="info-value"><%= targetUser.email %></div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">
+            <i class="fas fa-id-card"></i>
+            ID de usuario
+          </div>
+          <div class="info-value"><%= targetUser._id %></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Información de la cuenta -->
+    <div class="profile-section animate-fade-in">
+      <div class="section-header">
+        <div class="section-icon">
+          <i class="fas fa-cog"></i>
+        </div>
+        <h3 class="section-title">Información de la Cuenta</h3>
+      </div>
+      <div class="info-grid">
+        <div class="info-item">
+          <div class="info-label">
+            <i class="fas fa-calendar-plus"></i>
+            Fecha de registro
+          </div>
+          <div class="info-value"><%= new Date(user.createdAt).toLocaleDateString('es-ES') %></div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">
+            <i class="fas fa-clock"></i>
+            Hora de registro
+          </div>
+          <div class="info-value"><%= new Date(user.createdAt).toLocaleTimeString('es-ES') %></div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">
+            <i class="fas fa-shield-alt"></i>
+            Nivel de acceso
+          </div>
+          <div class="info-value">
+            <span class="profile-role <%= targetUser.role === 'admin' ? 'role-admin' : (targetUser.role === 'psychologist' ? 'role-psych' : 'role-user') %>" style="padding: 4px 12px; font-size: 0.75rem;">
+              <%= targetUser.role === 'admin' ? 'Administrador' : (targetUser.role === 'psychologist' ? 'Psicólogo' : 'Usuario') %>
+            </span>
+          </div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">
+            <i class="fas fa-user-check"></i>
+            Estado de la cuenta
+          </div>
+          <div class="info-value">
+            <span class="profile-status <%= targetUser.isBanned ? 'status-banned' : 'status-active' %>" style="padding: 4px 12px; font-size: 0.75rem;">
+              <%= targetUser.isBanned ? 'Baneado' : 'Activo' %>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Timeline de Actividad -->
+  <div class="activity-timeline-section animate-slide-in">
+    <div class="section-header">
+      <div class="section-icon">
+        <i class="fas fa-clock"></i>
+      </div>
+      <h3 class="section-title">Actividad Reciente</h3>
+      <div class="activity-auto-update-badge">
+        <i class="fas fa-sync-alt"></i>
+        Actualización automática
+      </div>
+    </div>
+    <div class="activity-timeline">
+      <div class="timeline-items">
+        <div class="loading-timeline" style="display: none;">
+          <i class="fas fa-spinner fa-spin"></i>
+          <p>Cargando actividad...</p>
+        </div>
+    
+    <!-- Actividad dinámica del usuario -->
+    <% if (recentActivity && recentActivity.length > 0) { %>
+      <% recentActivity.forEach(activity => { %>
+        <div class="timeline-item">
+          <div class="timeline-icon <%= activity.color %>">
+            <i class="<%= activity.icon %>"></i>
+          </div>
+          <div class="timeline-content">
+            <div class="timeline-title"><%= activity.title %></div>
+            <div class="timeline-description">Actividad de <%= activity.type === 'post' ? 'publicación' : 'comentario' %></div>
+            <div class="timeline-time"><%= new Date(activity.date).toLocaleString('es-ES') %></div>
+          </div>
+        </div>
+      <% }); %>
+    <% } %>
+    
+    <!-- Eventos del sistema -->
+    <div class="timeline-item">
+      <div class="timeline-icon">
+        <i class="fas fa-user-plus"></i>
+      </div>
+      <div class="timeline-content">
+        <div class="timeline-title">Cuenta creada</div>
+        <div class="timeline-description">El usuario se registró en la plataforma</div>
+        <div class="timeline-time"><%= new Date(user.createdAt).toLocaleString('es-ES') %></div>
+      </div>
+    </div>
+    
+    <% if (user.updatedAt && user.updatedAt.getTime() !== user.createdAt.getTime()) { %>
+    <div class="timeline-item">
+      <div class="timeline-icon">
+        <i class="fas fa-edit"></i>
+      </div>
+      <div class="timeline-content">
+        <div class="timeline-title">Perfil actualizado</div>
+        <div class="timeline-description">Última modificación del perfil</div>
+        <div class="timeline-time"><%= new Date(user.updatedAt).toLocaleString('es-ES') %></div>
+      </div>
+    </div>
+    <% } %>
+    
+    <% if (recentActivity.length === 0) { %>
+    <div class="timeline-item">
+      <div class="timeline-icon">
+        <i class="fas fa-info-circle"></i>
+      </div>
+      <div class="timeline-content">
+        <div class="timeline-title">Sin actividad reciente</div>
+        <div class="timeline-description">El usuario no ha realizado actividades recientemente</div>
+        <div class="timeline-time">-</div>
+      </div>
+    </div>
+    <% } %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Acciones administrativas -->
+  <div class="admin-actions animate-fade-in">
+    <div class="section-header">
+      <div class="section-icon">
+        <i class="fas fa-tools"></i>
+      </div>
+      <h3 class="section-title">Acciones Administrativas</h3>
+    </div>
+    <div class="actions-grid">
+      <div class="action-card">
+        <div class="action-icon">
+          <i class="fas fa-edit"></i>
+        </div>
+        <div class="action-title">Editar Usuario</div>
+        <div class="action-description">Modificar información personal y configuraciones</div>
+        <a href="/admin/users/<%= targetUser._id %>/edit" class="btn-profile btn-warning">
+          <i class="fas fa-edit"></i>
+          Editar
+        </a>
+      </div>
+      
+      <% if (!targetUser.isBanned) { %>
+      <div class="action-card">
+        <div class="action-icon">
+          <i class="fas fa-ban"></i>
+        </div>
+        <div class="action-title">Banear Usuario</div>
+        <div class="action-description">Suspender temporalmente la cuenta del usuario</div>
+        <button class="btn-profile btn-warning" onclick="confirmBan('<%= targetUser._id %>', '<%= targetUser.name %>')">
+          <i class="fas fa-ban"></i>
+          Banear
+        </button>
+      </div>
+      <% } else { %>
+      <div class="action-card">
+        <div class="action-icon">
+          <i class="fas fa-user-check"></i>
+        </div>
+        <div class="action-title">Desbanear Usuario</div>
+        <div class="action-description">Restaurar el acceso a la cuenta del usuario</div>
+        <button class="btn-profile btn-success" onclick="confirmUnban('<%= targetUser._id %>', '<%= targetUser.name %>')">
+          <i class="fas fa-user-check"></i>
+          Desbanear
+        </button>
+      </div>
+      <% } %>
+      
+
+      
+      <div class="action-card">
+        <div class="action-icon">
+          <i class="fas fa-eye"></i>
+        </div>
+        <div class="action-title">Ver Perfil Público</div>
+        <div class="action-description">Visualizar el perfil como lo ven otros usuarios</div>
+        <a href="/user/public/<%= targetUser._id %>?returnUrl=/admin/users/<%= targetUser._id %>" class="btn-profile btn-primary" target="_blank">
+          <i class="fas fa-external-link-alt"></i>
+          Ver Público
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- Modal de confirmación para banear -->
+<div class="modal-overlay" id="banModal">
+  <div class="modal-content" style="max-width: 500px;">
+    <div class="modal-header">
+      <h3><i class="fas fa-ban"></i> Banear Usuario</h3>
+      <button class="modal-close" onclick="closeModal('banModal')">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p>¿Estás seguro de que deseas banear al usuario <strong id="banUserName"></strong>?</p>
+      
+      <form id="banForm" method="POST" action="/admin/users/<%= targetUser._id %>/ban">
+        
+        <!-- Tipo de baneo -->
+        <div class="form-group" style="margin: 20px 0;">
+          <label style="display: block; margin-bottom: 10px; font-weight: bold;">Tipo de baneo:</label>
+          <div style="margin-bottom: 10px;">
+            <input type="radio" id="permanentBan" name="banType" value="permanent" checked onchange="toggleBanDuration()">
+            <label for="permanentBan" style="margin-left: 8px;">Permanente</label>
+          </div>
+          <div>
+            <input type="radio" id="temporaryBan" name="banType" value="temporary" onchange="toggleBanDuration()">
+            <label for="temporaryBan" style="margin-left: 8px;">Temporal</label>
+          </div>
+        </div>
+        
+        <!-- Duración del baneo temporal -->
+        <div id="banDurationSection" style="display: none; margin: 20px 0;">
+          <label for="banDuration" style="display: block; margin-bottom: 10px; font-weight: bold;">Duración:</label>
+          <select id="banDuration" name="banDuration" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+            <option value="1">1 día</option>
+            <option value="3">3 días</option>
+            <option value="7">1 semana</option>
+            <option value="14">2 semanas</option>
+            <option value="30">1 mes</option>
+            <option value="90">3 meses</option>
+          </select>
+        </div>
+        
+        <!-- Razón del baneo -->
+        <div class="form-group" style="margin: 20px 0;">
+          <label for="banReason" style="display: block; margin-bottom: 10px; font-weight: bold;">Razón del baneo:</label>
+          <textarea id="banReason" name="banReason" rows="3" 
+                    style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; resize: vertical;"
+                    placeholder="Describe la razón del baneo...">Violación de las normas de la comunidad</textarea>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-profile btn-secondary" onclick="closeModal('banModal')">
+        <i class="fas fa-times"></i>
+        Cancelar
+      </button>
+      <button type="submit" form="banForm" class="btn-profile btn-warning">
+        <i class="fas fa-ban"></i>
+        Banear Usuario
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de confirmación para desbanear -->
+<div class="modal-overlay" id="unbanModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3><i class="fas fa-user-check"></i> Confirmar Desbaneo</h3>
+      <button class="modal-close" onclick="closeModal('unbanModal')">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p>¿Estás seguro de que deseas desbanear al usuario <strong id="unbanUserName"></strong>?</p>
+      <p class="info-text">El usuario recuperará el acceso completo a su cuenta.</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-profile btn-secondary" onclick="closeModal('unbanModal')">
+        <i class="fas fa-times"></i>
+        Cancelar
+      </button>
+      <form id="unbanForm" method="POST" action="/admin/users/<%= targetUser._id %>/unban" style="display: inline;">
+        <input type="hidden" name="_method" value="PUT">
+        <button type="submit" class="btn-profile btn-success">
+          <i class="fas fa-user-check"></i>
+          Desbanear Usuario
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<style>
+/* Estilos para indicadores de actualización */
+.stats-update-indicator,
+.activity-update-indicator {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: linear-gradient(135deg, #007bff, #0056b3);
+  color: white;
+  padding: 12px 20px;
+  border-radius: 25px;
+  box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+  z-index: 1000;
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  animation: slideInRight 0.3s ease-out;
+}
+
+.activity-update-indicator {
+  background: linear-gradient(135deg, #28a745, #1e7e34);
+  box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+  top: 80px;
+}
+
+/* Estilos para timeline de actividad */
+.activity-timeline-section {
+  background: white;
+  border-radius: 15px;
+  padding: 25px;
+  margin: 25px 0;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e9ecef;
+}
+
+.activity-timeline-section .section-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.activity-auto-update-badge {
+  position: absolute;
+  right: 0;
+  background: linear-gradient(135deg, #28a745, #20c997);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  animation: pulse 2s infinite;
+}
+
+.activity-timeline {
+  position: relative;
+  padding-left: 30px;
+}
+
+.activity-timeline::before {
+  content: '';
+  position: absolute;
+  left: 15px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(to bottom, #007bff, #28a745, #ffc107);
+}
+
+.timeline-item {
+  position: relative;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+}
+
+.timeline-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  position: relative;
+  z-index: 2;
+  margin-left: -23px;
+  border: 3px solid white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.timeline-content {
+  background: #f8f9fa;
+  padding: 12px 16px;
+  border-radius: 10px;
+  border-left: 4px solid #007bff;
+  flex: 1;
+  transition: all 0.3s ease;
+}
+
+.timeline-content:hover {
+  background: #e9ecef;
+  transform: translateX(5px);
+}
+
+.timeline-title {
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 4px;
+  font-size: 14px;
+}
+
+.timeline-date {
+  color: #6c757d;
+  font-size: 12px;
+  font-style: italic;
+}
+
+.loading-timeline,
+.no-activity-message {
+  text-align: center;
+  padding: 40px 20px;
+  color: #6c757d;
+}
+
+.loading-timeline i,
+.no-activity-message i {
+  font-size: 24px;
+  margin-bottom: 10px;
+  display: block;
+}
+
+/* Estilos para iconos de actividad */
+.timeline-icon.success {
+  background-color: #28a745;
+  color: white;
+}
+
+.timeline-icon.info {
+  background-color: #17a2b8;
+  color: white;
+}
+
+.timeline-icon.warning {
+  background-color: #ffc107;
+  color: #212529;
+}
+
+.timeline-icon.danger {
+  background-color: #dc3545;
+  color: white;
+}
+
+/* Animación para estadísticas en tiempo real */
+.stat-number {
+  transition: all 0.3s ease;
+}
+
+.stat-number.updated {
+  transform: scale(1.1);
+  color: #28a745;
+}
+
+/* Indicador de actividad reciente */
+.timeline-item:first-child .timeline-icon {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(40, 167, 69, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(40, 167, 69, 0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes animate-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: animate-fade-in 0.6s ease-out forwards;
+}
+
+/* Estilos para alertas personalizadas */
+.custom-alert {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
+  min-width: 300px;
+  max-width: 500px;
+  opacity: 0;
+  transform: translateX(100%);
+  transition: all 0.3s ease-out;
+}
+
+.custom-alert.show {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.custom-alert-content {
+  display: flex;
+  align-items: center;
+  padding: 16px 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  font-weight: 500;
+  gap: 12px;
+}
+
+.custom-alert-success .custom-alert-content {
+  background: linear-gradient(135deg, #28a745, #20c997);
+  color: white;
+  border-left: 4px solid #1e7e34;
+}
+
+.custom-alert-error .custom-alert-content {
+  background: linear-gradient(135deg, #dc3545, #c82333);
+  color: white;
+  border-left: 4px solid #bd2130;
+}
+
+.custom-alert-info .custom-alert-content {
+  background: linear-gradient(135deg, #007bff, #0056b3);
+  color: white;
+  border-left: 4px solid #004085;
+}
+
+.custom-alert-content i {
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.custom-alert-content span {
+  flex: 1;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.custom-alert-close {
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+  flex-shrink: 0;
+}
+
+.custom-alert-close:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.custom-alert-close i {
+  font-size: 14px;
+}
+</style>
+
+<script>
+// Funciones para los modales de confirmación
+
+
+function confirmBan(userId, userName) {
+  document.getElementById('banUserName').textContent = userName;
+  document.getElementById('banForm').action = `/admin/users/${userId}/ban`;
+  const modal = document.getElementById('banModal');
+  modal.style.display = 'flex';
+  setTimeout(() => {
+    modal.classList.add('active');
+  }, 10);
+  document.body.style.overflow = 'hidden';
+}
+
+function toggleBanDuration() {
+  const temporaryRadio = document.getElementById('temporaryBan');
+  const durationSection = document.getElementById('banDurationSection');
+  
+  if (temporaryRadio.checked) {
+    durationSection.style.display = 'block';
+  } else {
+    durationSection.style.display = 'none';
+  }
+}
+
+function confirmUnban(userId, userName) {
+  document.getElementById('unbanUserName').textContent = userName;
+  document.getElementById('unbanForm').action = `/admin/users/${userId}/unban`;
+  const modal = document.getElementById('unbanModal');
+  modal.style.display = 'flex';
+  setTimeout(() => {
+    modal.classList.add('active');
+  }, 10);
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal(modalId) {
+  const modal = document.getElementById(modalId);
+  modal.classList.remove('active');
+  setTimeout(() => {
+    modal.style.display = 'none';
+  }, 300);
+  document.body.style.overflow = 'auto';
+}
+
+// Cerrar modal al hacer clic fuera de él
+document.addEventListener('click', function(event) {
+  if (event.target.classList.contains('modal-overlay')) {
+    const modal = event.target;
+    modal.classList.remove('active');
+    setTimeout(() => {
+      modal.style.display = 'none';
+    }, 300);
+    document.body.style.overflow = 'auto';
+  }
+});
+
+// Cerrar modal con tecla Escape
+document.addEventListener('keydown', function(event) {
+  if (event.key === 'Escape') {
+    const modals = document.querySelectorAll('.modal-overlay');
+    modals.forEach(modal => {
+      if (modal.style.display === 'flex') {
+        modal.classList.remove('active');
+        setTimeout(() => {
+          modal.style.display = 'none';
+        }, 300);
+        document.body.style.overflow = 'auto';
+      }
+    });
+  }
+});
+
+// Función para mostrar alertas personalizadas
+function showCustomAlert(message, type = 'info') {
+  // Remover alerta existente si la hay
+  const existingAlert = document.querySelector('.custom-alert');
+  if (existingAlert) {
+    existingAlert.remove();
+  }
+
+  // Crear el elemento de alerta
+  const alertDiv = document.createElement('div');
+  alertDiv.className = `custom-alert custom-alert-${type}`;
+  alertDiv.innerHTML = `
+    <div class="custom-alert-content">
+      <i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i>
+      <span>${message}</span>
+      <button class="custom-alert-close" onclick="this.parentElement.parentElement.remove()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+  `;
+
+  // Agregar al body
+  document.body.appendChild(alertDiv);
+
+  // Mostrar con animación
+  setTimeout(() => alertDiv.classList.add('show'), 10);
+
+  // Auto-remover después de 4 segundos
+  setTimeout(() => {
+    if (alertDiv.parentElement) {
+      alertDiv.classList.remove('show');
+      setTimeout(() => alertDiv.remove(), 300);
+    }
+  }, 4000);
+}
+
+// Manejador para el formulario de baneo
+document.getElementById('banForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  
+  const formData = new FormData(this);
+  const submitBtn = document.querySelector('button[form="banForm"]');
+  const originalText = submitBtn.innerHTML;
+  
+  try {
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Baneando...';
+    
+    const response = await fetch(this.action, {
+      method: 'POST',
+      body: formData
+    });
+    
+    const result = await response.json();
+    
+    if (result.success) {
+      closeModal('banModal');
+      setTimeout(() => location.reload(), 1500); // Recargar después de cerrar modal
+    } else {
+      showCustomAlert('Error: ' + result.message, 'error');
+    }
+  } catch (error) {
+    showCustomAlert('Error al banear usuario: ' + error.message, 'error');
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.innerHTML = originalText;
+  }
+});
+
+// Manejador para el formulario de desbaneo
+document.getElementById('unbanForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  
+  const formData = new FormData(this);
+  const submitBtn = document.querySelector('#unbanForm button[type="submit"]');
+  const originalText = submitBtn.innerHTML;
+  
+  try {
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Desbaneando...';
+    
+    const response = await fetch(this.action, {
+      method: 'POST',
+      body: formData
+    });
+    
+    const result = await response.json();
+    
+    if (result.success) {
+      showCustomAlert('Usuario desbaneado exitosamente', 'success');
+      closeModal('unbanModal');
+      setTimeout(() => location.reload(), 1500); // Recargar después de mostrar la alerta
+    } else {
+      showCustomAlert('Error: ' + result.message, 'error');
+    }
+  } catch (error) {
+    showCustomAlert('Error al desbanear usuario: ' + error.message, 'error');
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.innerHTML = originalText;
+  }
+});
+
+// Animaciones de entrada
+document.addEventListener('DOMContentLoaded', function() {
+  // Aplicar animaciones escalonadas
+  const animatedElements = document.querySelectorAll('.animate-fade-in, .animate-slide-in');
+  animatedElements.forEach((element, index) => {
+    element.style.animationDelay = `${index * 0.1}s`;
+  });
+  
+  // Efecto de conteo para estadísticas
+  const statNumbers = document.querySelectorAll('.stat-number');
+  statNumbers.forEach(stat => {
+    const finalValue = parseInt(stat.textContent);
+    let currentValue = 0;
+    const increment = finalValue / 20;
+    const timer = setInterval(() => {
+      currentValue += increment;
+      if (currentValue >= finalValue) {
+        stat.textContent = finalValue;
+        clearInterval(timer);
+      } else {
+        stat.textContent = Math.floor(currentValue);
+      }
+    }, 50);
+  });
+  
+  // Inicializar sistema de estadísticas y actividad en tiempo real
+  const userId = '<%= targetUser._id %>';
+  if (typeof UserStatsManager !== 'undefined') {
+    window.userStatsManager = new UserStatsManager(userId);
+    console.log('🚀 Sistema de estadísticas y actividad iniciado para usuario:', userId);
+  } else {
+    console.warn('⚠️ UserStatsManager no está disponible');
+  }
+});
+</script>
+
+  <!-- Sistema de estadísticas en tiempo real -->
+  <script src="/js/admin-user-stats.js"></script>
+  
+  <!-- Tu JS primero, para que el callback global exista antes de cargar el script de Google -->
+  <script src="/js/tradux.js"></script>
+  <!-- Script oficial de Google (callback definido en translate.js) -->
+  <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+<%- include('../partials/footer') %>

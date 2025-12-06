@@ -1,0 +1,115 @@
+<link rel="stylesheet" href="/css/site-header.css">
+<header class="site-header">
+  <div class="container">
+    <a class="brand" href="/"><span>Braincare</span></a>
+    <button class="menu-toggle" aria-expanded="false" aria-controls="siteNav"><i class="fas fa-bars"></i></button>
+    <nav id="siteNav" class="nav">
+      <ul class="nav-left">
+        <% if (locals.user && locals.user.isBannedUser && locals.user.isPermanentlyBanned) { %>
+          <li><a class="nav-link" href="/">Inicio</a></li>
+        <% } else if (locals.user && locals.user.isBannedUser) { %>
+          <li><a class="nav-link" href="/">Inicio</a></li>
+        <% } else { %>
+          <li><a class="nav-link" href="/" data-section="home">Inicio</a></li>
+          <li class="dropdown">
+            <a href="#" class="nav-link dropdown-toggle" data-section="articles">Información</a>
+            <div class="dropdown-menu">
+              <a class="dropdown-item" href="/foro"><i class="fas fa-comments"></i> Foro</a>
+              <a class="dropdown-item" href="/articles"><i class="fas fa-book-open"></i> Artículos</a>
+              <a class="dropdown-item" href="/guides"><i class="fas fa-book"></i> Guías</a>
+              <a class="dropdown-item" href="/psychologists"><i class="fas fa-user-doctor"></i> Psicólogos</a>
+            </div>
+          </li>
+          
+          <li><a class="nav-link" href="/ruta4" data-section="coki">CoKi IA</a></li>
+          
+        <% } %>
+        <% if (locals.user && !locals.user.isBannedUser) { %>
+          <% if (locals.user.role === 'admin') { %>
+            <li class="dropdown">
+              <a class="nav-link dropdown-toggle" href="#">Administración</a>
+              <div class="dropdown-menu">
+                <a class="dropdown-item" href="/admin/dashboard">Gestión de Usuarios</a>
+                <a class="dropdown-item" href="/articles/admin/dashboard">Gestión de Artículos</a>
+                <a class="dropdown-item" href="/guides/admin/dashboard">Gestión de Guías</a>
+                <a class="dropdown-item" href="/foro/admin/dashboard">Gestión del Foro</a>
+                <a class="dropdown-item" href="/admin/reports">Gestión de Reportes</a>
+                <a class="dropdown-item" href="/admin/requests">Solicitudes</a>
+              </div>
+            </li>
+          <% } else if (locals.user.role === 'psychologist') { %>
+            <li class="dropdown">
+              <a class="nav-link dropdown-toggle" href="#">Administración</a>
+              <div class="dropdown-menu">
+                <a class="dropdown-item" href="/articles/admin/dashboard">Artículos</a>
+                <a class="dropdown-item" href="/guides/admin/dashboard">Guías</a>
+                
+                
+              </div>
+            </li>
+          <% } %>
+        <% } %>
+      </ul>
+      <ul class="nav-right">
+        <% if (locals.user) { %>
+          <% if (!locals.user.isBannedUser) { %>
+            <li><a class="nav-link open-notifications" href="#"><i class="fas fa-envelope"></i><span class="badge-dot" id="userNotificationBadge" style="display:none">0</span></a></li>
+          <% } %>
+          <li>
+            <a class="nav-link" href="/user/profile">
+              <% let profileImageUrl = '/img/default-avatar.svg'; if (locals.user) { if (typeof locals.user.getProfileImageUrl === 'function') { profileImageUrl = locals.user.getProfileImageUrl(); } else if (locals.user.profileImage) { profileImageUrl = locals.user.profileImage; } } %>
+              <img src="<%= profileImageUrl %>" class="profile-image" alt="Perfil"> <span class="user-name-display" data-sync-field="name" data-user-id="<%= locals.user._id %>"><%= locals.user.name %></span>
+            </a>
+          </li>
+          <li><a class="nav-link" href="/auth/logout"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a></li>
+        <% } else { %>
+          <li><a class="nav-link" href="/auth/login">Iniciar Sesión</a></li>
+          <li><a class="nav-link" href="/auth/register">Registrarse</a></li>
+        <% } %>
+      </ul>
+    </nav>
+  </div>
+</header>
+<div id="mobilePanel" class="mobile-panel">
+  <div class="mobile-header">
+    <a class="brand" href="/"><span>Braincare</span></a>
+    <button class="menu-toggle"><i class="fas fa-times"></i></button>
+  </div>
+  <div class="mobile-links">
+    <div class="menu-title">Navegación</div>
+    <a class="mobile-link" href="/">Inicio</a>
+    <a class="mobile-link" href="/foro">Foro</a>
+    <a class="mobile-link" href="/articles">Artículos</a>
+    <a class="mobile-link" href="/guides">Guías</a>
+    <a class="mobile-link" href="/psychologists">Psicólogos</a>
+    
+    <a class="mobile-link" href="/ruta4">CoKi IA</a>
+    <% if (locals.user && !locals.user.isBannedUser) { %>
+      <% if (locals.user.role === 'admin') { %>
+        <div class="menu-title">Administración</div>
+        <a class="mobile-link" href="/admin/dashboard">Gestión de Usuarios</a>
+        <a class="mobile-link" href="/articles/admin/dashboard">Gestión de Artículos</a>
+        <a class="mobile-link" href="/guides/admin/dashboard">Gestión de Guías</a>
+        <a class="mobile-link" href="/foro/admin/dashboard">Gestión del Foro</a>
+        <a class="mobile-link" href="/admin/reports">Gestión de Reportes</a>
+        <a class="mobile-link" href="/admin/requests">Solicitudes</a>
+      <% } else if (locals.user.role === 'psychologist') { %>
+        <div class="menu-title">Administración</div>
+        <a class="mobile-link" href="/articles/admin/dashboard">Artículos</a>
+        <a class="mobile-link" href="/guides/admin/dashboard">Guías</a>
+        
+        
+      <% } %>
+    <% } %>
+    <% if (locals.user) { %>
+      <div class="menu-title">Cuenta</div>
+      <a class="mobile-link" href="/user/profile">Mi Perfil</a>
+      <a class="mobile-link" href="/auth/logout">Cerrar Sesión</a>
+    <% } else { %>
+      <div class="menu-title">Cuenta</div>
+      <a class="mobile-link" href="/auth/login">Iniciar Sesión</a>
+      <a class="mobile-link" href="/auth/register">Registrarse</a>
+    <% } %>
+  </div>
+</div>
+<script src="/js/site-header.js"></script>

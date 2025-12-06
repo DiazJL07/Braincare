@@ -1,0 +1,215 @@
+ 
+ 
+
+<link rel="stylesheet" href="/css/dashboard-general.css">
+
+<style>
+  body { padding-top: 0; }
+
+  /* Grid específico para vista detalle (Izquierda Info / Derecha Acciones) */
+  .detail-layout {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 2rem;
+  }
+
+  /* Estilo para la imagen de evidencia */
+  .evidence-img {
+    width: 100%;
+    max-width: 100%;
+    border-radius: var(--gen-radius-sm);
+    border: 1px solid var(--gen-border-color);
+    margin-top: 0.5rem;
+    cursor: zoom-in;
+    transition: transform 0.2s;
+  }
+  .evidence-img:hover {
+    box-shadow: var(--gen-shadow-md);
+  }
+
+  /* Panel de decisión sticky */
+  .action-panel {
+    position: sticky;
+    top: 2rem;
+  }
+
+  @media (max-width: 900px) {
+    .detail-layout { grid-template-columns: 1fr; }
+    .action-panel { position: static; }
+  }
+</style>
+
+<div class="gen-dash-wrapper animate-fade-in">
+
+  <!-- Header -->
+  <div class="gen-header-row">
+    <div>
+      <h1 class="gen-page-title">Detalle de Solicitud</h1>
+      <p class="gen-page-subtitle">Verifica la información y procesa la solicitud</p>
+    </div>
+    <div class="gen-header-actions">
+      <!-- Botón volver opcional para mejorar navegación -->
+      <a href="/admin/requests" class="gen-btn gen-btn-outline">
+        <i class="fas fa-arrow-left"></i> Volver
+      </a>
+    </div>
+  </div>
+
+  <div class="detail-layout">
+    
+    <!-- Columna Principal: Información -->
+    <div class="gen-panel">
+      
+      <!-- Header del Usuario -->
+      <div style="display:flex; align-items:center; gap:1rem; padding-bottom:1.5rem; border-bottom:1px solid var(--gen-border-color); margin-bottom:1.5rem;">
+        <div class="gen-avatar-circle" style="width:64px; height:64px; font-size:1.5rem;">
+          <% const avatar = (request.user && request.user.profileImage) ? request.user.profileImage : '/img/default-avatar.svg'; %>
+          <img src="<%= avatar %>" alt="Avatar" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">
+        </div>
+        <div>
+          <h2 style="font-size:1.25rem; font-weight:700; margin:0; color:var(--gen-text-primary);">
+            <%= request.user ? request.user.name : request.fullName %>
+          </h2>
+          <div style="color:var(--gen-text-secondary); margin-top:0.25rem;">
+            <%= request.email %>
+          </div>
+        </div>
+      </div>
+
+      <!-- Datos de la solicitud -->
+      <div class="gen-form-group">
+        <label class="gen-label">Estado Actual</label>
+        <div>
+          <% 
+             let badgeClass = 'gen-badge-neutral';
+             let statusLabel = 'Desconocido';
+             
+             if (request.status === 'pending') { badgeClass = 'gen-badge'; statusLabel = 'Pendiente'; }
+             if (request.status === 'approved') { badgeClass = 'gen-badge-info'; statusLabel = 'Aprobada'; }
+             if (request.status === 'rejected') { badgeClass = 'gen-badge-neutral'; statusLabel = 'Denegada'; }
+             
+             // Estilos inline específicos para colores de estado si gen-badge-* no cubre todos
+             let style = "";
+             if(request.status === 'pending') style="background:#fff7ed; color:#c2410c; border:1px solid #ffedd5;";
+             if(request.status === 'approved') style="background:#ecfdf5; color:#047857; border:1px solid #a7f3d0;";
+             if(request.status === 'rejected') style="background:#fef2f2; color:#b91c1c; border:1px solid #fecaca;";
+          %>
+          <span class="<%= badgeClass %>" style="<%= style %> padding: 0.4rem 0.8rem; border-radius: 50px; font-size: 0.85rem; font-weight: 600;">
+            <%= statusLabel %>
+          </span>
+        </div>
+      </div>
+
+      <div class="gen-form-group">
+        <label class="gen-label">Servicios / Descripción</label>
+        <div style="background:#f8fafc; padding:1rem; border-radius:8px; border:1px solid var(--gen-border-color); color:var(--gen-text-body);">
+          <%= request.servicesDescription %>
+        </div>
+      </div>
+
+      <% if (request.proofImage) { %>
+        <div class="gen-form-group">
+          <label class="gen-label">Evidencia Adjunta</label>
+          <img src="<%= request.proofImage %>" alt="Evidencia" class="evidence-img" onclick="window.open(this.src)">
+          <small style="color:var(--gen-text-secondary);">Haz clic en la imagen para ver en tamaño completo.</small>
+        </div>
+      <% } %>
+
+    </div>
+
+    <!-- Columna Lateral: Acciones -->
+    <div class="action-panel">
+      <div class="gen-panel">
+        <h3 style="font-size:1.1rem; font-weight:700; margin-bottom:1.5rem; color:var(--gen-text-primary);">
+          Procesar Solicitud
+        </h3>
+
+        <% if (request.status === 'pending') { %>
+          <form action="/admin/requests/<%= request._id %>/process" method="POST">
+            
+            <div class="gen-form-group">
+              <label for="processAction" class="gen-label">Decisión</label>
+              <select name="action" id="processAction" class="gen-select">
+                <option value="approve">Aprobar Solicitud</option>
+                <option value="reject">Denegar Solicitud</option>
+              </select>
+            </div>
+
+            <!-- Campos Condicionales de Rechazo -->
+            <div id="rejectFields" style="display:none; animation: genFadeIn 0.3s;">
+              <div class="gen-form-group" style="background:#fff1f2; padding:1rem; border-radius:8px; border:1px solid #fecaca;">
+                <label class="gen-label" style="color:#991b1b;">Motivo del rechazo</label>
+                <textarea name="rejectionReason" class="gen-input gen-textarea" rows="3" style="min-height:80px;"></textarea>
+                
+                <div style="margin-top:0.8rem; display:flex; align-items:center; gap:0.5rem;">
+                  <input type="checkbox" id="reapplyAllowed" name="reapplyAllowed" value="true" checked style="width:16px; height:16px; accent-color:var(--gen-accent);">
+                  <label for="reapplyAllowed" style="font-size:0.9rem; cursor:pointer;">Permitir nueva solicitud</label>
+                </div>
+              </div>
+            </div>
+
+            <div style="margin-top:1.5rem;">
+              <button type="submit" class="gen-btn gen-btn-primary" id="processBtn" style="width:100%; justify-content:center;">
+                <i class="fas fa-check-double"></i> Procesar
+              </button>
+            </div>
+
+          </form>
+        <% } else { %>
+          <!-- Mensaje Informativo si ya no está pendiente -->
+          <div style="text-align:center; padding:1rem 0;">
+            <% if (request.status === 'approved') { %>
+              <div style="width:60px; height:60px; background:#ecfdf5; color:#047857; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 1rem; font-size:1.5rem;">
+                <i class="fas fa-check"></i>
+              </div>
+              <h4 style="margin:0; color:#047857;">Solicitud Aprobada</h4>
+              <p style="font-size:0.9rem; color:var(--gen-text-secondary); margin-top:0.5rem;">Esta solicitud ya ha sido procesada exitosamente.</p>
+            <% } else { %>
+              <div style="width:60px; height:60px; background:#fef2f2; color:#b91c1c; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 1rem; font-size:1.5rem;">
+                <i class="fas fa-times"></i>
+              </div>
+              <h4 style="margin:0; color:#b91c1c;">Solicitud Denegada</h4>
+              <p style="font-size:0.9rem; color:var(--gen-text-secondary); margin-top:0.5rem;">Esta solicitud fue rechazada anteriormente.</p>
+            <% } %>
+          </div>
+        <% } %>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  // Lógica simple para mostrar/ocultar campos de rechazo y cambiar color del botón
+  document.addEventListener('DOMContentLoaded', function(){
+    var select = document.getElementById('processAction');
+    var rejectFields = document.getElementById('rejectFields');
+    var btn = document.getElementById('processBtn');
+
+    if (select && rejectFields && btn) {
+      var toggle = function(){
+        if (select.value === 'reject') {
+          rejectFields.style.display = 'block';
+          // Cambiar estilo del botón a Rojo (Danger)
+          btn.className = 'gen-btn gen-btn-danger';
+          btn.innerHTML = '<i class="fas fa-times-circle"></i> Denegar';
+          btn.style.width = '100%';
+          btn.style.justifyContent = 'center';
+        } else {
+          rejectFields.style.display = 'none';
+          // Cambiar estilo del botón a Azul (Primary)
+          btn.className = 'gen-btn gen-btn-primary';
+          btn.innerHTML = '<i class="fas fa-check-double"></i> Aprobar';
+          btn.style.width = '100%';
+          btn.style.justifyContent = 'center';
+        }
+      };
+      
+      select.addEventListener('change', toggle);
+      toggle(); // Ejecutar al inicio por si acaso
+    }
+  });
+</script>
+
+<%- include('../partials/footer') %>

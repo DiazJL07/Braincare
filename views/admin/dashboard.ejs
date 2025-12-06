@@ -1,0 +1,244 @@
+ 
+
+<link rel="stylesheet" href="/css/dashboard-general.css">
+
+
+
+
+<div class="gen-dash-wrapper animate-fade-in">
+  
+  <div class="gen-header-row">
+    <div>
+      <h1 class="gen-page-title">Panel de Administrador</h1>
+      <p class="gen-page-subtitle">Gestiona usuarios, contenido y configuraciones del sistema</p>
+    </div>
+    <div class="gen-header-actions">
+      <a href="/admin/users/new" class="gen-btn gen-btn-primary">
+        <i class="fas fa-plus"></i> Crear Usuario
+      </a>
+    </div>
+  </div>
+
+  <div class="gen-panel" style="padding:0;">
+    <div class="gen-table-header">
+      <h2 class="gen-filter-title">
+        <i class="fas fa-users" style="color: var(--gen-accent);"></i>
+        Gestión de Usuarios
+      </h2>
+      </div>
+    
+    <div class="gen-table-responsive">
+      <table class="gen-table">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Email</th>
+            <th>Rol</th>
+            <th>Fecha de registro</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="usersTableBody">
+          <% if (users && users.length > 0) { %>
+            <% users.forEach(user => { %>
+              <tr class="users-table-row">
+                <td>
+                  <div class="gen-user-cell">
+                    <div class="gen-avatar-circle">
+                      <%= user.name ? user.name.charAt(0).toUpperCase() : 'U' %>
+                    </div>
+                    <span style="font-weight: 500;"><%= user.name %></span>
+                  </div>
+                </td>
+                
+                <td><%= user.email %></td>
+                
+                <td>
+                  <% 
+                    let badgeClass = 'gen-badge-neutral';
+                    if (user.role === 'admin') badgeClass = 'gen-badge-info'; 
+                    // Puedes definir un estilo específico para psicólogo si quieres, por ahora uso neutral o info
+                    if (user.role === 'psychologist') badgeClass = 'gen-badge-info'; 
+                  %>
+                  <span class="gen-badge <%= badgeClass %>">
+                    <%= user.role === 'admin' ? 'Administrador' : (user.role === 'psychologist' ? 'Psicólogo' : 'Usuario') %>
+                  </span>
+                </td>
+                
+                <td><%= new Date(user.createdAt).toLocaleDateString() %></td>
+                
+                <td>
+                  <div class="gen-action-group">
+                    <a href="/admin/users/<%= user._id %>" class="gen-action-btn-sm" title="Ver">
+                      <i class="fas fa-eye"></i>
+                    </a>
+                    <a href="/admin/users/<%= user._id %>/edit" class="gen-action-btn-sm" title="Editar">
+                      <i class="fas fa-edit"></i>
+                    </a>
+                    <button type="button" class="gen-action-btn-sm delete" title="Eliminar"
+                            onclick="confirmDelete('<%= user._id %>', '<%= user.name %>')">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            <% }) %>
+          <% } else { %>
+            <tr>
+              <td colspan="5" style="text-align: center; padding: 3rem; color: var(--gen-text-secondary);">
+                No hay usuarios registrados
+              </td>
+            </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  
+  <div id="usersPagination" class="gen-pagination"></div>
+
+</div>
+
+<div class="gen-modal-overlay" id="deleteModal">
+  <div class="gen-modal-card" style="max-width: 450px;">
+    <div class="gen-modal-header" style="background: var(--gen-danger); color: white;">
+      <h3 class="gen-modal-title" style="color: white;">Confirmar eliminación</h3>
+      <button type="button" class="gen-btn gen-btn-ghost boton-cerrar" style="color: white;">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    
+    <div class="gen-modal-body" style="text-align: center; padding: 2rem;">
+      <p style="font-size: 1.1rem; color: var(--gen-text-body);">
+        ¿Estás seguro de que deseas eliminar al usuario 
+        <strong id="userName" style="color: var(--gen-danger);"></strong>?
+      </p>
+      <p style="font-size: 0.9rem; color: var(--gen-text-secondary); background: #fef2f2; padding: 0.8rem; border-radius: 6px;">
+        <i class="fas fa-info-circle"></i> Esta acción no se puede deshacer.
+      </p>
+    </div>
+    
+    <div class="gen-modal-footer" style="justify-content: center;">
+      <button type="button" class="gen-btn gen-btn-outline boton-cancelar">Cancelar</button>
+      
+      <form id="deleteForm" method="POST" style="display: inline;">
+        <button type="submit" class="gen-btn gen-btn-danger">
+          <i class="fas fa-trash"></i> Eliminar
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  // 1. Reloj (Mantenido intacto)
+  function updateTime() {
+    const now = new Date();
+    // ... tu lógica original ...
+    // Nota: Como he quitado los spans #current-time del HTML para limpiar el diseño,
+    // este script correrá sin errores (los if protegen), pero no mostrará nada
+    // a menos que reinsertes los spans en el header si los deseas.
+    const timeElement = document.getElementById('current-time');
+    if (timeElement) timeElement.textContent = now.toLocaleTimeString('es-ES');
+  }
+  setInterval(updateTime, 1000);
+
+  // 2. Modales y Eliminación (Adaptado a clases .show y gen-modal)
+  function confirmDelete(userId, name) {
+    document.getElementById('userName').textContent = name;
+    document.getElementById('deleteForm').action = `/admin/users/${userId}/delete`;
+    
+    const deleteModal = document.getElementById('deleteModal');
+    // Usamos la clase .show del CSS nuevo
+    deleteModal.classList.add('show');
+    // document.body.classList.add('modal-open'); // Opcional, si tu CSS global lo usa
+  }
+  
+  function closeModal() {
+    const modal = document.getElementById('deleteModal');
+    modal.classList.remove('show');
+    // document.body.classList.remove('modal-open');
+  }
+
+  // Event Listeners para cerrar modal
+  document.addEventListener('DOMContentLoaded', function() {
+    const modal = document.getElementById('deleteModal');
+    // Buscamos por las clases que añadimos a los botones del modal nuevo
+    const closeBtn = modal.querySelector('.boton-cerrar');
+    const cancelBtn = modal.querySelector('.boton-cancelar');
+    
+    if (closeBtn) closeBtn.addEventListener('click', closeModal);
+    if (cancelBtn) cancelBtn.addEventListener('click', closeModal);
+    
+    // Cerrar al hacer clic fuera
+    if (modal) {
+      modal.addEventListener('click', function(event) {
+        if (event.target.classList.contains('gen-modal-overlay')) {
+          closeModal();
+        }
+      });
+    }
+  });
+
+  // 3. Paginación (Adaptada a clases .users-table-row y .gen-page-btn)
+  (function(){
+    let usersCurrentPage = 1; 
+    const usersPageSize = 15;
+    
+    // Selector actualizado: .users-table-row dentro de tbody
+    function getRows(){ 
+      return Array.from(document.querySelectorAll('.users-table-row')).filter(r => r.style.display !== 'none'); 
+    }
+    
+    function applyPage(){ 
+      // Obtenemos todas las filas
+      const all = Array.from(document.querySelectorAll('.users-table-row'));
+      
+      // Si hubiera filtro de búsqueda (que oculte filas), getRows() lo respetaría.
+      // Como este dashboard no tiene filtro JS activo en el código que me pasaste,
+      // asumimos que todas son visibles para paginar.
+      
+      const start = (usersCurrentPage-1) * usersPageSize;
+      const end = start + usersPageSize;
+      
+      all.forEach((r, i) => {
+         r.style.display = (i >= start && i < end) ? '' : 'none';
+      }); 
+    }
+    
+    function renderPag(){ 
+      const c = document.getElementById('usersPagination'); 
+      if(!c) return; 
+      
+      const total = document.querySelectorAll('.users-table-row').length; 
+      const pages = Math.max(1, Math.ceil(total/usersPageSize)); 
+      
+      if(usersCurrentPage > pages) usersCurrentPage = pages; 
+      c.innerHTML = ''; 
+      
+      for(let i=1; i<=pages; i++){ 
+        const b = document.createElement('button'); 
+        // Usamos la clase nueva .gen-page-btn
+        b.className = 'gen-page-btn' + (i === usersCurrentPage ? ' active' : ''); 
+        b.textContent = i; 
+        b.onclick = function(){ 
+          usersCurrentPage = i; 
+          applyPage(); 
+          renderPag(); 
+        }; 
+        c.appendChild(b);
+      } 
+    }
+    
+    document.addEventListener('DOMContentLoaded', function(){ 
+      renderPag(); 
+      applyPage(); 
+    });
+  })();
+</script>
+
+<%- include('../partials/footer') %>
+
+<script src="/js/admin-dashboard-animations.js"></script>
+<script src="/js/tradux.js"></script>
+<script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>

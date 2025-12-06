@@ -1,0 +1,154 @@
+
+<link rel="stylesheet" href="/css/chat.css">
+
+<style>
+  body{
+    padding-top: 4% !important;
+  }
+</style>
+<section class="chat-app-container">
+ 
+
+  <div class="chat-layout">
+    <!-- Contenedor del Sidebar (Lista de Chats) -->
+    <div class="chat-sidebar-wrapper">
+      <div class="chat-sidebar-header">Mis chats</div>
+      
+      <ul class="chat-list">
+        <% if (chats && chats.length) { %>
+          <% chats.forEach(c => { %>
+            <% const isActive = selectedChat && selectedChat._id.toString() === c._id.toString(); %>
+            <li class="chat-item <%= isActive ? 'chat-item-active' : '' %>">
+              <a href="/psych/chats?chat=<%= c._id %>" class="chat-item-link">
+                <div class="chat-item-avatar">
+                  <i class="fas fa-user-circle"></i>
+                </div>
+                <div class="chat-item-content">
+                  <div class="chat-item-name-row">
+                    <span class="chat-item-name"><%= c.user && c.user.name ? c.user.name : 'Usuario' %></span>
+                  </div>
+                  <small class="chat-item-last-msg">
+                    <%= c.lastMsgText || '' %>
+                  </small>
+                  <small class="chat-item-date">
+                    <%= new Date(c.lastMessageAt || c.createdAt).toLocaleString('es-ES') %>
+                  </small>
+                </div>
+              </a>
+              <div class="chat-badges-group">
+                <% if (c.unreadForPsych) { %>
+                  <span class="chat-badge chat-badge-new">Nuevo</span>
+                <% } %>
+                <% if (isActive) { %>
+                  <span class="chat-badge chat-badge-active">Activo</span>
+                <% } %>
+              </div>
+            </li>
+          <% }) %>
+        <% } else { %>
+          <li class="chat-item chat-item-empty">Sin chats</li>
+        <% } %>
+      </ul>
+    </div>
+
+    <!-- Contenedor del Main Chat -->
+    <div class="chat-main-wrapper">
+      <% if (selectedChat) { %>
+        <!-- Header de la Conversación -->
+        <div class="chat-header">
+          <div>
+            <strong class="chat-header-name"><%= selectedChat.user && selectedChat.user.name ? selectedChat.user.name : 'Usuario' %></strong>
+          </div>
+          <div>
+            <a href="/psych/chats" class="ps-btn-outline chat-header-close-btn">Cerrar</a>
+          </div>
+        </div>
+        
+        <!-- Contenedor de Mensajes -->
+        <div class="chat-messages-container" data-chat-thread>
+    <% if (messages && messages.length) { %>
+        <% messages.forEach(m => { %>
+            <% const isOwn = m.sender && m.sender._id && m.sender._id.toString() === (locals.user ? locals.user._id.toString() : ''); %>
+            <div class="chat-message-row <%= isOwn ? 'chat-message-row-own' : 'chat-message-row-other' %>">
+                <div class="chat-bubble <%= isOwn ? 'chat-bubble-own' : 'chat-bubble-other' %>">
+                    <div class="chat-bubble-text"><%= m.text %></div>
+                    <div class="chat-bubble-date">
+                        <%= new Date(m.createdAt).toLocaleString('es-ES', { hour: '2-digit', minute: '2-digit' }) %>
+                    </div>
+                </div>
+            </div>
+        <% }) %>
+    <% } else { %>
+        <div class="ps-empty chat-empty-state">Inicia la conversación</div>
+    <% } %>
+</div>
+        <!-- Área de Input -->
+        <div class="chat-input-area">
+          <form action="/psych/chats/<%= selectedChat._id %>/send" method="POST" class="chat-input-form">
+            <!-- Nuevo div que envuelve el campo y el botón para simular una sola barra -->
+            <div class="chat-input-wrapper-revisado">
+                <input type="text" name="text" class="chat-input-field" placeholder="Escribe tu mensaje" required>
+                <button type="submit" class="chat-send-btn">
+                  <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+          </form>
+        </div>
+      <% } else { %>
+        <div class="ps-empty chat-empty-state chat-select-prompt">Selecciona un chat de la lista</div>
+      <% } %>
+    </div>
+  </div>
+</section>
+
+
+<% if (selectedChat && locals.user) { %>
+<script>
+  (function(){
+    var userId = '<%= locals.user._id %>'
+    var chatId = '<%= selectedChat._id %>'
+    try {
+      var es = new EventSource('/api/user-updates/' + userId)
+      es.onmessage = function(ev) {
+        try {
+          var data = JSON.parse(ev.data)
+          if (data && data.type === 'chat_message' && String(data.chatId) === String(chatId)) {
+            var container = document.querySelector('[data-chat-thread]')
+            if (container) {
+              var isOwn = String(data.senderId) === String(userId)
+              
+              // 1. Crear Fila del Mensaje
+              var wrap = document.createElement('div')
+              wrap.className = 'chat-message-row ' + (isOwn ? 'chat-message-row-own' : 'chat-message-row-other') 
+              
+              // 2. Crear Burbuja
+              var bubble = document.createElement('div')
+              bubble.className = 'chat-bubble ' + (isOwn ? 'chat-bubble-own' : 'chat-bubble-other')
+              
+              // 3. Crear Texto
+              var text = document.createElement('div')
+              text.className = 'chat-bubble-text'
+              text.textContent = data.text
+              
+              // 4. Crear Fecha
+              var time = document.createElement('div')
+              time.className = 'chat-bubble-date'
+              time.textContent = new Date(data.createdAt || Date.now()).toLocaleString('es-ES')
+              
+              // 5. Ensamblar
+              bubble.appendChild(text)
+              bubble.appendChild(time)
+              wrap.appendChild(bubble)
+              container.appendChild(wrap)
+              
+              // 6. Desplazar
+              container.scrollTop = container.scrollHeight
+            }
+          }
+        } catch (e) {}
+      }
+    } catch (e) {}
+  })()
+</script>
+
+<% } %>

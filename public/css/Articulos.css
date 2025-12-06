@@ -1,0 +1,389 @@
+/* CSS Correcciones BrainCare - Artículos */
+
+:root {
+  --primary-purple: #8B7EC8;
+  --light-purple: #B8A9E8;
+  --soft-purple: #E8E1F5;
+  --neutral-white: #FFFFFF;
+  --neutral-gray: #F5F5F7;
+  --texto-titulos: #4A4A4A;
+  --text-medium: #6D6D70;
+  --text-light: #8E8E93;
+  --text-dark: #2C2C2E;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+  line-height: 1.6;
+  background-color: var(--neutral-gray);
+}
+
+/* --- HERO SECTION (Sin cambios drásticos) --- */
+.InicioArticulos {
+  background-image: url("/img/articles/Ps1.png");
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  min-height: 35vh;
+  width: 100%;
+  padding: 80px 20px;
+  display: flex;
+  align-items: center;
+}
+
+.InicioArticulos::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.5); /* Oscurecimiento simple */
+  z-index: 1;
+}
+
+.guides-header-text {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  color: white;
+}
+
+.guides-header-title {
+  font-size: 3rem;
+  font-weight: 800;
+  margin-bottom: 15px;
+}
+
+.guides-header-text .lead {
+  font-size: 1.1rem;
+  max-width: 800px;
+  opacity: 0.9;
+}
+
+/* --- BUSCADOR --- */
+.public-top-search {
+  background: var(--neutral-white);
+  padding: 1.5rem;
+  border-radius: 12px;
+ 
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  max-width: 1000px;
+  margin: -2rem auto 2rem auto;
+  position: relative;
+  z-index: 5;
+  width: 90%;
+}
+
+.articles-filter-label {
+  font-weight: 600;
+  color: var(--primary-purple);
+  white-space: nowrap;
+}
+
+.articles-filter-input {
+  width: 100%;
+  padding: 10px 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  outline: none;
+}
+
+/* --- LAYOUT PRINCIPAL --- */
+.contenedorArt1 {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 20px 40px 20px;
+}
+
+.layout-principal {
+  display: flex;
+  gap: 30px;
+  align-items: flex-start;
+}
+
+.columna-articulos {
+  flex: 1;
+  min-width: 0;
+}
+
+.columna-sidebar {
+  width: 350px;
+  flex-shrink: 0;
+}
+
+/* --- LISTA DE ARTÍCULOS --- */
+.articles-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.article-card {
+  background: var(--neutral-white);
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #eee;
+  /* CORRECCIÓN: Eliminada la transición de transform para quitar el efecto de flotar */
+  transition: box-shadow 0.2s ease; 
+}
+
+
+.article-card:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.article-content {
+  display: flex;
+  padding: 20px;
+  gap: 20px;
+}
+
+.article-image {
+  width: 240px;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.article-no-image {
+  width: 240px;
+  height: 180px;
+  background-color: var(--soft-purple);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary-purple);
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.article-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.infoImport {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 0.85rem;
+}
+
+.article-topic {
+  background: var(--soft-purple);
+  color: var(--primary-purple);
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-weight: 600;
+}
+
+.article-date {
+  color: var(--text-light);
+}
+
+.article-link {
+  text-decoration: none;
+}
+
+.article-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--texto-titulos);
+  margin-bottom: 10px;
+  line-height: 1.3;
+}
+
+.article-title:hover {
+  color: var(--primary-purple);
+}
+
+.article-meta {
+  font-size: 0.9rem;
+  color: var(--text-medium);
+  margin-bottom: auto; /* Empuja el footer hacia abajo */
+}
+
+.article-footer {
+  margin-top: 15px;
+  padding-top: 10px;
+  border-top: 1px solid #f0f0f0;
+  text-align: right;
+  font-size: 0.85rem;
+  color: var(--text-light);
+}
+
+/* --- SIDEBAR --- */
+.filtro-card {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+  border: 1px solid #eee;
+}
+
+.filtro-label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 5px;
+  font-size: 0.9rem;
+}
+
+.filtro-select {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 15px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+}
+
+.filtro-btn {
+  width: 100%;
+  padding: 10px;
+  background-color: var(--primary-purple);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.filtro-btn:hover {
+  background-color: #7a6eb3;
+}
+
+/* POPULARES */
+.popular-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.popular-item {
+  border-bottom: 1px solid #f5f5f5;
+  padding-bottom: 10px;
+}
+.popular-item:last-child { border-bottom: none; }
+.popular-item a strong { color: var(--texto-titulos); font-size: 0.95rem; }
+.popular-item .small { font-size: 0.8rem; color: #888; }
+
+
+.articles-pagination {
+    width: 100%;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap; 
+  margin-top: 30px;
+  padding: 10px;
+}
+
+.page-btn {
+  min-width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 0;
+  margin-left: -1px; 
+  color: var(--text-medium);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.9rem;
+  
+  
+  position: relative; 
+}
+
+
+.page-btn:first-child {
+  border-top-left-radius: 6px;
+  border-bottom-left-radius: 6px;
+  margin-left: 0; 
+}
+
+
+.page-btn:last-child {
+  border-top-right-radius: 6px;
+  border-bottom-right-radius: 6px;
+}
+
+.page-btn:hover {
+  border-color: var(--primary-purple);
+  color: var(--primary-purple);
+  background-color: #f9f9f9; 
+  
+  
+  z-index: 2; 
+}
+
+.page-btn.active {
+  background-color: var(--primary-purple);
+  color: white;
+  border-color: var(--primary-purple);
+  
+  /* CAMBIO 7: El activo también debe estar al frente */
+  z-index: 3; 
+}
+
+/* --- RESPONSIVE DESIGN --- */
+
+@media (max-width: 900px) {
+  .layout-principal {
+    flex-direction: column;
+  }
+  .columna-sidebar {
+    width: 100%;
+  }
+}
+
+@media (max-width: 600px) {
+  .article-content {
+    flex-direction: column; /* Apila imagen y texto */
+  }
+  .article-image, .article-no-image {
+    width: 100%; /* Imagen ocupa todo el ancho */
+    height: 200px;
+  }
+  .public-top-search {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+/* --- CORRECCIÓN 1: OCULTAR IMAGEN EN MÓVILES PEQUEÑOS (< 425px) --- */
+@media (max-width: 425px) {
+  /* Ocultamos tanto la etiqueta img como el div de 'sin imagen' */
+  .article-image, 
+  .article-no-image {
+    display: none !important;
+  }
+
+  .article-content {
+    padding: 15px; /* Reducimos padding para aprovechar espacio */
+  }
+
+  .guides-header-title {
+    font-size: 2rem;
+  }
+  
+  /* Ajuste paginación para pantallas muy pequeñas */
+  .page-btn {
+    min-width: 32px;
+    height: 32px;
+    font-size: 0.85rem;
+  }
+}

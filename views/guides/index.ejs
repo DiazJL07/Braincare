@@ -1,0 +1,215 @@
+
+
+<!-- CSS Nuevo -->
+<link rel="stylesheet" href="/css/guide.css">
+
+<!-- Hero Section: Cabecera limpia con Buscador central -->
+<div class="guides-hero">
+  <h1>Biblioteca de Guías</h1>
+  <p>Recursos profesionales, ejercicios prácticos y lectura especializada para tu bienestar mental.</p>
+  
+  <div class="hero-search-wrapper">
+    <i class="fas fa-search hero-search-icon"></i>
+    <input type="text" id="guidesPublicSearchInput" class="hero-search-input" placeholder="Buscar guías por título, tema o autor...">
+  </div>
+</div>
+
+<!-- Layout Principal: Grid + Sidebar Sticky -->
+<div class="guides-layout">
+  
+  <!-- Columna Principal: Grid de Guías -->
+  <main class="guides-main">
+    <% if (guides && guides.length > 0) { %>
+      <div class="guides-grid">
+        <% guides.forEach(guide => { %>
+          <article class="guide-card">
+            <a href="/guides/<%= guide._id %>" class="btn-view-guide">
+            <!-- Imagen y Badge -->
+            <div class="guide-img-container">
+              <% if (guide.image) { %>
+                <img src="<%= guide.image %>" class="guide-img" alt="<%= guide.title %>">
+              <% } else { %>
+                <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; color:#CBD5E1; font-size:3rem;">
+                  <i class="fas fa-book-open"></i>
+                </div>
+              <% } %>
+              
+              <!-- Badge flotante -->
+              <span class="guide-topic-badge"><%= guide.topic %></span>
+              
+              
+              <div class="guide-overlay-btn">
+              
+               
+              
+              </div>
+            </div>
+
+            <!-- Cuerpo de la tarjeta -->
+            <div class="guide-body">
+              <h3 class="guide-title"><%= guide.title %></h3>
+               </a>
+              <div class="guide-author">
+                <i class="fas fa-user-circle"></i>
+                <%= guide.author ? guide.author.name : 'BrainCare Team' %>
+              </div>
+              
+              <div class="guide-stats-row">
+                <div class="stat" title="Vistas">
+                  <i class="fas fa-eye"></i> <%= guide.views || 0 %>
+                </div>
+                <div class="stat" title="Descargas">
+                  <i class="fas fa-download"></i> <%= guide.downloads || 0 %>
+                </div>
+              </div>
+            </div>
+           
+          </article>
+        <% }); %>
+      </div>
+      
+      <!-- Paginación -->
+      <div id="guidesPublicPagination" class="articles-pagination" style="margin-top: 2rem;"></div>
+
+    <% } else { %>
+      <!-- Estado Vacío -->
+      <div class="guides-empty">
+        <i class="fas fa-search" style="font-size: 3rem; color: #E2E8F0; margin-bottom: 1rem;"></i>
+        <h3>No encontramos guías</h3>
+        <p style="color: #94A3B8;">Intenta ajustar los filtros o tu búsqueda.</p>
+      </div>
+    <% } %>
+  </main>
+
+  <!-- Columna Lateral (Sidebar Sticky) -->
+  <aside class="guides-sidebar">
+    
+    <!-- Filtros -->
+    <div class="sidebar-card">
+      <h4 class="sidebar-title"><i class="fas fa-filter"></i> Filtrar Guías</h4>
+      <form action="/guides" method="GET">
+        
+        <div class="filter-group">
+          <label class="filter-label">Tema</label>
+          <select class="filter-select" name="topic">
+            <option value="todos" <%= currentTopic === 'todos' ? 'selected' : '' %>>Todos</option>
+            <option value="Transtornos" <%= currentTopic === 'Transtornos' ? 'selected' : '' %>>Transtornos</option>
+            <option value="Recomendaciones" <%= currentTopic === 'Recomendaciones' ? 'selected' : '' %>>Recomendaciones</option>
+            <option value="Tratamientos" <%= currentTopic === 'Tratamientos' ? 'selected' : '' %>>Tratamientos</option>
+            <option value="Prevencion" <%= currentTopic === 'Prevencion' ? 'selected' : '' %>>Prevención</option>
+            <option value="Investigacion" <%= currentTopic === 'Investigacion' ? 'selected' : '' %>>Investigación</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label class="filter-label">Ordenar por</label>
+          <select class="filter-select" name="sort">
+            <option value="fecha" <%= currentSort === 'fecha' ? 'selected' : '' %>>Más recientes</option>
+            <option value="vistas" <%= currentSort === 'vistas' ? 'selected' : '' %>>Más leídas</option>
+            <option value="descargas" <%= currentSort === 'descargas' ? 'selected' : '' %>>Más descargadas</option>
+          </select>
+        </div>
+
+        <button type="submit" class="filter-btn-apply">Actualizar Resultados</button>
+      </form>
+    </div>
+
+    <!-- Populares -->
+    <div class="sidebar-card">
+      <h4 class="sidebar-title"><i class="fas fa-fire" style="color: #F59E0B;"></i> Tendencias (24h)</h4>
+      <div class="popular-list">
+        <% if (typeof popularGuides24h !== 'undefined' && popularGuides24h && popularGuides24h.length > 0) { %>
+          <% popularGuides24h.forEach(p => { %>
+            <div class="popular-item">
+              <a href="/guides/<%= p._id %>" class="popular-link"><%= p.title %></a>
+              <div class="popular-meta">
+                <span><i class="fas fa-eye"></i> <%= p.views24h || 0 %></span>
+                <span><%= p.topic %></span>
+              </div>
+            </div>
+          <% }) %>
+        <% } else { %>
+          <div style="color: #94A3B8; font-size: 0.9rem; text-align: center;">No hay datos recientes</div>
+        <% } %>
+      </div>
+    </div>
+
+  </aside>
+
+</div>
+
+<!-- Scripts de Funcionalidad (Manteniendo tu lógica original intacta) -->
+<script>
+  document.addEventListener('DOMContentLoaded', function(){
+    // Script de búsqueda en tiempo real (Frontend)
+    (function(){
+      const input = document.getElementById('guidesPublicSearchInput');
+      const container = document.querySelector('.guides-grid');
+      const cards = Array.from(container ? container.querySelectorAll('.guide-card') : []);
+      const pag = document.getElementById('guidesPublicPagination');
+      let empty = document.getElementById('guidesEmptyResult');
+      let page = 1; const size = 10; let query = '';
+
+      function filterItems(){
+        const q = query.toLowerCase();
+        return cards.filter(card => {
+          const title = (card.querySelector('.guide-title')?.textContent || '').toLowerCase();
+          const author = (card.querySelector('.guide-author')?.textContent || '').toLowerCase();
+          return (!q || title.includes(q) || author.includes(q));
+        });
+      }
+
+      function render(){
+        const items = filterItems();
+        const total = items.length; const pages = Math.max(1, Math.ceil(total/size));
+        if(page > pages) page = pages;
+        
+        cards.forEach(c => c.style.display = 'none');
+        
+        const start = (page-1)*size; const end = start+size;
+        items.slice(start,end).forEach(c => { 
+            c.style.display = 'flex'; // Flex porque así definimos .guide-card en CSS
+            c.style.animation = 'fadeInUp 0.3s ease-out'; 
+        });
+
+        // Manejo del mensaje vacío
+        if (!empty) {
+          empty = document.createElement('div');
+          empty.id = 'guidesEmptyResult';
+          empty.className = 'guides-empty';
+          empty.innerHTML = '<i class="fas fa-search" style="font-size:2rem;margin-bottom:1rem;color:#ccc"></i><h3>Sin resultados</h3><p>No hay guías que coincidan.</p>';
+          empty.style.display = 'none';
+          if(container) container.parentNode.insertBefore(empty, container.nextSibling);
+        }
+        empty.style.display = total === 0 ? 'block' : 'none';
+
+        // Paginación
+        if(pag){
+          pag.innerHTML = '';
+          for(let i=1; i<=pages; i++){
+            const b = document.createElement('button');
+            // Usamos clases genéricas si existen o simples
+            b.className = 'page-btn' + (i === page ? ' active' : '');
+            b.textContent = i;
+            b.style.margin = '0 5px';
+            b.onclick = function(){ page=i; render(); };
+            pag.appendChild(b);
+          }
+        }
+      }
+
+      if(input){ 
+          input.addEventListener('input', function(e){ 
+              query = e.target.value || ''; page=1; render(); 
+          }); 
+      }
+      render();
+    })();
+  });
+</script>
+
+<!-- Scripts Globales -->
+<script src="/js/tradux.js"></script>
+<script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+<%- include('../partials/footer') %>

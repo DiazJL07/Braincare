@@ -1,0 +1,31 @@
+<div class="container">
+  <h2>Sesiones</h2>
+  <h4>Pendientes</h4>
+  <ul class="list-group mb-4">
+    <% pending.forEach(s => { %>
+      <li class="list-group-item d-flex justify-content-between align-items-center">
+        <span><%= new Date(s.start).toLocaleString('es-ES') %> - <%= new Date(s.end).toLocaleString('es-ES') %></span>
+        <div class="d-flex gap-2">
+          <% if (s.videoLink) { %>
+            <a href="<%= s.videoLink %>" target="_blank" class="btn btn-sm btn-outline-primary">Videollamada</a>
+          <% } else { %>
+            <form action="/psych/sessions/<%= s._id %>/generate-video" method="POST"><button class="btn btn-sm btn-outline-primary" type="submit">Generar enlace</button></form>
+          <% } %>
+          <form action="/psych/sessions/<%= s._id %>/complete" method="POST"><button class="btn btn-sm btn-success" type="submit">Completada</button></form>
+        </div>
+      </li>
+    <% }) %>
+  </ul>
+  <h4>Completadas</h4>
+  <ul class="list-group mb-4">
+    <% completed.forEach(s => { %>
+      <li class="list-group-item"><%= new Date(s.start).toLocaleString('es-ES') %> - <%= new Date(s.end).toLocaleString('es-ES') %></li>
+    <% }) %>
+  </ul>
+  <h4>Canceladas</h4>
+  <ul class="list-group">
+    <% canceled.forEach(s => { %>
+      <li class="list-group-item"><%= new Date(s.start).toLocaleString('es-ES') %> - <%= new Date(s.end).toLocaleString('es-ES') %></li>
+    <% }) %>
+  </ul>
+</div>

@@ -1,0 +1,483 @@
+/* Animaciones específicas para cada dashboard administrativo */
+
+/* ===== ANIMACIONES PARA DASHBOARD DE FORO ===== */
+
+/* Keyframes específicos del foro */
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes bounceIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+  70% {
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes fadeOutRight {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(50px);
+  }
+}
+
+/* Clases para foro */
+.slide-in-left {
+  animation: slideInLeft 0.6s ease-out forwards;
+}
+
+.bounce-in {
+  animation: bounceIn 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+}
+
+.fade-out-right {
+  animation: fadeOutRight 0.5s ease-in forwards;
+}
+
+.forum-post-card:hover {
+  border-left: 4px solid #4a90e2;
+  transition: all 0.3s ease;
+}
+
+.like-particle {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: #4a90e2;
+  border-radius: 50%;
+  animation: likeParticle 1s ease-out forwards;
+  pointer-events: none;
+}
+
+@keyframes likeParticle {
+  0% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.5) translateY(-30px);
+  }
+}
+
+.reply-form-appear {
+  animation: slideInLeft 0.4s ease-out;
+  max-height: 200px;
+  overflow: hidden;
+}
+
+/* ===== ANIMACIONES PARA DASHBOARD DE GUÍAS ===== */
+
+/* Keyframes específicos de guías */
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slideInBottom {
+  from {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInTop {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Clases para guías */
+.fade-in-scale {
+  animation: fadeInScale 0.6s ease-out forwards;
+}
+
+.slide-in-bottom {
+  animation: slideInBottom 0.6s ease-out forwards;
+}
+
+.slide-in-top {
+  animation: slideInTop 0.5s ease-out forwards;
+}
+
+.slide-in-up {
+  animation: slideInUp 0.6s ease-out forwards;
+}
+
+.fade-in-right {
+  animation: fadeInRight 0.6s ease-out forwards;
+}
+
+.guide-card:hover .guide-icon {
+  color: #10b981;
+  transition: color 0.3s ease;
+}
+
+.category-active {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  transform: scale(1.05);
+}
+
+.floating-heart {
+  position: absolute;
+  animation: floatingHeart 1s ease-out forwards;
+  pointer-events: none;
+  font-size: 16px;
+}
+
+@keyframes floatingHeart {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-40px) scale(1.5);
+  }
+}
+
+.share-options-show {
+  animation: slideInTop 0.3s ease-out;
+  display: block;
+}
+
+.filter-panel-open {
+  animation: slideInBottom 0.4s ease-out;
+  max-height: 300px;
+  overflow: hidden;
+}
+
+.filter-panel-close {
+  animation: slideInBottom 0.4s ease-out reverse;
+  max-height: 0;
+  overflow: hidden;
+}
+
+.filter-item-appear {
+  animation: fadeInScale 0.3s ease-out forwards;
+}
+
+/* ===== ANIMACIONES PARA DASHBOARD DE ARTÍCULOS ===== */
+
+/* Keyframes específicos de artículos */
+@keyframes zoomIn {
+  from {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes flipIn {
+  from {
+    opacity: 0;
+    transform: perspective(400px) rotateY(90deg);
+  }
+  to {
+    opacity: 1;
+    transform: perspective(400px) rotateY(0deg);
+  }
+}
+
+@keyframes popIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.5) rotate(-10deg);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.1) rotate(5deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+@keyframes wiggle {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-5deg); }
+  75% { transform: rotate(5deg); }
+}
+
+@keyframes glow {
+  0%, 100% {
+    text-shadow: 0 0 5px rgba(139, 92, 246, 0.5);
+  }
+  50% {
+    text-shadow: 0 0 20px rgba(139, 92, 246, 0.8);
+  }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+@keyframes typewriter {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+@keyframes heartbeat {
+  0%, 100% { transform: scale(1); }
+  25% { transform: scale(1.1); }
+  50% { transform: scale(1.2); }
+  75% { transform: scale(1.1); }
+}
+
+@keyframes bookmarkSave {
+  0% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-10px) rotate(10deg); }
+  100% { transform: translateY(0) rotate(0deg); }
+}
+
+@keyframes shareBounce {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+}
+
+/* Clases para artículos */
+.zoom-in {
+  animation: zoomIn 0.6s ease-out forwards;
+}
+
+.flip-in {
+  animation: flipIn 0.8s ease-out forwards;
+}
+
+.pop-in {
+  animation: popIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+}
+
+.wiggle {
+  animation: wiggle 0.6s ease-in-out;
+}
+
+.glow {
+  animation: glow 0.8s ease-in-out;
+}
+
+.shake {
+  animation: shake 0.5s ease-in-out;
+}
+
+.heartbeat {
+  animation: heartbeat 0.8s ease-in-out;
+}
+
+.bookmark-save {
+  animation: bookmarkSave 0.6s ease-in-out;
+}
+
+.share-bounce {
+  animation: shareBounce 0.5s ease-in-out;
+}
+
+.article-card:hover {
+  border-top: 4px solid #8b5cf6;
+  transition: all 0.3s ease;
+}
+
+.category-selected {
+  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+  color: white;
+  transform: scale(1.1);
+}
+
+.status-badge.published {
+  background: linear-gradient(135deg, #10b981, #059669);
+  animation: pulse 0.5s ease-in-out;
+}
+
+.status-badge.draft {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  animation: pulse 0.5s ease-in-out;
+}
+
+.preview-modal-show {
+  animation: modalFadeIn 0.3s ease-out;
+  display: flex;
+}
+
+.metric-appear {
+  animation: slideInBottom 0.8s ease-out forwards;
+}
+
+.comment-slide-in {
+  animation: slideInLeft 0.5s ease-out forwards;
+}
+
+.share-menu-show {
+  animation: slideInTop 0.3s ease-out;
+  display: block;
+}
+
+.share-option-appear {
+  animation: popIn 0.4s ease-out forwards;
+}
+
+/* ===== ANIMACIONES COMUNES MEJORADAS ===== */
+
+/* Efectos de búsqueda */
+.search-results-appear {
+  animation: slideInBottom 0.3s ease-out;
+}
+
+.search-result-appear {
+  animation: fadeInUp 0.4s ease-out forwards;
+}
+
+.search-results-show {
+  animation: slideInBottom 0.3s ease-out;
+  display: block;
+}
+
+/* Efectos de filtros */
+.filter-active {
+  background: linear-gradient(135deg, #4a90e2, #357abd);
+  color: white;
+  transform: scale(1.05);
+}
+
+/* Efectos de carga específicos */
+.chart-fade-in {
+  animation: fadeInScale 1s ease-out forwards;
+}
+
+/* Efectos de hover mejorados para cada dashboard */
+.forum-stat-card:hover {
+  background: linear-gradient(135deg, #4a90e2, #357abd);
+  color: white;
+  transform: translateY(-5px);
+}
+
+.guides-stat-card:hover {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  transform: translateY(-5px);
+}
+
+.articles-stat-card:hover {
+  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+  color: white;
+  transform: translateY(-5px);
+}
+
+/* Efectos de progreso específicos */
+.progress-bar {
+  transition: width 1s ease-in-out;
+  background: linear-gradient(90deg, #4a90e2, #10b981, #8b5cf6);
+  background-size: 200% 100%;
+  animation: progressGradient 2s ease-in-out infinite;
+}
+
+@keyframes progressGradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Efectos responsivos mejorados */
+@media (max-width: 768px) {
+  .zoom-in, .flip-in, .bounce-in {
+    animation-duration: 0.4s;
+  }
+  
+  .slide-in-left, .slide-in-right, .slide-in-bottom {
+    animation-duration: 0.3s;
+  }
+  
+  .fade-in-scale, .pop-in {
+    animation-duration: 0.3s;
+  }
+}
+
+/* Efectos de accesibilidad */
+@media (prefers-reduced-motion: reduce) {
+  .slide-in-left, .slide-in-right, .slide-in-bottom, .slide-in-top,
+  .fade-in-scale, .zoom-in, .flip-in, .bounce-in, .pop-in {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Efectos de tema oscuro */
+@media (prefers-color-scheme: dark) {
+  .forum-post-card:hover {
+    border-left-color: #60a5fa;
+  }
+  
+  .guide-card:hover .guide-icon {
+    color: #34d399;
+  }
+  
+  .article-card:hover {
+    border-top-color: #a78bfa;
+  }
+}

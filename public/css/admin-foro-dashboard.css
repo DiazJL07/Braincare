@@ -1,0 +1,1010 @@
+/* CSS Independiente para Dashboard de Administración de Foro - Tema Psicología */
+body{
+    margin-top: 5%;
+}
+/* Variables CSS para tema de psicología - Diseño serio y elegante */
+:root {
+    --primary-articles: #7C3AED;
+    --secondary-psychology: #A594D1;
+    --accent-psychology: #6B5B95;
+    --warm-psychology: #B8A9C9;
+    --calm-psychology: #F5F3FF;
+    --text-primary: #2D2A3D;
+    --text-secondary: #6B6B7D;
+    --background-light: #FDFCFF;
+    --background-card: #7C3AED;
+    --border-light: #E8E5F0;
+    --shadow-soft: 0 2px 15px rgba(139, 126, 200, 0.08);
+    --shadow-hover: 0 4px 25px rgba(139, 126, 200, 0.12);
+    --border-radius: 8px;
+    --transition-smooth: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    --font-primary: 'Inter', 'Segoe UI', system-ui, sans-serif;
+    --gradient-subtle: linear-gradient(135deg, #F8F7FF 0%, #F0EFFF 100%);
+    --gradient-primary: linear-gradient(135deg, #7C3AED 0%, #8B5CF6 100%);
+    --gradient-accent: linear-gradient(135deg, #6B5B95 0%, #8B7EC8 100%);
+}
+
+/* Animaciones CSS - Sutiles y profesionales */
+@keyframes gentleFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes subtleSlide {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes softGlow {
+    0%, 100% {
+        box-shadow: 0 2px 15px rgba(139, 126, 200, 0.08);
+    }
+    50% {
+        box-shadow: 0 4px 25px rgba(139, 126, 200, 0.15);
+    }
+}
+
+@keyframes gentleShimmer {
+    0% {
+        background-position: -100px 0;
+    }
+    100% {
+        background-position: calc(100px + 100%) 0;
+    }
+}
+
+/* Contenedor principal del dashboard de foro */
+.foro-admin-dashboard {
+    min-height: 100vh;
+    font-family: var(--font-primary);
+    padding: 20px;
+    max-width: 1400;
+    animation: gentleFadeIn 0.8s ease-out;
+}
+
+/* Header del dashboard */
+.foro-dashboard-header {
+    background: var(--gradient-primary);
+    color: white;
+    padding: 24px;
+    border-radius: var(--border-radius);
+    margin-bottom: 32px;
+    box-shadow: var(--shadow-soft);
+    position: relative;
+    overflow: hidden;
+    animation: subtleSlide 1s ease-out;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.foro-dashboard-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -50%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
+    animation: gentleShimmer 4s infinite;
+}
+
+.foro-dashboard-header h1 {
+    margin: 0;
+    font-size: 2.2rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    position: relative;
+    z-index: 1;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    line-height: 1.2;
+}
+
+.foro-dashboard-header .subtitle {
+    margin: 8px 0 0 0;
+    opacity: 0.85;
+    font-size: 1rem;
+    font-weight: 400;
+    position: relative;
+    z-index: 1;
+    letter-spacing: 0.01em;
+}
+
+.foro-header-actions {
+    display: flex;
+    gap: 15px;
+    margin-top: 20px;
+    position: relative;
+    z-index: 1;
+}
+
+.foro-action-btn {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    padding: 12px 24px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: var(--transition-smooth);
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.foro-action-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: translateY(-2px);
+    color: white;
+    text-decoration: none;
+}
+
+/* Estadísticas del foro */
+.foro-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+    margin-bottom: 40px;
+}
+
+.foro-stat-card {
+    background: var(--background-card);
+    padding: 28px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-soft);
+    border: 1px solid var(--border-light);
+    transition: var(--transition-smooth);
+    position: relative;
+    overflow: hidden;
+    animation: gentleFadeIn 0.8s ease-out;
+    animation-delay: 0.2s;
+    animation-fill-mode: both;
+}
+
+.foro-stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--gradient-accent);
+}
+
+.foro-stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-hover);
+    animation: softGlow 3s infinite;
+}
+
+.foro-stat-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary-psychology), var(--secondary-psychology));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+    color: white;
+    font-size: 1.4rem;
+    animation: pulse 2s infinite;
+    opacity: 0.9;
+}
+
+.foro-stat-number {
+    font-size: 2.2rem;
+    font-weight: 600;
+    color: var(--primary-psychology);
+    margin-bottom: 12px;
+    line-height: 1;
+    letter-spacing: -0.01em;
+}
+
+.foro-stat-label {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    opacity: 0.8;
+}
+
+.foro-stat-trend {
+    margin-top: 10px;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.trend-up {
+    color: var(--accent-psychology);
+}
+
+.trend-down {
+    color: #E74C3C;
+}
+
+/* Sección de contenido principal */
+.foro-main-content {
+    overflow: hidden;
+    animation: gentleFadeIn 1s ease-out;
+    animation-delay: 0.3s;
+    animation-fill-mode: both;
+    margin-top: 24px;
+}
+
+.foro-content-header {
+    padding: 20px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.foro-content-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #6B6B7D;
+    margin: 0;
+    letter-spacing: -0.01em;
+}
+
+.foro-realtime-indicator {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--accent-psychology);
+    font-size: 0.8rem;
+    font-weight: 500;
+    opacity: 0.9;
+}
+
+.foro-realtime-dot {
+    width: 6px;
+    height: 6px;
+    background: var(--accent-psychology);
+    border-radius: 50%;
+    animation: softGlow 3s infinite;
+}
+
+/* Tabla de publicaciones */
+.foro-table-container {
+    padding: 0;
+    overflow-x: auto;
+    background: var(--background-card);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-soft);
+    border: 1px solid var(--border-light);
+}
+
+.foro-posts-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+    background: white;
+}
+
+.foro-posts-table th {
+    background: var(--background-card);
+    color: var(--calm-psychology);
+    padding: 16px 20px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    border-bottom: 2px solid var(--border-light);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.foro-posts-table td {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border-light);
+    vertical-align: middle;
+    transition: var(--transition-smooth);
+}
+
+.foro-posts-table tr {
+    transition: var(--transition-smooth);
+    animation: gentleFadeIn 0.8s ease-out;
+}
+
+.foro-posts-table tbody tr:hover {
+    background: var(--calm-psychology);
+   
+}
+
+/* Estilos para elementos de la tabla */
+.foro-post-title {
+    color: var(--text-primary);
+    text-decoration: none;
+    font-weight: 600;
+    transition: var(--transition-smooth);
+    font-size: 0.9rem;
+}
+
+.foro-post-title:hover {
+    text-decoration: none;
+}
+
+.foro-topic-badge {
+    background: var(--calm-psychology);
+    color: var(--accent-psychology);
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border: 1px solid var(--border-light);
+}
+
+.foro-author-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.foro-author-avatar {
+    width: 32px;
+    height: 32px;
+    background: var(--gradient-primary);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 0.8rem;
+    flex-shrink: 0;
+}
+
+.foro-author-name {
+    font-weight: 500;
+    color: var(--text-primary);
+    font-size: 0.85rem;
+}
+
+.foro-stats-cell {
+    text-align: center;
+    font-weight: 600;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.foro-date-cell {
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.views-badge {
+    color: var(--primary-psychology);
+}
+
+.likes-badge {
+    color: #E74C3C;
+}
+
+.comments-badge {
+    color: var(--accent-psychology);
+}
+
+/* Botones de acción */
+.foro-actions-group {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    align-items: center;
+}
+
+.foro-action-button {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    border: 1px solid var(--border-light);
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+    font-size: 0.9rem;
+    text-decoration: none;
+    color: var(--text-secondary);
+}
+
+.foro-btn-view {
+    color: var(--primary-psychology);
+    border-color: var(--primary-psychology);
+}
+
+.foro-btn-view:hover {
+    background: rgb(48, 48, 48);
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(139, 126, 200, 0.2);
+}
+
+.foro-btn-edit {
+    color: var(--accent-psychology);
+    border-color: var(--accent-psychology);
+}
+
+.foro-btn-edit:hover {
+    background: var(--accent-psychology);
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(107, 91, 149, 0.2);
+}
+
+.foro-btn-delete {
+    color: #E74C3C;
+    border-color: #E74C3C;
+}
+
+.foro-btn-delete:hover {
+    background: #E74C3C;
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(231, 76, 60, 0.2);
+}
+
+/* Estados de carga */
+.foro-loading-skeleton {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200px 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: 4px;
+    height: 20px;
+}
+
+/* Estilos adicionales para columnas específicas */
+.foro-posts-table th:first-child,
+.foro-posts-table td:first-child {
+    padding-left: 24px;
+}
+
+.foro-posts-table th:last-child,
+.foro-posts-table td:last-child {
+    padding-right: 24px;
+    text-align: center;
+}
+
+.foro-posts-table th:nth-child(4),
+.foro-posts-table th:nth-child(5),
+.foro-posts-table th:nth-child(6),
+.foro-posts-table th:nth-child(7) {
+    text-align: center;
+}
+
+.foro-posts-table td:nth-child(4),
+.foro-posts-table td:nth-child(5),
+.foro-posts-table td:nth-child(6),
+.foro-posts-table td:nth-child(7) {
+    text-align: center;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+    .foro-stats-grid {
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+    }
+    
+    .foro-dashboard-header {
+        padding: 30px;
+    }
+    
+    .foro-dashboard-header h1 {
+        font-size: 2.4rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .foro-admin-dashboard {
+        padding: 16px;
+    }
+    
+    .foro-dashboard-header {
+        padding: 24px 18px;
+        text-align: center;
+    }
+    
+    .foro-dashboard-header h1 {
+        font-size: 1.9rem;
+    }
+    
+    .foro-header-actions {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .foro-action-btn {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .foro-stats-grid {
+        grid-template-columns: 1fr;
+        gap: 18px;
+    }
+    
+    .foro-stat-card {
+        padding: 20px;
+        text-align: center;
+    }
+    
+    .foro-content-header {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+        padding: 20px;
+    }
+    
+    .foro-table-container {
+        padding: 20px 15px;
+    }
+    
+    .foro-posts-table {
+        font-size: 0.85rem;
+    }
+    
+    .foro-posts-table th,
+    .foro-posts-table td {
+        padding: 12px 8px;
+    }
+    
+    .foro-author-info {
+        flex-direction: column;
+        gap: 4px;
+        text-align: center;
+    }
+    
+    .foro-actions-group {
+        flex-direction: column;
+        gap: 4px;
+    }
+}
+
+@media (max-width: 480px) {
+    .foro-admin-dashboard {
+        padding: 12px;
+    }
+    
+    .foro-dashboard-header h1 {
+        font-size: 1.7rem;
+    }
+    
+    .foro-stat-number {
+        font-size: 1.9rem;
+    }
+    
+    .foro-posts-table {
+        min-width: 600px;
+    }
+    
+    .foro-action-button {
+        width: 30px;
+        height: 30px;
+        font-size: 0.75rem;
+    }
+}
+
+/* Animaciones de entrada escalonadas */
+.foro-stat-card:nth-child(1) { animation-delay: 0.1s; }
+.foro-stat-card:nth-child(2) { animation-delay: 0.2s; }
+.foro-stat-card:nth-child(3) { animation-delay: 0.3s; }
+.foro-stat-card:nth-child(4) { animation-delay: 0.4s; }
+
+/* Efectos de hover mejorados */
+.foro-posts-table tr:hover .foro-post-title {
+    color: var(--secondary-psychology);
+}
+
+
+
+/* Indicadores de estado */
+.foro-status-active {
+    color: var(--accent-psychology);
+}
+
+.foro-status-inactive {
+    color: #95A5A6;
+}
+
+.foro-status-pending {
+    color: var(--warm-psychology);
+}
+
+/* Modal de confirmación */
+.foro-modal {
+    display: none;
+    position: fixed;
+    z-index: 1001;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+    justify-content: center;
+    align-items: center;
+}
+
+.foro-modal-content {
+    background: var(--background-card);
+    margin: 3% auto;
+    padding: 0;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    animation: subtleSlide 0.5s ease-out;
+    overflow: hidden;
+    border: 1px solid var(--border-light);
+}
+
+.foro-modal-large {
+    max-width: 900px !important;
+    width: 95% !important;
+}
+
+.foro-modal-header {
+    background: var(--gradient-accent);
+    color: white;
+    padding: 20px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.foro-modal-title {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+}
+
+.foro-modal-close {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.3rem;
+    cursor: pointer;
+    padding: 0;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: var(--transition-smooth);
+    opacity: 0.9;
+}
+
+.foro-modal-close:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: rotate(90deg);
+    opacity: 1;
+}
+
+.foro-modal-body {
+    padding: 24px;
+    text-align: center;
+}
+
+.foro-modal-icon {
+    font-size: 2.5rem;
+    color: var(--accent-psychology);
+    margin-bottom: 16px;
+    opacity: 0.9;
+}
+
+.foro-modal-text {
+    font-size: 1rem;
+    color: var(--text-primary);
+    margin-bottom: 24px;
+    line-height: 1.5;
+    opacity: 0.9;
+}
+
+.foro-modal-footer {
+    padding: 0 24px 24px;
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+.foro-modal-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: var(--border-radius);
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+    min-width: 100px;
+}
+
+.foro-modal-btn-cancel {
+    background: var(--calm-psychology);
+    color: var(--text-primary);
+    border: 1px solid var(--border-light);
+}
+
+.foro-modal-btn-cancel:hover {
+    background: var(--calm-psychology);
+    transform: translateY(-1px);
+}
+
+.foro-modal-btn-confirm {
+    background: var(--primary-articles);
+    color: white;
+}
+
+.foro-modal-btn-confirm:hover {
+    background: var(--accent-psychology);
+    transform: translateY(-1px);
+    box-shadow: 0 3px 12px rgba(124, 58, 237, 0.25);
+}
+
+/* Modo oscuro deshabilitado temporalmente para evitar problemas de visibilidad */
+/* 
+@media (prefers-color-scheme: dark) {
+    :root {
+        --background-light: #1A1A1A;
+        --background-card: #2D2D2D;
+        --text-primary: #FFFFFF;
+        --text-secondary: #B0B0B0;
+        --border-light: #404040;
+        --calm-psychology: #1E3A5F;
+    }
+    
+    .foro-posts-table th {
+        background: linear-gradient(135deg, var(--calm-psychology) 0%, #2C3E50 100%);
+        color: var(--text-primary);
+    }
+    
+    .foro-posts-table tr:hover {
+        background: linear-gradient(135deg, var(--calm-psychology) 0%, #34495E 100%);
+    }
+}
+
+/* Estilos para el Modal de Nueva Publicación */
+.new-post-foro-modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+    justify-content: center;
+    align-items: center;
+}
+
+.new-post-foro-modal-content {
+    background-color: #fefefe;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 500px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    position: relative;
+}
+
+.new-post-foro-modal-header {
+    background: linear-gradient(135deg, var(--primary-psychology) 0%, var(--secondary-psychology) 100%);
+    color: white;
+    padding: 20px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 3px solid var(--accent-psychology);
+}
+
+.new-post-foro-modal-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.new-post-foro-modal-close {
+    color: white;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    padding: 5px 10px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+}
+
+.new-post-foro-modal-close:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: rotate(90deg);
+}
+
+.new-post-foro-modal-body {
+    padding: 0;
+    height: calc(100% - 80px);
+}
+
+.new-post-foro-modal-body iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    border-radius: 0 0 15px 15px;
+}
+
+/* Estilos para el formulario dentro del modal */
+.foro-form-container {
+    padding: 35px;
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+.foro-form-container .form-label {
+    font-weight: 600;
+    color: var(--primary-psychology);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.foro-form-container .form-control,
+.foro-form-container .form-select {
+    border: 2px solid #E9ECEF;
+    border-radius: 10px;
+    padding: 12px 15px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    background: #FFFFFF;
+}
+
+.foro-form-container .form-control:focus,
+.foro-form-container .form-select:focus {
+    border-color: var(--accent-psychology);
+    box-shadow: 0 0 0 0.2rem rgba(139, 69, 19, 0.15);
+    outline: none;
+}
+
+.foro-form-container textarea.form-control {
+    resize: vertical;
+    min-height: 120px;
+}
+
+.foro-form-container .form-text {
+    color: #6C757D;
+    font-size: 12px;
+    margin-top: 5px;
+}
+
+.foro-form-container .btn {
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.foro-form-container .btn-primary {
+    background: linear-gradient(135deg, var(--primary-psychology) 0%, var(--secondary-psychology) 100%);
+    border: none;
+    color: white;
+}
+
+.foro-form-container .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(139, 69, 19, 0.3);
+}
+
+.foro-form-container .btn-secondary {
+    background: #6C757D;
+    border: none;
+    color: white;
+}
+
+.foro-form-container .btn-secondary:hover {
+    background: #5A6268;
+    transform: translateY(-1px);
+}
+
+.foro-form-container .alert {
+    border-radius: 10px;
+    border: none;
+    padding: 15px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.foro-form-container .alert-success {
+    background: linear-gradient(135deg, #D4EDDA 0%, #C3E6CB 100%);
+    color: #155724;
+}
+
+.foro-form-container .alert-danger {
+    background: linear-gradient(135deg, #F8D7DA 0%, #F5C6CB 100%);
+    color: #721C24;
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Responsive para el modal */
+@media (max-width: 768px) {
+    .foro-modal-content {
+        width: 95%;
+        height: 95%;
+        margin: 2.5% auto;
+    }
+    
+    .foro-modal-large {
+        width: 98% !important;
+        margin: 2% auto !important;
+    }
+    
+    .foro-modal-header {
+        padding: 15px 20px;
+    }
+    
+    .foro-modal-header h2 {
+        font-size: 1.3rem;
+    }
+    
+    .foro-modal-body iframe {
+         height: calc(100% - 70px);
+     }
+     
+    .foro-form-container {
+        padding: 20px;
+        max-height: 70vh;
+    }
+    
+    .foro-form-container textarea.form-control {
+        min-height: 100px;
+    }
+ }

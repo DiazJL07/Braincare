@@ -1,0 +1,271 @@
+:root {
+    --mkt-primary: #4F46E5;
+    --mkt-primary-soft: #EEF2FF;
+    --mkt-secondary: #64748B;
+    --mkt-bg: #F8FAFC;
+    --mkt-card-bg: #FFFFFF;
+    --mkt-border: #E2E8F0;
+    --mkt-radius: 16px;
+    --mkt-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    --mkt-shadow-hover: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+body {
+    background-color: var(--mkt-bg);
+}
+
+/* --- Header de Sección --- */
+.market-header {
+    background: white;
+    padding: 2rem;
+    border-radius: var(--mkt-radius);
+    border: 1px solid var(--mkt-border);
+    margin-bottom: 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: var(--mkt-shadow);
+}
+
+.market-title h2 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #1E293B;
+    margin: 0;
+}
+
+.market-btn-create {
+    background: var(--mkt-primary);
+    color: white;
+    padding: 0.8rem 1.5rem;
+    border-radius: 50px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+    display: inline-flex; align-items: center; gap: 0.5rem;
+}
+.market-btn-create:hover {
+    background: #4338CA;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+}
+
+/* --- Grid de Ofertas --- */
+.market-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 2rem;
+    padding-bottom: 3rem;
+}
+
+/* --- Tarjeta de Oferta (Card) --- */
+.market-card {
+    background: var(--mkt-card-bg);
+    border-radius: var(--mkt-radius);
+    border: 1px solid var(--mkt-border);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.market-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--mkt-shadow-hover);
+    border-color: #C7D2FE;
+}
+
+/* Cabecera de la Tarjeta (Tipo y Precio) */
+.market-card-top {
+    padding: 1.5rem;
+    background: linear-gradient(to right, #ffffff, #f8fafc);
+    border-bottom: 1px dashed var(--mkt-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.market-service-info {
+    flex: 1;
+}
+
+.market-title-text {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #0F172A;
+    line-height: 1.2;
+    margin-bottom: 0.3rem;
+}
+
+.market-session-type {
+    font-size: 0.85rem;
+    color: var(--mkt-secondary);
+    display: flex; align-items: center; gap: 0.3rem;
+    text-transform: capitalize;
+}
+
+.market-price-tag {
+    background: var(--mkt-primary-soft);
+    color: var(--mkt-primary);
+    padding: 0.5rem 1rem;
+    border-radius: 12px;
+    font-weight: 800;
+    font-size: 1.1rem;
+    white-space: nowrap;
+    margin-left: 1rem;
+}
+
+/* Cuerpo de la Tarjeta */
+.market-card-body {
+    padding: 1.5rem;
+    flex: 1;
+    display: flex; flex-direction: column; gap: 1rem;
+}
+
+/* Perfil Psicólogo */
+.market-psych-profile {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--mkt-border);
+}
+
+.market-avatar {
+    width: 40px; height: 40px;
+    background: #E2E8F0;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; color: #64748B;
+}
+
+.market-psych-name {
+    font-weight: 600; color: #334155; font-size: 0.95rem;
+}
+.market-psych-label {
+    font-size: 0.75rem; color: #94A3B8; display: block;
+}
+
+/* Descripción */
+.market-desc {
+    font-size: 0.9rem;
+    color: #475569;
+    line-height: 1.6;
+    display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+}
+
+/* Tags / Chips */
+.market-tags {
+    display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: auto;
+}
+
+.market-chip {
+    font-size: 0.75rem;
+    background: #F1F5F9;
+    color: #475569;
+    padding: 0.2rem 0.6rem;
+    border-radius: 6px;
+    font-weight: 500;
+}
+
+/* Footer Acciones */
+.market-card-footer {
+    padding: 1.2rem 1.5rem;
+    background: #F8FAFC;
+    border-top: 1px solid var(--mkt-border);
+    display: flex;
+    gap: 0.8rem;
+}
+
+.market-btn {
+    flex: 1;
+    padding: 0.6rem;
+    text-align: center;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    text-decoration: none;
+    transition: 0.2s;
+    border: 1px solid transparent;
+}
+
+.btn-primary {
+    background: var(--mkt-primary); color: white;
+}
+.btn-primary:hover { background: #4338CA; }
+
+.btn-outline {
+    background: white; border-color: var(--mkt-border); color: #334155;
+}
+.btn-outline:hover { border-color: var(--mkt-primary); color: var(--mkt-primary); }
+
+.btn-danger {
+    background: #FEF2F2; color: #DC2626; border: 1px solid #FECACA;
+}
+.btn-danger:hover { background: #DC2626; color: white; }
+
+.market-date {
+    position: absolute; bottom: 5px; right: 10px;
+    font-size: 0.65rem; color: #CBD5E1;
+}
+
+/* --- Modales (Estilo Genérico Integrado) --- */
+.market-modal {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.5); z-index: 9999;
+    display: none; justify-content: center; align-items: center;
+    opacity: 0; transition: opacity 0.3s;
+}
+.market-modal.show { display: flex; opacity: 1; }
+
+.market-modal-dialog {
+    background: white; width: 90%; max-width: 600px;
+    border-radius: 16px; overflow: hidden;
+    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+    display: flex; flex-direction: column;
+    max-height: 90vh;
+}
+
+.market-modal-header {
+    padding: 1.5rem; border-bottom: 1px solid var(--mkt-border);
+    display: flex; justify-content: space-between; align-items: center;
+}
+.market-modal-title { font-size: 1.25rem; font-weight: 700; margin: 0; }
+.market-close { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #94A3B8; }
+
+.market-modal-body { padding: 1.5rem; overflow-y: auto; }
+
+/* Estilos específicos para el chat en modal */
+.chat-thread {
+    height: 300px; overflow-y: auto; background: #F8FAFC;
+    border: 1px solid var(--mkt-border); border-radius: 8px;
+    padding: 1rem; margin-bottom: 1rem;
+}
+.chat-input-row { display: flex; gap: 0.5rem; }
+.chat-input { flex: 1; padding: 0.8rem; border: 1px solid var(--mkt-border); border-radius: 8px; }
+
+/* Empty State */
+.market-empty {
+    grid-column: 1/-1; text-align: center; padding: 4rem; color: #94A3B8;
+}
+
+/* Calendar Grid */
+.calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; margin-top: 10px; }
+.cal-day {
+    padding: 10px; text-align: center; border-radius: 6px; background: #f1f5f9;
+    color: #94a3b8; text-decoration: none; font-weight: 600;
+}
+.cal-day.available { background: #dcfce7; color: #166534; cursor: pointer; }
+.cal-day.available:hover { background: #166534; color: white; }
+.cal-day.selected { background: var(--mkt-primary); color: white; }
+
+/* Responsive */
+@media (max-width: 600px) {
+    .market-header { flex-direction: column; gap: 1rem; text-align: center; }
+    .market-card-top { flex-direction: column; gap: 0.5rem; }
+    .market-price-tag { margin-left: 0; align-self: flex-start; }
+}

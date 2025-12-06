@@ -1,0 +1,18 @@
+<div class="container">
+  <h2>Especialidades</h2>
+  <form action="/admin/specialties" method="POST" class="row g-2 mb-3">
+    <div class="col"><input class="form-control" name="name" placeholder="Nombre"></div>
+    <div class="col"><button class="btn btn-primary" type="submit">Crear</button></div>
+  </form>
+  <table class="table">
+    <thead><tr><th>Nombre</th><th>Estado</th></tr></thead>
+    <tbody>
+      <% specialties.forEach(s => { %>
+        <tr>
+          <td><%= s.name %></td>
+          <td><%= s.active ? 'Activa' : 'Inactiva' %></td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>

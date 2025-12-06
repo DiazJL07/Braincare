@@ -1,0 +1,527 @@
+/*Nab var*/
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px; /* Agregado padding a ambos lados */
+      
+    background-color: #dac7ff;
+    position: fixed;
+    width: 100%;
+    box-sizing: border-box;
+    top: 0;
+    z-index: 1000;
+    transition: background-color 0.3s ease;
+    left: 0;
+    right: 0;
+    margin: 0;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    width: 50px;
+    height: 50px;
+}
+
+.menu {
+    display: flex;
+    list-style: none;
+    justify-content: center;
+    padding: 0;
+    flex-grow: 1;
+}
+
+.menu li {
+    margin: 0 15px;
+    position: relative;
+}
+
+.menu li a {
+    color: #000000;
+    text-decoration: none;
+    font-size: 16px;
+    padding: 10px 15px;
+    display: block;
+    transition: color 0.3s ease;
+}
+
+.menu li a:hover {
+    color: #ffcc00;
+}
+
+/* Menú desplegable */
+.submenu {
+    visibility: hidden; 
+    opacity: 0; 
+    overflow: hidden;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: rgba(120, 96, 170, 0.9);
+    list-style: none;
+    padding: 10px 0;
+    margin: 0;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: opacity 0.4s ease, visibility 0.4s ease, transform 0.4s ease;
+    transform: translateY(-10px); 
+}
+
+
+.submenu li {
+    margin: 0;
+}
+
+.submenu li a {
+    padding: 10px 20px;
+    white-space: nowrap;
+    display: block;
+    color: #000000;
+}
+
+.dropdown:hover .submenu {
+   visibility:visible;
+   opacity: 1;
+   transform: translateY(0);
+}
+
+
+.acciones {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+/* Alinear nav-list más a la derecha */
+.nav-list {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-left: auto;
+    padding-right: 40px;
+    justify-content: flex-end;
+}
+
+.nav-list .nav-item {
+    display: flex;
+    align-items: center;
+}
+
+.nav-list .nav-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  text-decoration: none;
+  color: #000000;
+  transition: color 0.3s ease;
+}
+
+#userNotificationsButton .nav-link,
+#adminNotificationsButton .nav-link {
+  position: relative;
+  overflow: hidden;
+}
+
+.nav-list .nav-link:hover {
+    color: #ffcc00;
+}
+
+
+.idioma select {
+    background: none;
+    border: none;
+    color: #000000;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.idioma select:hover {
+    color: #ffcc00;
+}
+
+.login-nav {
+    text-decoration: none;
+    border: none;
+    font-weight: 300;
+    padding: .75rem 1.5rem;
+    background-color:#5F4B88;
+    color: #000000;
+    transition: 0.2s;
+    border-radius: 8px;
+}
+.login-nav button:hover {
+    background-color: #3f2674;
+}
+
+
+.perfil a {
+    color: #000000;
+    font-size: 18px;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.perfil a:hover {
+    color: #ffcc00;
+}
+
+
+.contenido {
+    padding: 100px 20px;
+    text-align: center;
+}
+/*Logaut*/
+.log-out-container {
+    position: relative;
+    display: inline-block;
+    min-width: 5rem;
+}
+.log-out-button {
+    background-color: #b29fd9ba;
+    border-radius: 8px;
+    color: #000000;
+    padding: .75rem 1.5rem;
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+.log-out-button svg {
+    height: 1.25rem;
+    padding-left: 1.5rem;
+    fill: #FFFFFF;
+}
+.log-out-container:hover svg {
+    transform: scaleY(-1);
+    transition: ease-in-out 0.1s;
+}
+.log-out-opciones {
+    display: none;
+    width: 100%;
+    text-align: center;
+    position: absolute;
+    background: #ffffff;
+    backdrop-filter: blur(5px);
+    z-index: 1;
+    border-radius: 0 0 8px 8px;
+}
+.log-out-opciones a {
+    color: #000000;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+.log-out-opciones a:hover {
+    backdrop-filter: blur(5px);
+}
+.log-out-container:hover .log-out-opciones {
+    display: block;
+}
+.log-out-container:hover .log-out-button {
+    background-color: #9172cf;
+    border-radius: 8px 8px 0 0;
+}
+
+/* Estilos nativos para reemplazar Bootstrap */
+.nav-dropdown {
+    position: relative;
+    display: inline-block;
+    
+}
+
+
+.nav-dropdown.show .dropdown-menu {
+    display: block;
+}
+
+.dropdown-item {
+    color: #333;
+    padding: 8px 16px;
+    text-decoration: none;
+    display: block;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+}
+
+.dropdown-item:hover {
+    background-color: #f8f9fa;
+}
+
+.dropdown-divider {
+    height: 0;
+    margin: 8px 0;
+    overflow: hidden;
+    border-top: 1px solid #e9ecef;
+}
+
+.dropdown-item-text {
+    display: block;
+    padding: 8px 16px;
+    color: #ffffff;
+    text-align: center;
+}
+
+.profile-link {
+    display: flex;
+    align-items: center;
+}
+
+.profile-image {
+    border-radius: 50%;
+    margin-right: 8px;
+    position: relative;
+    z-index: 9999;
+}
+
+.btn-logout {
+    background-color: #dc3545;
+    color: white;
+    border: 1px solid #dc3545;
+    padding: 6px 12px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 14px;
+    display: inline-flex;
+    align-items: center;
+}
+
+.btn-logout:hover {
+    background-color: #c82333;
+    border-color: #bd2130;
+    color: white;
+    text-decoration: none;
+}
+
+.notification-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background-color: #dc3545;
+  color: white;
+  border-radius: 50%;
+  padding: 2px 6px;
+  font-size: 12px;
+  min-width: 18px;
+  text-align: center;
+}
+
+.notification-badge.pulse {
+  animation: pulse 1.2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+}
+
+@keyframes bellShake {
+  0% { transform: rotate(0deg); }
+  20% { transform: rotate(-15deg); }
+  40% { transform: rotate(10deg); }
+  60% { transform: rotate(-7deg); }
+  80% { transform: rotate(3deg); }
+  100% { transform: rotate(0deg); }
+}
+
+.bell-shake {
+  animation: bellShake 0.8s ease-in-out;
+}
+
+/* Menu de hamburguesa */
+/* Paleta de colores */
+:root {
+    --morado-oscuro: #4b2c5e;
+    --morado: #7e57c2;
+    --morado-claro: #d1c4e9;
+    --blanco: #ffffff;
+    --gris-suave: #f5f5f5;
+    --sombra: rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Panel slide */
+  .panelslide {
+    height: 100%;
+    width: 0;
+    position: fixed;
+    z-index: 1000;
+    top: 0;
+    left: 0;
+    background-color: var(--blanco);
+    overflow-x: hidden;
+    transition: 0.3s ease;
+    box-shadow: 3px 0 10px var(--sombra);
+  }
+  
+  .panelslide.open {
+    width: 260px;
+  }
+  
+  /* Botón hamburguesa */
+  .openbtn {
+    font-size: 26px;
+    cursor: pointer;
+    background-color: transparent;
+    border: none;
+    color: var(--morado-oscuro);
+    margin: 10px;
+  }
+  
+  /* Cabecera del panel */
+  .panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background-color: var(--morado);
+    color: var(--blanco);
+    font-weight: bold;
+    font-size: 20px;
+  }
+  
+  /* Enlaces del menú */
+  .panelslide a {
+    padding: 15px 20px;
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    font-size: 16px;
+    color: var(--morado-oscuro);
+    transition: 0.2s;
+  }
+  
+  .panelslide a:hover {
+    background-color: var(--morado-claro);
+    color: var(--morado-oscuro);
+  }
+  
+  /* Íconos del menú */
+  .menu-icon {
+    width: 22px;
+    margin-right: 15px;
+  }
+  
+  /* Submenús */
+  .submenu-hamburguer {
+    display: none;
+    flex-direction: column;
+    background-color: var(--gris-suave);
+    padding-left: 20px;
+  }
+  
+  .submenu-hamburguer.active {
+    display: flex;
+  }
+  
+  /* Divider */
+  .menu-divider {
+    border: none;
+    height: 1px;
+    background: var(--morado-claro);
+    margin: 15px 0;
+  }
+  
+  /* Usuario */
+  .user-section {
+    padding: 20px;
+    border-top: 1px solid var(--morado-claro);
+  }
+  
+  .user-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .user-img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+  }
+  
+  .log-out-button {
+    cursor: pointer;
+    color: var(--morado-oscuro);
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  
+  .log-out-opciones {
+    margin-top: 5px;
+  }
+  
+  .log-out-opciones a {
+    color: var(--morado);
+    font-size: 14px;
+    padding-left: 10px;
+  }
+
+/* Estilos para usuarios baneados permanentemente */
+.disabled-section {
+  cursor: not-allowed !important;
+  opacity: 0.6;
+  pointer-events: none;
+  user-select: none;
+}
+
+.disabled-section:hover {
+  color: #6c757d !important;
+  background-color: transparent !important;
+}
+
+.disabled-section .fas.fa-lock {
+  color: #dc3545;
+  animation: lock-pulse 2s infinite;
+}
+
+@keyframes lock-pulse {
+  0% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.6;
+  }
+}
+
+/* Estilo especial para el texto de usuario baneado permanentemente */
+.text-danger .fas.fa-ban {
+  animation: ban-pulse 1.5s infinite;
+}
+
+@keyframes ban-pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Tooltip personalizado para elementos deshabilitados */
+.disabled-section[title]:hover::after {
+  content: attr(title);
+  position: absolute;
+  bottom: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #333;
+  color: #000000;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  z-index: 1000;
+  pointer-events: none;
+}

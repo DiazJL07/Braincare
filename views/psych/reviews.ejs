@@ -1,0 +1,11 @@
+<div class="container">
+  <h2>Reseñas</h2>
+  <ul class="list-group">
+    <% reviews.forEach(r => { %>
+      <li class="list-group-item">
+        <span class="fw-bold"><%= r.rating %>/5</span>
+        <div><%= r.comment %></div>
+      </li>
+    <% }) %>
+  </ul>
+</div>

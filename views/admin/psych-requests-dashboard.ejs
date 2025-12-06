@@ -1,0 +1,230 @@
+ 
+
+<link rel="stylesheet" href="/css/admin-reports.css">
+
+<style>
+  body { padding-top: 0; }
+  
+  /* Estilos específicos para la paginación (igual que en el archivo de reportes) */
+  .adm-rep-pagination {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    margin-top: 1.5rem;
+  }
+  .adm-rep-page-btn {
+    background: white;
+    border: 1px solid #e5e7eb;
+    padding: 0.5rem 1rem;
+    border-radius: 0.375rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+    font-size: 0.9rem;
+  }
+  .adm-rep-page-btn:hover {
+    background-color: #f3f4f6;
+  }
+  .adm-rep-page-btn.active {
+    background: #2563eb;
+    color: white;
+    border-color: #2563eb;
+  }
+</style>
+
+<div class="adm-reports-wrapper animate-fade-in">
+  
+  <div class="adm-rep-header-row">
+    <h1 class="adm-rep-page-title">
+      Solicitudes de Psicólogo
+    </h1>
+    <div>
+      <a href="/admin/dashboard" class="adm-rep-nav-back">
+        <i class="fas fa-arrow-left"></i> Volver al Dashboard
+      </a>
+    </div>
+  </div>
+
+  <div class="adm-rep-filter-bar animate-slide-in">
+    <div class="adm-rep-filter-label">
+      <i class="fas fa-filter" style="color: #374151;"></i>
+      Filtrar:
+    </div>
+    
+    <form method="GET" action="/admin/requests" class="adm-rep-inline-form">
+      <% const currentStatus = (typeof status !== 'undefined') ? status : 'all'; %>
+      
+      <select name="status" class="adm-rep-select-minimal">
+        <option value="all" <%= currentStatus === 'all' ? 'selected' : '' %>>Todas las solicitudes</option>
+        <option value="pending" <%= currentStatus === 'pending' ? 'selected' : '' %>>Pendientes</option>
+        <option value="approved" <%= currentStatus === 'approved' ? 'selected' : '' %>>Aprobadas</option>
+        <option value="rejected" <%= currentStatus === 'rejected' ? 'selected' : '' %>>Denegadas</option>
+      </select>
+      
+      <button type="submit" class="adm-rep-btn-filter">
+        <i class="fas fa-search"></i> Buscar
+      </button>
+    </form>
+  </div>
+
+  <div class="adm-rep-table-panel animate-slide-in">
+    <div class="adm-rep-section-header">
+      <h2 class="adm-rep-section-headline">
+        <i class="fas fa-user-md" style="color: #2563eb;"></i>
+        Listado de Solicitudes
+      </h2>
+    </div>
+
+    <% if (requests && requests.length > 0) { %>
+      <div class="adm-rep-scroll-wrapper">
+        <table class="adm-rep-data-table">
+          <thead>
+            <tr>
+              <th>Usuario / Rol</th>
+              <th>Correo Electrónico</th>
+              <th>Estado</th>
+              <th>Fecha Recepción</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="requestsTableBody">
+            <% requests.forEach(function(req){ %>
+              <tr class="table-row">
+                <td>
+                  <div class="adm-rep-user-cell">
+                    <% const avatar = (req.user && req.user.profileImage) ? req.user.profileImage : '/img/default-avatar.svg'; %>
+                    <img src="<%= avatar %>" 
+                         alt="Avatar" 
+                         class="adm-rep-avatar-circle" 
+                         onerror="this.src='/img/default-avatar.svg'">
+                    
+                    <div style="display:flex; flex-direction:column; line-height:1.2;">
+                      <span><%= req.fullName %></span>
+                      <small style="color: #6b7280; font-weight:400; font-size:0.75rem;">
+                        <%= req.user ? req.user.name : 'Usuario' %>
+                      </small>
+                    </div>
+                  </div>
+                </td>
+                
+                <td style="color: #374151;">
+                    <%= req.email %>
+                </td>
+                
+                <td>
+                  <% 
+                    let pillClass = 'pill-type-neutral';
+                    let iconClass = 'fa-circle';
+                    let label = 'Desconocido';
+
+                    if (req.status === 'pending') {
+                        pillClass = 'pill-type-warning';
+                        iconClass = 'fa-hourglass-half';
+                        label = 'Pendiente';
+                    } else if (req.status === 'approved') {
+                        pillClass = 'pill-type-success';
+                        iconClass = 'fa-check';
+                        label = 'Aprobada';
+                    } else if (req.status === 'rejected') {
+                        pillClass = 'pill-type-error';
+                        iconClass = 'fa-times';
+                        label = 'Denegada';
+                    }
+                  %>
+                  <span class="adm-rep-status-pill <%= pillClass %>">
+                    <i class="fas <%= iconClass %>"></i> <%= label %>
+                  </span>
+                </td>
+                
+                <td>
+                  <%= new Date(req.createdAt).toLocaleDateString('es-ES') %>
+                  <small style="color: #9ca3af; margin-left:4px;">
+                    <%= new Date(req.createdAt).toLocaleTimeString('es-ES', {hour:'2-digit', minute:'2-digit'}) %>
+                  </small>
+                </td>
+                
+                <td>
+                  <a href="/admin/requests/<%= req._id %>" class="adm-rep-action-link">
+                    <i class="fas fa-eye"></i> Ver
+                  </a>
+                </td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+      
+     
+
+    <% } else { %>
+      <div style="text-align:center; padding: 4rem 2rem; color: #6b7280;">
+        <i class="fas fa-id-card" style="font-size: 3rem; color: #d1d5db; margin-bottom: 1rem;"></i>
+        <h3 style="color: #111827; margin:0 0 0.5rem 0; font-size:1.1rem;">No hay solicitudes</h3>
+        <p style="margin:0;">No se encontraron solicitudes con el filtro seleccionado.</p>
+      </div>
+    <% } %>
+  </div>
+   <div id="requestsPagination" class="adm-rep-pagination"></div>
+</div>
+
+
+<script>
+  (function(){
+    let reqCurrentPage = 1; 
+    const reqPageSize = 15;
+    
+    // Seleccionamos las filas dentro del tbody específico
+    function rows(){ 
+      return Array.from(document.querySelectorAll('#requestsTableBody tr')).filter(r => r.style.display !== 'none'); 
+    }
+    
+    function apply(){ 
+      const all = Array.from(document.querySelectorAll('#requestsTableBody tr')); 
+      const vis = rows(); 
+      
+      // Ocultar las que no están en la lista visible (por si hubiera filtro JS)
+      all.forEach(r => { if(!vis.includes(r)) r.style.display='none'; }); 
+      
+      const s = (reqCurrentPage-1) * reqPageSize; 
+      const e = s + reqPageSize; 
+      
+      vis.forEach((r,i) => { 
+        r.style.display = (i >= s && i < e) ? '' : 'none'; 
+      }); 
+    }
+    
+    function render(){ 
+      const c = document.getElementById('requestsPagination'); 
+      if(!c) return; 
+      
+      const total = rows().length; 
+      // Si no hay filas (porque requests es vacío), no renderizar paginación
+      if (total === 0) { c.innerHTML = ''; return; }
+
+      const pages = Math.max(1, Math.ceil(total/reqPageSize)); 
+      
+      if(reqCurrentPage > pages) reqCurrentPage = pages; 
+      c.innerHTML = ''; 
+      
+      for(let i=1; i<=pages; i++){ 
+        const b = document.createElement('button'); 
+        // Usamos la clase de diseño nueva 'adm-rep-page-btn'
+        b.className = 'adm-rep-page-btn' + (i === reqCurrentPage ? ' active' : ''); 
+        b.textContent = i; 
+        b.onclick = function(){ 
+          reqCurrentPage = i; 
+          apply(); 
+          render(); 
+        }; 
+        c.appendChild(b);
+      } 
+    }
+    
+    document.addEventListener('DOMContentLoaded', function(){ 
+      render(); 
+      apply(); 
+    });
+  })();
+</script>
+
+<%- include('../partials/footer') %>

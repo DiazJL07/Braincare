@@ -1,0 +1,150 @@
+ 
+<link rel="stylesheet" href="/css/profile-detail.css">
+<div class="public-profile-container" data-return-url="<%- (typeof returnUrl !== 'undefined' ? returnUrl : '') %>">
+    
+    <div class="public-banner">
+        <% const coverUrl = (typeof profileUser.getCoverImageUrl === 'function') 
+            ? profileUser.getCoverImageUrl() 
+            : ((profileUser.coverImage && profileUser.coverImage !== '/img/default-cover.svg') ? profileUser.coverImage : '/img/default-cover.svg'); %>
+        <img src="<%= coverUrl %>" alt="Portada de <%= profileUser.name %>">
+    </div>
+
+    <div class="public-grid">
+        
+        <aside class="profile-card">
+            
+            <div class="avatar-container">
+                <% const avatarUrl = (typeof profileUser.getProfileImageUrl === 'function') 
+                    ? profileUser.getProfileImageUrl() 
+                    : (profileUser.profileImage ? profileUser.profileImage : '/img/default-avatar.svg'); %>
+                <% if (avatarUrl && avatarUrl !== '/img/default-avatar.svg') { %>
+                    <img src="<%= avatarUrl %>" class="profile-avatar" alt="Foto de perfil">
+                <% } else { %>
+                    <div class="avatar-placeholder">
+                        <%= profileUser.name.charAt(0).toUpperCase() %>
+                    </div>
+                <% } %>
+            </div>
+
+            <h1 class="profile-name"><%= profileUser.name %></h1>
+            
+            <span class="badge-pill <%= profileUser.role === 'admin' ? 'badge-admin' : (profileUser.role === 'psychologist' ? 'badge-psych' : 'badge-user') %>">
+                <% if (profileUser.role === 'admin') { %> <i class="fas fa-shield-alt"></i> Administrador <% } %>
+                <% if (profileUser.role === 'psychologist') { %> <i class="fas fa-user-md"></i> Psicólogo <% } %>
+                <% if (profileUser.role === 'user') { %> <i class="fas fa-user"></i> Usuario <% } %>
+            </span>
+
+            <div class="info-list">
+                <div class="info-item">
+                    <span>Miembro desde</span>
+                    <strong><%= new Date(profileUser.createdAt).toLocaleDateString('es-ES', { year: 'numeric', month: 'short' }) %></strong>
+                </div>
+                
+                <div class="info-item">
+                    <span>Estado</span>
+                    <% if (profileUser.isBanned) { %>
+                        <span class="status-banned"><i class="fas fa-ban"></i> Baneado</span>
+                    <% } else { %>
+                        <span class="status-active"><i class="fas fa-check-circle"></i> Activo</span>
+                    <% } %>
+                </div>
+
+                <% if (psychProfile) { %>
+                    <div class="info-item">
+                        <span>Experiencia</span>
+                        <strong><%= psychProfile.experienceYears || 0 %> Años</strong>
+                    </div>
+                <% } %>
+            </div>
+
+            <button type="button" class="btn-back" onclick="handleBack()">
+                <i class="fas fa-arrow-left"></i>
+                <% if (typeof returnUrl !== 'undefined' && returnUrl) { %>
+                    <%= returnUrl.includes('/admin/') ? 'Volver al Panel' : 'Volver' %>
+                <% } else { %>
+                    Volver Atrás
+                <% } %>
+            </button>
+
+        </aside>
+
+        <main class="content-area">
+
+            <% if (psychProfile) { %>
+                
+                <div class="content-section">
+                    <h2 class="section-title"><i class="far fa-id-card"></i> Carta de Presentación</h2>
+                    <div class="bio-text">
+                        <%= psychProfile.bio || 'Este profesional aún no ha añadido una descripción detallada.' %>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h2 class="section-title"><i class="fas fa-brain"></i> Áreas de Enfoque</h2>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <small style="color:#94a3b8; display:block; margin-bottom:8px;">ESPECIALIDADES</small>
+                        <div class="tags-wrapper">
+                            <% if (psychProfile.specialties && psychProfile.specialties.length > 0) { %>
+                                <% psychProfile.specialties.forEach(spec => { %>
+                                    <span class="tag-pill tag-highlight"><%= spec.name %></span>
+                                <% }) %>
+                            <% } else { %>
+                                <span class="text-muted">Sin especialidades listadas</span>
+                            <% } %>
+                        </div>
+                    </div>
+
+                    <% if (psychProfile.topics && psychProfile.topics.length > 0) { %>
+                    <div>
+                        <small style="color:#94a3b8; display:block; margin-bottom:8px;">TEMAS QUE TRATA</small>
+                        <div class="tags-wrapper">
+                            <% psychProfile.topics.forEach(topic => { %>
+                                <span class="tag-pill"><%= topic %></span>
+                            <% }) %>
+                        </div>
+                    </div>
+                    <% } %>
+                </div>
+
+                <% if (psychProfile.languages && psychProfile.languages.length > 0) { %>
+                <div class="content-section">
+                    <h2 class="section-title"><i class="fas fa-language"></i> Idiomas</h2>
+                    <div class="tags-wrapper">
+                        <% psychProfile.languages.forEach(lang => { %>
+                            <span class="tag-pill"><i class="far fa-comment-dots"></i> <%= lang %></span>
+                        <% }) %>
+                    </div>
+                </div>
+                <% } %>
+
+            <% } else { %>
+                <div class="content-section">
+                    <h2 class="section-title"><i class="fas fa-user-circle"></i> Información General</h2>
+                    <p class="text-muted">
+                        Este es un perfil de usuario regular. Se unió a la comunidad el <%= new Date(profileUser.createdAt).toLocaleDateString() %>.
+                    </p>
+                </div>
+            <% } %>
+
+        </main>
+
+    </div>
+</div>
+
+<script>
+  (function(){
+    const container = document.querySelector('.public-profile-container');
+    const returnUrl = (container && container.getAttribute('data-return-url')) || '';
+    window.handleBack = function(){
+      if (document.referrer && window.history.length > 1) { window.history.back(); return; }
+      if (returnUrl) { window.location.href = returnUrl; return; }
+      window.location.href = '/';
+    };
+  })();
+</script>
+
+  <!-- Tu JS primero, para que el callback global exista antes de cargar el script de Google -->
+  <script src="/js/tradux.js"></script>
+  <!-- Script oficial de Google (callback definido en translate.js) -->
+  <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>

@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cuenta Suspendida - Foro</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .banned-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 3rem;
+            max-width: 600px;
+            width: 90%;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .banned-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #ff6b6b, #feca57, #48dbfb, #ff9ff3);
+        }
+        
+        .banned-icon {
+            font-size: 4rem;
+            color: #e74c3c;
+            margin-bottom: 1.5rem;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        .banned-title {
+            color: #2c3e50;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            font-size: 2.5rem;
+        }
+        
+        .banned-subtitle {
+            color: #7f8c8d;
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .ban-info {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 2rem 0;
+            border-left: 5px solid #e74c3c;
+        }
+        
+        .ban-detail {
+            margin-bottom: 1rem;
+            text-align: left;
+        }
+        
+        .ban-detail strong {
+            color: #2c3e50;
+            display: inline-block;
+            width: 120px;
+        }
+        
+        .ban-reason {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 10px;
+            padding: 1rem;
+            margin: 1rem 0;
+            color: #856404;
+        }
+        
+        .contact-info {
+            background: #e8f4fd;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            border-left: 5px solid #3498db;
+        }
+        
+        .btn-home {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border: none;
+            border-radius: 25px;
+            padding: 12px 30px;
+            color: white;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-home:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            color: white;
+        }
+        
+        .countdown {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #e74c3c;
+            margin: 1rem 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="banned-container">
+        <div class="banned-icon">
+            <i class="fas fa-ban"></i>
+        </div>
+        
+        <h1 class="banned-title">Cuenta Suspendida</h1>
+        <p class="banned-subtitle">Tu cuenta ha sido suspendida temporalmente</p>
+        
+        <div class="ban-info">
+            <div class="ban-detail">
+                <strong>Fecha del baneo:</strong> 
+                <%= new Date(user.banDate).toLocaleDateString('es-ES', { 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                }) %>
+            </div>
+            
+            <% if (user.banExpiresAt) { %>
+                <div class="ban-detail">
+                    <strong>Expira el:</strong> 
+                    <%= new Date(user.banExpiresAt).toLocaleDateString('es-ES', { 
+                        year: 'numeric', 
+                        month: 'long', 
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    }) %>
+                </div>
+                
+                <div class="countdown" id="countdown">
+                    <!-- El countdown se actualizará con JavaScript -->
+                </div>
+            <% } else { %>
+                <div class="ban-detail">
+                    <strong>Tipo:</strong> 
+                    <span class="badge bg-danger">Baneo Permanente</span>
+                </div>
+            <% } %>
+            
+            <% if (user.banReason) { %>
+                <div class="ban-reason">
+                    <strong><i class="fas fa-exclamation-triangle"></i> Razón del baneo:</strong><br>
+                    <%= user.banReason %>
+                </div>
+            <% } %>
+        </div>
+        
+        <div class="contact-info">
+            <h5><i class="fas fa-envelope"></i> ¿Crees que esto es un error?</h5>
+            <p class="mb-2">Si consideras que tu cuenta fue suspendida por error, puedes contactar con nuestro equipo de soporte.</p>
+            <small class="text-muted">
+                <i class="fas fa-info-circle"></i> 
+                Incluye tu nombre de usuario y una descripción detallada de tu situación.
+            </small>
+        </div>
+        
+        <a href="/logout" class="btn-home">
+            <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+        </a>
+    </div>
+
+    <% if (user.banExpiresAt) { %>
+    <script>
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const banExpires = new Date('<%= user.banExpiresAt %>').getTime();
+            const distance = banExpires - now;
+
+            if (distance > 0) {
+                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                let countdownText = '';
+                if (days > 0) countdownText += days + 'd ';
+                if (hours > 0) countdownText += hours + 'h ';
+                if (minutes > 0) countdownText += minutes + 'm ';
+                countdownText += seconds + 's';
+
+                document.getElementById('countdown').innerHTML = 
+                    '<i class="fas fa-clock"></i> Tiempo restante: ' + countdownText;
+            } else {
+                document.getElementById('countdown').innerHTML = 
+                    '<i class="fas fa-check-circle"></i> ¡Tu suspensión ha expirado! Puedes intentar iniciar sesión nuevamente.';
+                document.getElementById('countdown').style.color = '#27ae60';
+            }
+        }
+
+        // Actualizar cada segundo
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+    </script>
+    <% } %>
+</body>
+  <!-- Tu JS primero, para que el callback global exista antes de cargar el script de Google -->
+  <script src="/js/tradux.js"></script>
+  <!-- Script oficial de Google (callback definido en translate.js) -->
+  <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+</html>

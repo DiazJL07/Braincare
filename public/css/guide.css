@@ -1,0 +1,324 @@
+/* --- Variables del Tema --- */
+:root {
+    --g-primary: #0EA5E9;
+    --g-primary-dark: #0284C7;
+    --g-bg: #F8FAFC;
+    --g-text: #334155;
+    --g-text-light: #94A3B8;
+    --g-radius: 16px; /* Radio curvado para las imágenes */
+    --g-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    --g-shadow-hover: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+body {
+    background-color: var(--g-bg);
+    color: var(--g-text);
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+}
+
+/* --- Hero Section --- */
+.guides-hero {
+    background-image: url(/img/articles/Ps1.png);
+    padding: 3rem 1.5rem;
+    text-align: center;
+    padding-top: 5%;
+   
+    margin-bottom: 3rem;
+}
+
+.guides-hero h1 {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: #ffffff;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.02em;
+}
+
+.guides-hero p {
+    font-size: 1rem;
+    color: var(--g-text-light);
+    max-width: 600px;
+    margin: 0 auto 2rem;
+}
+
+.hero-search-wrapper {
+    max-width: 500px;
+    margin: 0 auto;
+    position: relative;
+}
+
+.hero-search-input {
+    width: 100%;
+    padding: 0.8rem 1.5rem 0.8rem 3rem;
+    border: 1px solid #E2E8F0;
+    border-radius: 50px;
+    font-size: 0.95rem;
+    transition: all 0.3s;
+    background: #F1F5F9;
+    box-sizing: border-box;
+}
+
+.hero-search-input:focus {
+    outline: none;
+    background: white;
+    border-color: var(--g-primary);
+    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+}
+
+.hero-search-icon {
+    position: absolute; left: 1.2rem; top: 50%; transform: translateY(-50%);
+    color: var(--g-text-light); font-size: 1.1rem;
+}
+
+/* --- Layout Principal --- */
+.guides-layout {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.5rem 4rem;
+    display: grid;
+    grid-template-columns: 1fr 280px; /* Sidebar un poco más estrecho */
+    gap: 3rem;
+    align-items: start;
+}
+
+.guides-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem 1.5rem; /* Más espacio vertical entre filas */
+}
+
+/* --- TARJETA ESTILO GALERÍA (CAMBIOS CLAVE) --- */
+.guide-card {
+    /* Quitamos el fondo blanco y los bordes de la tarjeta en sí */
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    overflow: visible;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    position: relative;
+    transition: transform 0.3s ease;
+}
+
+.guide-card:hover {
+    transform: translateY(-5px); /* Movemos toda la tarjeta al hover */
+    box-shadow: none; /* Quitamos sombra global */
+}
+
+/* Contenedor de Imagen: Ahora este lleva el borde redondeado y la sombra */
+.guide-img-container {
+    height: 180px;
+    width: 100%;
+    border-radius: var(--g-radius); /* Borde redondeado SOLO aquí */
+    overflow: hidden;
+    position: relative;
+    background: #e2e8f0; /* Color de fondo por si la imagen tarda */
+    box-shadow: var(--g-shadow);
+    transition: box-shadow 0.3s ease;
+}
+
+.guide-card:hover .guide-img-container {
+    box-shadow: var(--g-shadow-hover); /* Sombra intensa al hover */
+}
+
+.guide-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Llenar todo el espacio (crop) */
+    transition: transform 0.5s ease;
+}
+
+.guide-card:hover .guide-img { transform: scale(1.05); }
+
+/* Badge sutil */
+.guide-topic-badge {
+    position: absolute;
+    top: 0.8rem; left: 0.8rem; /* Cambiado a izquierda para estilo moderno */
+    background: rgba(255, 255, 255, 0.95);
+    padding: 0.2rem 0.6rem;
+    border-radius: 6px; /* Borde más cuadrado */
+    font-size: 0.7rem; font-weight: 700;
+    color: #0F172A;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    z-index: 2;
+}
+
+/* Cuerpo: Texto limpio sin padding lateral */
+.guide-body {
+    padding: 1rem 0 0 0; /* Solo padding superior */
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.guide-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 0.3rem;
+    line-height: 1.3;
+    color: #0F172A;
+}
+
+.guide-author {
+    font-size: 0.85rem;
+    color: var(--g-text-light);
+    margin-bottom: 0.5rem;
+    display: flex; align-items: center; gap: 0.4rem;
+}
+
+/* Stats minimalistas */
+.guide-stats-row {
+    margin-top: auto;
+    display: flex;
+    gap: 1rem;
+    font-size: 0.8rem;
+    color: var(--g-text-light);
+    font-weight: 500;
+}
+
+.stat { display: flex; align-items: center; gap: 0.3rem; }
+.stat i { font-size: 0.9rem; }
+
+/* Botón Overlay (Opcional, estilo "Play") */
+.guide-overlay-btn {
+    position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    align-items: center; justify-content: center;
+    
+}
+
+.btn-view-guide{
+    text-decoration: none;
+    
+}
+.guide-card:hover .btn-view-guide { transform: scale(1); }
+
+/* --- Sidebar --- */
+.guides-sidebar { position: sticky; top: 2rem; }
+
+.sidebar-card {
+    /* Sidebar limpio sin fondo blanco para integrarse, o con fondo sutil */
+    padding-bottom: 2rem;
+    border-bottom: 1px solid #E2E8F0;
+    margin-bottom: 2rem;
+}
+.sidebar-card:last-child { border-bottom: none; }
+
+.sidebar-title {
+    font-size: 0.95rem; font-weight: 800;
+    text-transform: uppercase; letter-spacing: 0.05em;
+    margin-bottom: 1rem; color: #94A3B8;
+}
+
+.filter-group { margin-bottom: 1rem; }
+.filter-label { display: none; } /* Ocultamos etiquetas para limpieza */
+.filter-select {
+    width: 100%; padding: 0.7rem;
+    border: 1px solid #E2E8F0; border-radius: 8px;
+    background: white; color: var(--g-text);
+    cursor: pointer; font-size: 0.9rem;
+    box-sizing: border-box;
+}
+.filter-btn-apply {
+    width: 100%; padding: 0.8rem;
+    background: var(--g-text); color: white;
+    border: none; border-radius: 8px; font-weight: 600;
+    cursor: pointer; transition: 0.2s;
+    margin-top: 0.5rem;
+}
+.filter-btn-apply:hover { background: #0F172A; }
+
+/* Populares (Lista Simple) */
+.popular-item { padding: 0.6rem 0; display: flex; align-items: flex-start; gap: 0.8rem; }
+.popular-number { 
+    font-size: 1.2rem; font-weight: 900; color: #E2E8F0; line-height: 1; 
+}
+.popular-info { flex: 1; }
+.popular-link { 
+    font-weight: 600; color: var(--g-text); 
+    font-size: 0.95rem; line-height: 1.3; 
+    display: block; margin-bottom: 0.2rem; text-decoration: none;
+}
+.popular-link:hover { color: var(--g-primary); }
+.popular-meta { font-size: 0.75rem; color: var(--g-text-light); }
+
+/* Empty State */
+.guides-empty {
+    grid-column: 1 / -1; text-align: center; padding: 4rem;
+    color: var(--g-text-light);
+}
+
+/* Paginación (compartida con artículos) */
+.articles-pagination {
+    width: 100%;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-top: 30px;
+    padding: 10px;
+}
+
+.page-btn {
+    min-width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 0;
+    margin-left: -1px;
+    color: var(--g-text-light);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.9rem;
+    position: relative;
+}
+
+.page-btn:first-child {
+    border-top-left-radius: 6px;
+    border-bottom-left-radius: 6px;
+    margin-left: 0;
+}
+
+.page-btn:last-child {
+    border-top-right-radius: 6px;
+    border-bottom-right-radius: 6px;
+}
+
+.page-btn:hover {
+    border-color: var(--g-primary);
+    color: var(--g-primary);
+    background-color: #f9f9f9;
+    z-index: 2;
+}
+
+.page-btn.active {
+    background-color: var(--g-primary);
+    color: white;
+    border-color: var(--g-primary);
+    z-index: 3;
+}
+
+/* --- Media Queries --- */
+@media (max-width: 1024px) {
+    .guides-layout { grid-template-columns: 1fr; gap: 2rem; }
+    .guides-sidebar { position: static; order: -1; display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; border-bottom: 1px solid #E2E8F0; padding-bottom: 1rem; margin-bottom: 2rem; }
+    .sidebar-card { border: none; margin: 0; padding: 0; }
+}
+
+@media (max-width: 900px) {
+    .guides-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 700px) {
+    .guides-sidebar { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 600px) {
+    .guides-grid { grid-template-columns: 1fr; }
+    .guide-img-container { height: 220px; }
+}

@@ -1,0 +1,274 @@
+/* ===== NAVEGACIÓN ACTIVA CON ANIMACIONES ===== */
+
+/* Estilos base para los enlaces de navegación */
+.nav-link {
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+
+
+
+
+
+
+
+/* Animación de brillo para el indicador activo */
+@keyframes activeGlow {
+  0% {
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+  }
+  100% {
+    box-shadow: 0 2px 15px rgba(102, 126, 234, 0.6);
+  }
+}
+
+
+
+/* Indicador adicional en el lado derecho */
+.nav-link.active::after {
+  content: '●';
+  position: absolute;
+  right: -15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #667eea;
+  font-size: 12px;
+  animation: pulse 2s infinite;
+}
+
+@keyframes backgroundPulse {
+  0%, 100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+/* Efecto hover mejorado */
+
+/* Indicador de punto activo (alternativo) */
+
+
+/* ===== INDICADORES ESPECÍFICOS POR SECCIÓN ===== */
+
+/* Inicio */
+.nav-link[href="/"].active {
+  color: #28a745 !important;
+}
+.nav-link[href="/"].active::after {
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+}
+
+/* Artículos */
+.nav-link[href="/articles"].active {
+  color: #007bff !important;
+}
+.nav-link[href="/articles"].active::after {
+  background: linear-gradient(135deg, #007bff 0%, #6610f2 100%);
+}
+
+/* Foro */
+.nav-link[href="/foro"].active {
+  color: #fd7e14 !important;
+}
+.nav-link[href="/foro"].active::after {
+  background: linear-gradient(135deg, #fd7e14 0%, #e83e8c 100%);
+}
+
+/* Guías */
+.nav-link[href="/guides"].active {
+  color: #6f42c1 !important;
+}
+.nav-link[href="/guides"].active::after {
+  background: linear-gradient(135deg, #6f42c1 0%, #e83e8c 100%);
+}
+
+/* Información Legal */
+.nav-link[href="/ruta2"].active {
+  color: #17a2b8 !important;
+}
+.nav-link[href="/ruta2"].active::after {
+  background: linear-gradient(135deg, #17a2b8 0%, #6f42c1 100%);
+}
+
+/* Nosotros */
+.nav-link[href="/ruta3"].active {
+  color: #dc3545 !important;
+}
+.nav-link[href="/ruta3"].active::after {
+  background: linear-gradient(135deg, #dc3545 0%, #fd7e14 100%);
+}
+
+/* CoKi IA */
+.nav-link[href="/ruta4"].active,
+.nav-link[href="/ia"].active {
+  color: #20c997 !important;
+}
+.nav-link[href="/ruta4"].active::after,
+.nav-link[href="/ia"].active::after {
+  background: linear-gradient(135deg, #20c997 0%, #28a745 100%);
+}
+
+/* ===== EFECTOS ADICIONALES ===== */
+
+/* Efecto de ondas al hacer clic */
+.nav-link {
+  position: relative;
+  overflow: hidden;
+}
+
+
+
+.nav-link:active::before {
+  width: 300px;
+  height: 300px;
+}
+
+/* Animación de entrada para los enlaces */
+.nav-link {
+  animation: slideInFromTop 0.6s ease-out;
+}
+
+@keyframes slideInFromTop {
+  0% {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Retraso escalonado para cada enlace */
+.nav-item:nth-child(1) .nav-link { animation-delay: 0.1s; }
+.nav-item:nth-child(2) .nav-link { animation-delay: 0.2s; }
+.nav-item:nth-child(3) .nav-link { animation-delay: 0.3s; }
+.nav-item:nth-child(4) .nav-link { animation-delay: 0.4s; }
+.nav-item:nth-child(5) .nav-link { animation-delay: 0.5s; }
+.nav-item:nth-child(6) .nav-link { animation-delay: 0.6s; }
+
+/* ===== INDICADORES PARA MENÚ MÓVIL ===== */
+
+/* Estilos para el menú móvil */
+.mobile-menu .menu-item {
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.mobile-menu .menu-item.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  color: white !important;
+  font-weight: 700 !important;
+  border-radius: 10px !important;
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6) !important;
+  transform: translateX(8px) !important;
+  border: 2px solid #ffffff40 !important;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.3) !important;
+  position: relative !important;
+}
+
+.mobile-menu .menu-item.active::before {
+  content: '';
+  position: absolute;
+  left: -5px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 6px;
+  height: 100%;
+  background: linear-gradient(to bottom, #667eea, #764ba2);
+  border-radius: 3px;
+  animation: mobileActiveIndicator 0.3s ease-out;
+  box-shadow: 0 0 10px rgba(102, 126, 234, 0.8);
+}
+
+.mobile-menu .menu-item.active::after {
+  content: '◀';
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: rgba(255,255,255,0.8);
+  font-size: 14px;
+  animation: pulse 2s infinite;
+}
+
+@keyframes mobileDotPulse {
+  0%, 100% {
+    opacity: 1;
+    transform: translateY(-50%) scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: translateY(-50%) scale(1.2);
+  }
+}
+
+/* ===== RESPONSIVE ===== */
+
+@media (max-width: 992px) {
+  /* En móvil, usar solo los estilos del menú móvil */
+  .nav-link::after {
+    display: none;
+  }
+  
+  .nav-link::before {
+    display: none;
+  }
+}
+
+/* ===== ACCESIBILIDAD ===== */
+
+/* Reducir animaciones para usuarios que prefieren menos movimiento */
+@media (prefers-reduced-motion: reduce) {
+  .nav-link,
+  .nav-link::after,
+  .nav-link::before {
+    animation: none;
+    transition: none;
+  }
+}
+
+/* Mejorar contraste para usuarios con problemas de visión */
+@media (prefers-contrast: high) {
+  .nav-link.active {
+    color: #000 !important;
+    background-color: #fff;
+    border: 2px solid #000;
+  }
+  
+  .nav-link.active::after {
+    background: #000;
+  }
+}
+
+/* ===== ESTADOS ESPECIALES ===== */
+
+/* Enlaces deshabilitados */
+.nav-link.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.nav-link.disabled::after {
+  display: none;
+}
+
+/* Indicador de carga */
+.nav-link.loading::after {
+  width: 100%;
+  background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.5), transparent);
+  animation: loadingShimmer 1.5s ease-in-out infinite;
+}
+
+@keyframes loadingShimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}

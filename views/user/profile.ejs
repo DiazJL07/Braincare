@@ -1,0 +1,400 @@
+ 
+<% var psychProfile = typeof psychProfile !== 'undefined' ? psychProfile : null; var specialties = typeof specialties !== 'undefined' ? specialties : []; %>
+
+<link rel="stylesheet" href="/css/profile.css">
+<div class="profile-container">
+
+    <header class="profile-header">
+        <div class="header-banner">
+            <img src="<%= user.getCoverImageUrl() %>" class="banner-img" alt="Portada" id="coverImagePreview">
+            <button type="button" class="btn-edit-cover" onclick="openModal('coverModal')">
+                <i class="fas fa-camera"></i> Cambiar portada
+            </button>
+        </div>
+
+        <div class="user-info">
+            <div class="avatar-wrapper">
+                <% if (user.getProfileImageUrl()) { %>
+                    <img src="<%= user.getProfileImageUrl() %>" class="avatar" alt="Perfil" id="profileImagePreview">
+                <% } else { %>
+                    <div class="avatar-placeholder">
+                        <%= user.name.charAt(0).toUpperCase() %>
+                    </div>
+                <% } %>
+                <button class="btn-edit-avatar" onclick="openModal('avatarModal')">+</button>
+            </div>
+            
+            <div class="user-details">
+                <h1 data-sync-field="name"><%= user.name %></h1>
+                <p>
+                    <%= user.email %> • Miembro desde <%= new Date(user.createdAt).toLocaleDateString() %>
+                    <span class="badge <%= user.role === 'admin' ? 'admin' : (user.role === 'psychologist' ? 'psych' : 'user') %>">
+                        <i class="fas <%= user.role === 'admin' ? 'fa-crown' : (user.role === 'psychologist' ? 'fa-stethoscope' : 'fa-user') %>"></i> 
+                        <%= user.role === 'admin' ? 'Admin' : (user.role === 'psychologist' ? 'Psicólogo' : 'Usuario') %>
+                    </span>
+                </p>
+            </div>
+        </div>
+
+        <% if (typeof success !== 'undefined') { %>
+            <div style="padding: 0 30px;">
+                <div class="alert alert-success">
+                    <i class="fas fa-check-circle"></i> <%= success %>
+                </div>
+            </div>
+        <% } %>
+
+        <% if (typeof uploadError !== 'undefined' && uploadError) { %>
+            <div style="padding: 0 30px;">
+                <div class="alert alert-danger"><%= uploadError %></div>
+            </div>
+        <% } %>
+
+        <nav class="profile-tabs">
+            <a class="tab-link active" onclick="openTab(event, 'info')">Información Personal</a>
+            
+            <% if (user.role === 'psychologist') { %>
+                <a class="tab-link" onclick="openTab(event, 'professional')">Perfil Profesional</a>
+            <% } %>
+            
+            <a class="tab-link" onclick="openTab(event, 'security')">Seguridad</a>
+            
+            <% if (user.role === 'admin') { %>
+                <a class="tab-link" onclick="openTab(event, 'role')">Gestión de Rol</a>
+            <% } %>
+        </nav>
+    </header>
+
+    <main class="profile-content">
+        
+        <div id="info" class="tab-pane active">
+            <h2 class="section-title">Información Básica</h2>
+            <p class="section-desc">Gestiona tu nombre y contacto.</p>
+
+            <form action="/user/profile" method="POST" class="form-grid">
+                <div class="form-group">
+                    <label class="form-label"><i class="fas fa-user"></i> Nombre completo</label>
+                    <input type="text" class="form-control" name="name" value="<%= user.name %>" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label"><i class="fas fa-envelope"></i> Correo</label>
+                    <input type="email" class="form-control" name="email" value="<%= user.email %>" required>
+                </div>
+                <div class="form-group full-width">
+                    <label class="form-label"><i class="fas fa-key"></i> Contraseña actual (para confirmar)</label>
+                    <input type="password" class="form-control" name="currentPassword" required>
+                </div>
+                <div class="full-width" style="text-align: right;">
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Actualizar Info</button>
+                </div>
+            </form>
+
+            <% if (user.role === 'user') { %>
+                <hr style="margin: 30px 0; border: 0; border-top: 1px solid var(--border);">
+                <div class="form-group full-width">
+                    <h3 class="section-title">¿Eres psicólogo?</h3>
+                    
+                    <% if (typeof latestPsychRequest !== 'undefined' && latestPsychRequest) { %>
+                        <div class="alert <%= latestPsychRequest.status === 'pending' ? 'alert-info' : 'alert-danger' %>">
+                            <span>Estado de solicitud: <strong><%= latestPsychRequest.status %></strong></span>
+                            <% if (latestPsychRequest.status === 'rejected' && latestPsychRequest.rejectionReason) { %>
+                                <br><small>Motivo: <%= latestPsychRequest.rejectionReason %></small>
+                            <% } %>
+                        </div>
+                        <% if (latestPsychRequest.status !== 'pending' && latestPsychRequest.reapplyAllowed) { %>
+                            <button class="btn btn-primary" onclick="openModal('psychRequestModal')">Re-enviar Solicitud</button>
+                        <% } %>
+                    <% } else { %>
+                        <p class="section-desc">Solicita la verificación para ofrecer tus servicios en la plataforma.</p>
+                        <button class="btn btn-primary" onclick="openModal('psychRequestModal')">Solicitar verificación</button>
+                    <% } %>
+                </div>
+            <% } %>
+        </div>
+
+        <% if (user.role === 'psychologist') { %>
+        <div id="professional" class="tab-pane">
+            <h2 class="section-title">Perfil Profesional</h2>
+            <p class="section-desc">Información visible para tus pacientes.</p>
+
+            <form action="/user/profile/psych" method="POST" class="form-grid">
+                
+                <div class="form-group full-width">
+                    <label class="form-label">Idiomas</label>
+                    <div class="tags-container" id="languagesContainer">
+                        <% const langs = (psychProfile && Array.isArray(psychProfile.languages)) ? psychProfile.languages : []; %>
+                        <% langs.forEach(function(lang){ %>
+                            <span class="tag-item" data-value="<%= lang %>">
+                                <%= lang %> <button type="button" class="tag-remove">&times;</button>
+                                <input type="hidden" name="languages" value="<%= lang %>">
+                            </span>
+                        <% }) %>
+                        <input type="text" id="langInput" class="tag-input-field" placeholder="+ Añadir (Enter)">
+                        <button type="button" id="btnAddLang" class="btn btn-sm btn-secondary">Añadir</button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Años de experiencia</label>
+                    <input type="number" class="form-control" name="experienceYears" min="0" value="<%= psychProfile ? (psychProfile.experienceYears || 0) : 0 %>">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Especialidades (Lista)</label>
+                    <select class="form-control" name="specialties" multiple style="height: 100px;">
+                        <% const selectedSpecs = (psychProfile && Array.isArray(psychProfile.specialties)) ? psychProfile.specialties.map(s => s._id.toString()) : []; %>
+                        <% if ((specialties || []).length) { %>
+                            <% specialties.forEach(sp => { %>
+                                <option value="<%= sp._id %>" <%= selectedSpecs.includes(sp._id.toString()) ? 'selected' : '' %>><%= sp.name %></option>
+                            <% }) %>
+                        <% } else { %>
+                            <option disabled>No hay especialidades disponibles</option>
+                        <% } %>
+                    </select>
+                    <small class="form-text">Mantén presionada tecla Ctrl para seleccionar varias.</small>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Especialidades (Texto libre)</label>
+                    <input type="text" class="form-control" name="specialtiesText" value="<%= (psychProfile && Array.isArray(psychProfile.specialties)) ? psychProfile.specialties.map(s => s.name).join(', ') : '' %>" placeholder="Ej: Infantil, Parejas...">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Temas que tratas</label>
+                    <input type="text" class="form-control" name="topics" value="<%= (psychProfile && Array.isArray(psychProfile.topics)) ? psychProfile.topics.join(', ') : '' %>" placeholder="Ansiedad, Depresión...">
+                </div>
+
+                <div class="form-group full-width">
+                    <label class="form-label">Carta de presentación</label>
+                    <textarea class="form-control" name="bio" rows="4" placeholder="Cuéntale a tus pacientes sobre ti..."><%= psychProfile && psychProfile.bio ? psychProfile.bio : '' %></textarea>
+                </div>
+
+                <div class="full-width" style="text-align: right;">
+                    <button type="submit" class="btn btn-primary">Guardar Perfil Profesional</button>
+                </div>
+            </form>
+        </div>
+        <% } %>
+
+        <div id="security" class="tab-pane">
+            <h2 class="section-title">Seguridad</h2>
+            <p class="section-desc">Actualiza tu contraseña.</p>
+
+            <form action="/user/change-password" method="POST" class="form-grid">
+                <div class="form-group full-width">
+                    <label class="form-label">Contraseña Actual</label>
+                    <input type="password" class="form-control" name="currentPassword" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Nueva Contraseña</label>
+                    <input type="password" class="form-control" name="newPassword" required minlength="8">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Confirmar Nueva</label>
+                    <input type="password" class="form-control" name="confirmPassword" required minlength="8">
+                </div>
+                <div class="full-width" style="text-align: right;">
+                    <button type="submit" class="btn btn-warning"><i class="fas fa-sync-alt"></i> Cambiar Contraseña</button>
+                </div>
+            </form>
+        </div>
+
+        <% if (user.role === 'admin') { %>
+        <div id="role" class="tab-pane">
+            <h2 class="section-title">Gestión de Rol</h2>
+            <div class="alert alert-danger">⚠️ Zona de peligro: Cambiar tu rol puede restringir tu acceso.</div>
+            
+            <form action="/user/profile/role" method="POST" class="form-grid">
+                <div class="form-group">
+                    <label class="form-label">Seleccionar Rol</label>
+                    <select class="form-control" name="role" required>
+                        <option value="user" <%= user.role === 'user' ? 'selected' : '' %>>Usuario</option>
+                        <option value="admin" <%= user.role === 'admin' ? 'selected' : '' %>>Administrador</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Contraseña Actual</label>
+                    <input type="password" class="form-control" name="currentPassword" required>
+                </div>
+                <div class="full-width" style="text-align: right;">
+                    <button type="submit" class="btn btn-danger">Aplicar Cambio</button>
+                </div>
+            </form>
+        </div>
+        <% } %>
+
+    </main>
+</div>
+
+<div id="avatarModal" class="modal-overlay">
+    <div class="modal-box">
+        <div class="modal-header">
+            <h3 class="modal-title">Cambiar Foto de Perfil</h3>
+            <button class="modal-close" onclick="closeModal('avatarModal')">&times;</button>
+        </div>
+        <form action="/user/profile/image" method="POST" enctype="multipart/form-data">
+            <div class="form-group">
+                <label class="form-label">Seleccionar imagen (Max 5MB)</label>
+                <input type="file" class="form-control" name="profileImage" accept="image/*" required>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('avatarModal')">Cancelar</button>
+                <button type="submit" class="btn btn-primary">Subir</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="coverModal" class="modal-overlay">
+    <div class="modal-box">
+        <div class="modal-header">
+            <h3 class="modal-title">Cambiar Portada</h3>
+            <button class="modal-close" onclick="closeModal('coverModal')">&times;</button>
+        </div>
+        <form action="/user/profile/cover" method="POST" enctype="multipart/form-data">
+            <div class="form-group">
+                <label class="form-label">Seleccionar imagen</label>
+                <input type="file" class="form-control" name="coverImage" accept="image/*" required>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('coverModal')">Cancelar</button>
+                <button type="submit" class="btn btn-primary">Subir</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="psychRequestModal" class="modal-overlay">
+    <div class="modal-box">
+        <div class="modal-header">
+            <h3 class="modal-title">Solicitud de Psicólogo</h3>
+            <button class="modal-close" onclick="closeModal('psychRequestModal')">&times;</button>
+        </div>
+        <form action="/user/psychologist-request" method="POST" enctype="multipart/form-data">
+            <div class="form-group">
+                <label class="form-label">Nombre completo</label>
+                <input type="text" name="fullName" class="form-control" value="<%= user.name %>" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Correo</label>
+                <input type="email" name="email" class="form-control" value="<%= user.email %>" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Descripción de servicios</label>
+                <textarea name="servicesDescription" class="form-control" rows="3" required></textarea>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Imagen de título/comprobante</label>
+                <input type="file" name="proofImage" class="form-control" accept="image/*" required>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('psychRequestModal')">Cancelar</button>
+                <button type="submit" class="btn btn-primary">Enviar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // --- LÓGICA DE TABS ---
+    function openTab(evt, tabName) {
+        // 1. Ocultar todos los contenidos
+        var tabContent = document.getElementsByClassName("tab-pane");
+        for (var i = 0; i < tabContent.length; i++) {
+            tabContent[i].classList.remove("active");
+            tabContent[i].style.display = "none";
+        }
+
+        // 2. Quitar clase active de todos los links
+        var tabLinks = document.getElementsByClassName("tab-link");
+        for (var i = 0; i < tabLinks.length; i++) {
+            tabLinks[i].className = tabLinks[i].className.replace(" active", "");
+        }
+
+        // 3. Mostrar el actual y activar el link
+        document.getElementById(tabName).style.display = "block";
+        // Pequeño timeout para permitir la animación CSS
+        setTimeout(() => document.getElementById(tabName).classList.add("active"), 10);
+        evt.currentTarget.className += " active";
+    }
+
+    // --- LÓGICA DE MODALES ---
+    function openModal(modalId) {
+        document.getElementById(modalId).classList.add('open');
+    }
+
+    function closeModal(modalId) {
+        document.getElementById(modalId).classList.remove('open');
+    }
+
+    // Cerrar modal si se hace clic fuera de la caja
+    window.onclick = function(event) {
+        if (event.target.classList.contains('modal-overlay')) {
+            event.target.classList.remove('open');
+        }
+    }
+
+    // --- LÓGICA DE TAGS (IDIOMAS) ---
+    document.addEventListener('DOMContentLoaded', function() {
+        const container = document.getElementById('languagesContainer');
+        if (!container) return; // Si no es psicólogo, no existe este div
+
+        const input = document.getElementById('langInput');
+        const addBtn = document.getElementById('btnAddLang');
+
+        function createTag(text) {
+            // Verificar duplicados
+            const existing = container.querySelectorAll(`input[value="${text}"]`);
+            if (existing.length > 0) return;
+
+            // Crear HTML del tag
+            const span = document.createElement('span');
+            span.className = 'tag-item';
+            span.innerHTML = `
+                ${text} <button type="button" class="tag-remove">&times;</button>
+                <input type="hidden" name="languages" value="${text}">
+            `;
+            
+            // Insertar antes del input
+            container.insertBefore(span, input);
+            
+            // Agregar evento de eliminar al botón X
+            span.querySelector('.tag-remove').addEventListener('click', function() {
+                span.remove();
+            });
+        }
+
+        // Manejar botón Añadir
+        addBtn.addEventListener('click', function() {
+            if (input.value.trim() !== '') {
+                createTag(input.value.trim());
+                input.value = '';
+                input.focus();
+            }
+        });
+
+        // Manejar tecla Enter
+        input.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                addBtn.click();
+            }
+        });
+
+        // Re-asignar eventos de eliminar a los tags que vinieron del servidor (EJS)
+        container.querySelectorAll('.tag-remove').forEach(btn => {
+            btn.addEventListener('click', function() {
+                btn.parentElement.remove();
+            });
+        });
+    });
+</script>
+
+  <!-- Tu JS primero, para que el callback global exista antes de cargar el script de Google -->
+  <script src="/js/password-change-validator.js"></script>
+  <script src="/js/profile-validator.js"></script>
+  <script src="/js/tradux.js"></script>
+  <!-- Script oficial de Google (callback definido en translate.js) -->
+  <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+<%- include('../partials/footer') %>

@@ -1,0 +1,108 @@
+<section class="chat-app-container">
+  
+  <div class="chat-layout">
+    <div class="chat-sidebar-wrapper">
+      <div class="chat-sidebar-header">Mis chats</div>
+      <ul class="chat-list">
+        <% if (chats && chats.length) { %>
+          <% chats.forEach(c => { %>
+            <% const isActive = selectedChat && selectedChat._id.toString() === c._id.toString(); %>
+            <li class="chat-item <%= isActive ? 'chat-item-active' : '' %>">
+              <a href="/psych/user-chats?chat=<%= c._id %>" class="chat-item-link">
+                <div class="chat-item-avatar"><i class="fas fa-user-circle"></i></div>
+                <div class="chat-item-content">
+                  <div class="chat-item-name-row">
+                    <span class="chat-item-name"><%= c.psychologist && c.psychologist.name ? c.psychologist.name : 'Psicólogo' %></span>
+                  </div>
+                  <small class="chat-item-last-msg"><%= c.lastMsgText || '' %></small>
+                  <small class="chat-item-date"><%= new Date(c.lastMessageAt || c.createdAt).toLocaleString('es-ES') %></small>
+                </div>
+              </a>
+              <div class="chat-badges-group">
+                <% if (c.unreadForUser) { %><span class="chat-badge chat-badge-new">Nuevo</span><% } %>
+                <% if (isActive) { %><span class="chat-badge chat-badge-active">Activo</span><% } %>
+              </div>
+            </li>
+          <% }) %>
+        <% } else { %>
+          <li class="chat-item chat-item-empty">Sin chats</li>
+        <% } %>
+      </ul>
+    </div>
+    <div class="chat-main-wrapper">
+      <% if (selectedChat) { %>
+        <div class="chat-header">
+          <div><strong class="chat-header-name"><%= selectedChat.psychologist && selectedChat.psychologist.name ? selectedChat.psychologist.name : 'Psicólogo' %></strong></div>
+          <div><a href="/psych/user-chats" class="ps-btn-outline chat-header-close-btn">Cerrar</a></div>
+        </div>
+        <div class="chat-messages-container" data-chat-thread>
+          <% if (messages && messages.length) { %>
+            <% messages.forEach(m => { %>
+              <% const isOwn = m.sender && m.sender._id && m.sender._id.toString() === (locals.user ? locals.user._id.toString() : ''); %>
+              <div class="chat-message-row <%= isOwn ? 'chat-message-row-own' : 'chat-message-row-other' %>">
+                <div class="chat-bubble <%= isOwn ? 'chat-bubble-own' : 'chat-bubble-other' %>">
+                  <div class="chat-bubble-text"><%= m.text %></div>
+                  <div class="chat-bubble-date"><%= new Date(m.createdAt).toLocaleString('es-ES', { hour: '2-digit', minute: '2-digit' }) %></div>
+                </div>
+              </div>
+            <% }) %>
+          <% } else { %>
+            <div class="ps-empty chat-empty-state">Sin mensajes</div>
+          <% } %>
+        </div>
+        <div class="chat-input-area">
+          <form action="/psych/chats/start" method="POST" class="chat-input-form">
+            <input type="hidden" name="psychId" value="<%= selectedChat.psychologist._id %>">
+            <input type="hidden" name="returnUrl" value="/psych/user-chats?chat=<%= selectedChat._id %>">
+            <div class="chat-input-wrapper-revisado">
+              <input type="text" name="text" class="chat-input-field" placeholder="Escribe tu mensaje" required>
+              <button type="submit" class="chat-send-btn"><i class="fas fa-paper-plane"></i></button>
+            </div>
+          </form>
+        </div>
+      <% } else { %>
+        <div class="ps-empty chat-empty-state chat-select-prompt">Selecciona un chat de la lista</div>
+      <% } %>
+    </div>
+  </div>
+</section>
+
+<link rel="stylesheet" href="/css/chat.css">
+<link rel="stylesheet" href="/css/psych-services.css">
+<% if (selectedChat && locals.user) { %>
+<script>
+(function(){
+  var userId = '<%= locals.user._id %>';
+  var chatId = '<%= selectedChat._id %>';
+  try {
+    var es = new EventSource('/api/user-updates/' + userId);
+    es.onmessage = function(ev) {
+      try {
+        var data = JSON.parse(ev.data);
+        if (data && data.type === 'chat_message' && String(data.chatId) === String(chatId)) {
+          var container = document.querySelector('[data-chat-thread]');
+          if (container) {
+            var isOwn = String(data.senderId) === String(userId);
+            var wrap = document.createElement('div');
+            wrap.className = 'chat-message-row ' + (isOwn ? 'chat-message-row-own' : 'chat-message-row-other');
+            var bubble = document.createElement('div');
+            bubble.className = 'chat-bubble ' + (isOwn ? 'chat-bubble-own' : 'chat-bubble-other');
+            var text = document.createElement('div');
+            text.className = 'chat-bubble-text';
+            text.textContent = data.text;
+            var time = document.createElement('div');
+            time.className = 'chat-bubble-date';
+            time.textContent = new Date(data.createdAt || Date.now()).toLocaleString('es-ES');
+            bubble.appendChild(text);
+            bubble.appendChild(time);
+            wrap.appendChild(bubble);
+            container.appendChild(wrap);
+            container.scrollTop = container.scrollHeight;
+          }
+        }
+      } catch (e) {}
+    };
+  } catch (e) {}
+})();
+</script>
+<% } %>

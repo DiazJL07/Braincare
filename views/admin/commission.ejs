@@ -1,0 +1,13 @@
+<div class="container">
+  <h2>Comisión Global</h2>
+  <form action="/admin/finance/commission" method="POST" class="row g-2">
+    <div class="col-4">
+      <label class="form-label">Porcentaje</label>
+      <input type="number" name="percent" class="form-control" min="0" max="100" step="0.1" value="<%= (current && current.percent) || 0 %>">
+    </div>
+    <div class="col-4 d-flex align-items-end">
+      <button class="btn btn-primary" type="submit">Guardar</button>
+    </div>
+  </form>
+  <div class="mt-3">Vigente: <%= current ? (current.percent + '%') : 'N/A' %></div>
+</div>

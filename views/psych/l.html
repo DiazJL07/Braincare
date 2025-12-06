@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Servicios Braincare</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+/* ====== CONTENEDOR PRINCIPAL ====== */
+.braincare-seccion-global {
+  width: 100%;
+  padding: 80px 20px;
+  background: white;
+  text-align: center;
+}
+
+/* ====== TÍTULO ====== */
+.braincare-titulo-principal {
+  font-size: 36px;
+  font-weight: bold;
+  margin-bottom: 35px;
+}
+
+/* ====== BOTONES ====== */
+.braincare-tabs-botones {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  margin-bottom: 50px;
+  flex-wrap: wrap;
+}
+
+.braincare-tab-btn {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  background: #e6e6e6;
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+
+.braincare-tab-btn:hover {
+  transform: translateY(-2px);
+}
+
+.braincare-tab-btn.activo {
+  background: #111;
+  color: white;
+}
+
+/* ====== CONTENEDOR DEL CARRUSEL ====== */
+.braincare-carrusel-wrap {
+  width: 100%;
+  max-width: 1150px;
+  margin: auto;
+  overflow: hidden;
+  position: relative;
+  padding: 10px 0 20px;
+}
+
+/* ====== SLIDES ====== */
+.braincare-slides-track {
+  display: flex;
+  transition: transform 0.7s cubic-bezier(.4,0,.2,1);
+}
+
+.braincare-slide-item {
+  min-width: 100%;
+  display: flex;
+  align-items: center;
+  border-radius: 25px;
+  padding: 50px;
+  gap: 50px;
+  animation: fadeIn 0.6s ease;
+}
+
+/* ====== ANIMACIÓN ====== */
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.97); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* ====== COLORES ====== */
+.slide-uno { background: #ffd400; }
+.slide-dos { background: #ffb3d9; }
+.slide-tres { background: #cbb9ff; }
+.slide-cuatro { background: #b8f0ff; }
+.slide-cinco { background: #ffd1b3; }
+
+/* ====== IMAGEN ====== */
+.braincare-slide-img {
+  width: 42%;
+  display: flex;
+  justify-content: center;
+}
+
+.braincare-slide-img img {
+  width: 100%;
+  max-width: 380px;
+  border-radius: 25px;
+  object-fit: cover;
+}
+
+/* ====== TEXTO ====== */
+.braincare-slide-texto {
+  width: 58%;
+  text-align: left;
+}
+
+.braincare-slide-texto h2 {
+  font-size: 30px;
+  margin-bottom: 18px;
+}
+
+.braincare-slide-texto p {
+  font-size: 17px;
+  line-height: 1.7;
+}
+
+.braincare-slide-texto button {
+  margin-top: 22px;
+  padding: 12px 24px;
+  border-radius: 25px;
+  border: none;
+  cursor: pointer;
+  background: #111;
+  color: white;
+  transition: all 0.3s ease;
+}
+
+.braincare-slide-texto button:hover {
+  transform: scale(1.05);
+}
+
+/* ====== PUNTOS ====== */
+.braincare-indicadores {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 35px;
+}
+
+.braincare-punto {
+  width: 12px;
+  height: 12px;
+  background: gray;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.braincare-punto.activo {
+  background: black;
+  transform: scale(1.3);
+}
+
+/* ================================================= */
+/* ================= RESPONSIVE ==================== */
+/* ================================================= */
+
+@media (max-width: 900px) {
+  .braincare-slide-item {
+    padding: 35px;
+    gap: 35px;
+  }
+
+  .braincare-slide-texto h2 {
+    font-size: 26px;
+  }
+}
+
+@media (max-width: 720px) {
+  .braincare-slide-item {
+    flex-direction: column;
+    text-align: center;
+    padding: 30px 20px;
+  }
+
+  .braincare-slide-img,
+  .braincare-slide-texto {
+    width: 100%;
+  }
+
+  .braincare-slide-texto {
+    text-align: center;
+  }
+
+  .braincare-slide-texto h2 {
+    font-size: 24px;
+  }
+
+  .braincare-slide-texto p {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .braincare-titulo-principal {
+    font-size: 28px;
+  }
+
+  .braincare-tab-btn {
+    padding: 10px 16px;
+    font-size: 14px;
+  }
+
+  .braincare-slide-img img {
+    max-width: 280px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<section class="braincare-seccion-global">
+
+  <h1 class="braincare-titulo-principal">Servicios Braincare</h1>
+
+  <!-- BOTONES -->
+  <div class="braincare-tabs-botones">
+    <button class="braincare-tab-btn activo" onclick="moverCarrusel(0)">Guía IA</button>
+    <button class="braincare-tab-btn" onclick="moverCarrusel(1)">Meditaciones</button>
+    <button class="braincare-tab-btn" onclick="moverCarrusel(2)">Sueño</button>
+    <button class="braincare-tab-btn" onclick="moverCarrusel(3)">Programas</button>
+    <button class="braincare-tab-btn" onclick="moverCarrusel(4)">Terapia</button>
+  </div>
+
+  <!-- CARRUSEL -->
+  <div class="braincare-carrusel-wrap">
+    <div class="braincare-slides-track" id="braincareTrack">
+
+      <div class="braincare-slide-item slide-uno">
+        <div class="braincare-slide-img">
+          <img src="https://via.placeholder.com/400">
+        </div>
+        <div class="braincare-slide-texto">
+          <h2>Soporte con IA</h2>
+          <p>Habla con nuestra inteligencia emocional las 24 horas.</p>
+          <button>Explorar</button>
+        </div>
+      </div>
+
+      <div class="braincare-slide-item slide-dos">
+        <div class="braincare-slide-img">
+          <img src="https://via.placeholder.com/400">
+        </div>
+        <div class="braincare-slide-texto">
+          <h2>Meditaciones Guiadas</h2>
+          <p>Relájate con más de 1000 meditaciones.</p>
+          <button>Escuchar</button>
+        </div>
+      </div>
+
+      <div class="braincare-slide-item slide-tres">
+        <div class="braincare-slide-img">
+          <img src="https://via.placeholder.com/400">
+        </div>
+        <div class="braincare-slide-texto">
+          <h2>Mejor Sueño</h2>
+          <p>Audios especiales para dormir profundo.</p>
+          <button>Dormir mejor</button>
+        </div>
+      </div>
+
+      <div class="braincare-slide-item slide-cuatro">
+        <div class="braincare-slide-img">
+          <img src="https://via.placeholder.com/400">
+        </div>
+        <div class="braincare-slide-texto">
+          <h2>Programas Especiales</h2>
+          <p>Entrenamientos mentales por expertos.</p>
+          <button>Ver más</button>
+        </div>
+      </div>
+
+      <div class="braincare-slide-item slide-cinco">
+        <div class="braincare-slide-img">
+          <img src="https://via.placeholder.com/400">
+        </div>
+        <div class="braincare-slide-texto">
+          <h2>Terapia Online</h2>
+          <p>Conecta con especialistas certificados.</p>
+          <button>Agendar</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- PUNTOS -->
+  <div class="braincare-indicadores" id="braincarePuntos">
+    <div class="braincare-punto activo" onclick="moverCarrusel(0)"></div>
+    <div class="braincare-punto" onclick="moverCarrusel(1)"></div>
+    <div class="braincare-punto" onclick="moverCarrusel(2)"></div>
+    <div class="braincare-punto" onclick="moverCarrusel(3)"></div>
+    <div class="braincare-punto" onclick="moverCarrusel(4)"></div>
+  </div>
+
+</section>
+
+<script>
+let indiceActual = 0;
+const track = document.getElementById("braincareTrack");
+const botones = document.querySelectorAll(".braincare-tab-btn");
+const puntos = document.querySelectorAll(".braincare-punto");
+
+function moverCarrusel(indice) {
+  indiceActual = indice;
+  const desplazamiento = indice * 100;
+  track.style.transform = `translateX(-${desplazamiento}%)`;
+
+  botones.forEach(btn => btn.classList.remove("activo"));
+  puntos.forEach(p => p.classList.remove("activo"));
+
+  botones[indice].classList.add("activo");
+  puntos[indice].classList.add("activo");
+
+  // Reinicia animación suave
+  document.querySelectorAll(".braincare-slide-item").forEach(slide => {
+    slide.style.animation = "none";
+    slide.offsetHeight;
+    slide.style.animation = null;
+  });
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,437 @@
+ 
+
+<!-- CSS Unificado -->
+<link rel="stylesheet" href="/css/dashboard-general.css">
+
+<style>
+  body { padding-top: 5%; }
+
+  /* Estilos específicos para Estadísticas (KPIs) usando variables genéricas */
+  .gen-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  .gen-stat-card {
+    background: var(--gen-bg-surface);
+    border: 1px solid var(--gen-border-color);
+    border-radius: var(--gen-radius-md);
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    box-shadow: var(--gen-shadow-sm);
+    transition: transform 0.2s;
+  }
+  .gen-stat-card:hover { transform: translateY(-2px); }
+  
+  .gen-stat-icon {
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.5rem;
+  }
+  .gen-stat-icon.primary { background: #eff6ff; color: var(--gen-accent); }
+  .gen-stat-icon.success { background: #ecfdf5; color: var(--gen-success); }
+  
+  .gen-stat-content { display: flex; flex-direction: column; }
+  .gen-stat-number { font-size: 1.5rem; font-weight: 700; color: var(--gen-text-primary); line-height: 1.2; }
+  .gen-stat-label { font-size: 0.85rem; color: var(--gen-text-secondary); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+
+  /* Ajustes para Alertas dentro del diseño genérico */
+  .gen-alert {
+    padding: 1rem; border-radius: var(--gen-radius-sm); margin-bottom: 1.5rem;
+    display: flex; align-items: center; justify-content: space-between;
+    font-size: 0.9rem;
+  }
+  .gen-alert-success { background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; }
+  .gen-alert-danger { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+  .gen-alert-close { background: none; border: none; cursor: pointer; color: inherit; font-size: 1.2rem; line-height: 1; }
+
+  /* Switch Toggle personalizado para reemplazar Bootstrap form-switch */
+  .gen-toggle-wrapper { display: flex; align-items: center; gap: 0.5rem; cursor: pointer; }
+  .gen-toggle-input { display: none; }
+  .gen-toggle-slider {
+    width: 40px; height: 20px; background: #e5e7eb; border-radius: 20px;
+    position: relative; transition: 0.3s;
+  }
+  .gen-toggle-slider::before {
+    content: ''; position: absolute; width: 16px; height: 16px;
+    background: white; border-radius: 50%; top: 2px; left: 2px;
+    transition: 0.3s; box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+  }
+  .gen-toggle-input:checked + .gen-toggle-slider { background: var(--gen-success); }
+  .gen-toggle-input:checked + .gen-toggle-slider::before { transform: translateX(20px); }
+</style>
+
+<div class="gen-dash-wrapper animate-fade-in">
+  
+  <!-- Header Principal -->
+  <div class="gen-header-row">
+    <div>
+      <h1 class="gen-page-title">Gestión de Temas</h1>
+      <p class="gen-page-subtitle">Administra y organiza todos los temas del foro de la comunidad</p>
+    </div>
+    <div class="gen-header-actions">
+      <!-- Botón Crear Nuevo Tema -->
+      <button class="gen-btn gen-btn-primary" onclick="openModal('createTopicModal')">
+        <i class="fas fa-plus"></i> Crear Nuevo Tema
+      </button>
+    </div>
+  </div>
+
+  <!-- Contenedor de Alertas -->
+  <div id="alertContainer"></div>
+
+  <!-- Estadísticas -->
+  <div class="gen-stats-grid">
+    <div class="gen-stat-card">
+      <div class="gen-stat-icon primary">
+        <i class="fas fa-comments"></i>
+      </div>
+      <div class="gen-stat-content">
+        <span class="gen-stat-number"><%= topics.length %></span>
+        <span class="gen-stat-label">Total de Temas</span>
+      </div>
+    </div>
+    <div class="gen-stat-card">
+      <div class="gen-stat-icon success">
+        <i class="fas fa-check-circle"></i>
+      </div>
+      <div class="gen-stat-content">
+        <span class="gen-stat-number"><%= topics.filter(t => t.isActive).length %></span>
+        <span class="gen-stat-label">Temas Activos</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabla de Temas -->
+  <div class="gen-panel" style="padding:0;">
+    <div class="gen-table-header">
+      <h2 class="gen-filter-title">
+        <i class="fas fa-list" style="color: var(--gen-accent);"></i> Lista de Temas
+      </h2>
+    </div>
+    
+    <div class="gen-table-responsive">
+      <table class="gen-table">
+        <thead>
+          <tr>
+            <th>Tema</th>
+            <th>Descripción</th>
+            <th>Estado</th>
+            <th>Fecha</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (topics && topics.length > 0) { %>
+            <% topics.forEach((topic, index) => { %>
+              <tr class="gen-table-row">
+                <!-- Tema -->
+                <td>
+                  <div class="gen-user-cell">
+                    <div class="gen-avatar-circle" style="background: var(--gen-accent); color: white;">
+                      <i class="fas fa-tag"></i>
+                    </div>
+                    <span style="font-weight: 500;"><%= topic.name %></span>
+                  </div>
+                </td>
+                
+                <!-- Descripción -->
+                <td style="max-width: 300px;">
+                  <% if (topic.description) { %>
+                    <span style="color: var(--gen-text-secondary);">
+                      <%= topic.description.length > 50 ? topic.description.substring(0, 50) + '...' : topic.description %>
+                    </span>
+                  <% } else { %>
+                    <span style="font-style: italic; color: #9ca3af;">Sin descripción</span>
+                  <% } %>
+                </td>
+                
+                <!-- Estado -->
+                <td>
+                  <% if (topic.isActive) { %>
+                    <span class="gen-badge" style="background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0;">
+                      <i class="fas fa-check me-1"></i> Activo
+                    </span>
+                  <% } else { %>
+                    <span class="gen-badge gen-badge-neutral">
+                      <i class="fas fa-pause me-1"></i> Inactivo
+                    </span>
+                  <% } %>
+                </td>
+                
+                <!-- Fecha -->
+                <td>
+                  <div style="display:flex; flex-direction:column; font-size:0.9rem;">
+                    <span><%= new Date(topic.createdAt).toLocaleDateString('es-ES', { year: 'numeric', month: 'short', day: 'numeric'}) %></span>
+                    <small style="color: var(--gen-text-secondary);">
+                      <%= new Date(topic.createdAt).toLocaleTimeString('es-ES', {hour: '2-digit', minute: '2-digit'}) %>
+                    </small>
+                  </div>
+                </td>
+                
+                <!-- Acciones -->
+                <td>
+                  <div class="gen-action-group">
+                    <a href="/admin/topics/<%= topic._id %>/edit" class="gen-action-btn-sm" title="Editar tema">
+                      <i class="fas fa-edit"></i>
+                    </a>
+                    <button class="gen-action-btn-sm delete" onclick="confirmDeleteTopic('<%= topic._id %>', '<%= topic.name %>')" title="Eliminar tema">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            <% }) %>
+          <% } else { %>
+            <tr>
+              <td colspan="5" style="text-align: center; padding: 3rem; color: var(--gen-text-secondary);">
+                <i class="fas fa-comments" style="font-size: 3rem; margin-bottom: 1rem; color: #d1d5db;"></i>
+                <h3>No hay temas disponibles</h3>
+                <p>Crea el primer tema para comenzar.</p>
+              </td>
+            </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<!-- ================= MODALES (Estructura gen-modal) ================= -->
+
+<!-- Modal Crear Tema -->
+<div class="gen-modal-overlay" id="createTopicModal">
+  <div class="gen-modal-card" style="max-width: 600px;">
+    <div class="gen-modal-header">
+      <h2 class="gen-modal-title">
+        <i class="fas fa-plus-circle" style="color: var(--gen-accent);"></i> Crear Nuevo Tema
+      </h2>
+      <button type="button" class="gen-btn gen-btn-ghost" onclick="closeModal('createTopicModal')">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    
+    <form id="createTopicForm">
+      <div class="gen-modal-body">
+        <div id="createTopicAlerts"></div>
+        
+        <div class="gen-filter-grid" style="grid-template-columns: 1fr 1fr; gap: 1rem;">
+          <!-- Nombre -->
+          <div class="gen-form-group">
+            <label for="topicName" class="gen-label">Nombre del Tema</label>
+            <input type="text" class="gen-input" id="topicName" name="name" placeholder="Ej: Salud Mental" required>
+          </div>
+          
+          <!-- Estado -->
+          <div class="gen-form-group">
+            <label class="gen-label">Estado del Tema</label>
+            <label class="gen-toggle-wrapper" for="topicActive">
+              <input class="gen-toggle-input" type="checkbox" id="topicActive" name="isActive" checked>
+              <div class="gen-toggle-slider"></div>
+              <span style="font-size: 0.9rem; color: var(--gen-text-body);">Tema activo</span>
+            </label>
+          </div>
+        </div>
+        
+        <!-- Descripción -->
+        <div class="gen-form-group" style="margin-top: 1rem;">
+          <label for="topicDescription" class="gen-label">Descripción</label>
+          <textarea class="gen-input gen-textarea" id="topicDescription" name="description" rows="4" 
+                    placeholder="Describe el propósito del tema..." required style="min-height: 100px;"></textarea>
+        </div>
+      </div>
+      
+      <div class="gen-modal-footer">
+        <button type="button" class="gen-btn gen-btn-outline" onclick="closeModal('createTopicModal')">Cancelar</button>
+        <button type="button" class="gen-btn gen-btn-primary" id="createTopicBtn">
+          <i class="fas fa-save"></i> Crear Tema
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal Eliminar Tema -->
+<div class="gen-modal-overlay" id="deleteTopicModal">
+  <div class="gen-modal-card" style="max-width: 450px;">
+    <div class="gen-modal-header" style="background: var(--gen-danger); color: white;">
+      <h3 class="gen-modal-title" style="color: white;">Confirmar Eliminación</h3>
+      <button type="button" class="gen-btn gen-btn-ghost" style="color: white;" onclick="closeModal('deleteTopicModal')">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    
+    <div class="gen-modal-body" style="text-align: center; padding: 2rem;">
+      <div style="margin-bottom: 1rem;">
+        <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: var(--gen-danger);"></i>
+      </div>
+      <p style="font-size: 1.1rem; color: var(--gen-text-body);">
+        ¿Estás seguro de eliminar el tema "<strong id="topicNameDelete"></strong>"?
+      </p>
+      <div style="font-size: 0.9rem; color: #856404; background: #fff3cd; border: 1px solid #ffeeba; padding: 0.8rem; border-radius: 6px; margin-top: 1rem;">
+        <i class="fas fa-info-circle me-1"></i> Se eliminarán todos los posts asociados.
+      </div>
+    </div>
+    
+    <div class="gen-modal-footer" style="justify-content: center;">
+      <button type="button" class="gen-btn gen-btn-outline" onclick="closeModal('deleteTopicModal')">Cancelar</button>
+      <button type="button" class="gen-btn gen-btn-danger" id="confirmDeleteBtn">
+        <i class="fas fa-trash"></i> Eliminar Tema
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= SCRIPTS ================= -->
+<script>
+  let currentTopicId = null;
+
+  // -- Funciones de Modal Genéricas (reemplazan a Bootstrap) --
+  function openModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if(modal) {
+        modal.classList.add('show');
+        // Reset form específico si es el de crear
+        if(modalId === 'createTopicModal') {
+            const form = document.getElementById('createTopicForm');
+            if(form) form.reset();
+            document.getElementById('topicActive').checked = true;
+            document.getElementById('createTopicAlerts').innerHTML = '';
+        }
+    }
+  }
+
+  function closeModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if(modal) modal.classList.remove('show');
+  }
+
+  // Cerrar al hacer clic fuera
+  window.onclick = function(event) {
+    if (event.target.classList.contains('gen-modal-overlay')) {
+      event.target.classList.remove('show');
+    }
+  }
+
+  // -- Lógica de Eliminación --
+  function confirmDeleteTopic(topicId, topicName) {
+    currentTopicId = topicId;
+    document.getElementById('topicNameDelete').textContent = topicName;
+    openModal('deleteTopicModal');
+  }
+
+  document.getElementById('confirmDeleteBtn').addEventListener('click', async function() {
+    if (!currentTopicId) return;
+    
+    const btn = this;
+    const originalContent = btn.innerHTML;
+    
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Eliminando...';
+    btn.disabled = true;
+    
+    try {
+      const response = await fetch(`/admin/topics/${currentTopicId}`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' }
+      });
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        closeModal('deleteTopicModal');
+        showAlert('success', result.message);
+        setTimeout(() => window.location.reload(), 1500);
+      } else {
+        showAlert('danger', result.message || 'Error al eliminar el tema');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      showAlert('danger', 'Error de conexión al eliminar el tema');
+    } finally {
+      btn.innerHTML = originalContent;
+      btn.disabled = false;
+    }
+  });
+
+  // -- Lógica de Creación --
+  document.getElementById('createTopicBtn').addEventListener('click', async function() {
+    const form = document.getElementById('createTopicForm');
+    const btn = this;
+    const originalContent = btn.innerHTML;
+    
+    // Validar
+    const name = document.getElementById('topicName').value.trim();
+    if (!name) {
+      showTopicAlert('danger', 'El nombre del tema es obligatorio');
+      return;
+    }
+    
+    // Loading state
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+    
+    try {
+      const formData = {
+        name: name,
+        description: document.getElementById('topicDescription').value.trim(),
+        isActive: document.getElementById('topicActive').checked
+      };
+      
+      const response = await fetch('/admin/topics', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        closeModal('createTopicModal');
+        form.reset();
+        showAlert('success', result.message);
+        setTimeout(() => window.location.reload(), 1500);
+      } else {
+        showTopicAlert('danger', result.message || 'Error al crear el tema');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      showTopicAlert('danger', 'Error de conexión al crear el tema');
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = originalContent;
+    }
+  });
+
+  // -- Helpers de Alertas --
+  function showTopicAlert(type, message) {
+    const container = document.getElementById('createTopicAlerts');
+    const alertHtml = `
+      <div class="gen-alert gen-alert-${type}">
+        <span>${message}</span>
+        <button type="button" class="gen-alert-close" onclick="this.parentElement.remove()">&times;</button>
+      </div>`;
+    container.innerHTML = alertHtml;
+  }
+
+  function showAlert(type, message) {
+    const container = document.getElementById('alertContainer');
+    const alertHtml = `
+      <div class="gen-alert gen-alert-${type} animate-fade-in">
+        <span>${message}</span>
+        <button type="button" class="gen-alert-close" onclick="this.parentElement.remove()">&times;</button>
+      </div>`;
+    container.innerHTML = alertHtml;
+    // Auto cerrar global
+    setTimeout(() => { if(container.firstChild) container.firstChild.remove(); }, 5000);
+  }
+</script>
+
+<script src="/js/tradux.js"></script>
+<script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+<%- include('../partials/footer') %>

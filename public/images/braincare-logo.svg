@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 60" width="200" height="60">
+  <defs>
+    <linearGradient id="brainGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#E3F2FD;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#81D4FA;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#29B6F6;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="stemGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFCDD2;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#F8BBD9;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Brain shape -->
+  <g transform="translate(5, 8)">
+    <!-- Main brain body -->
+    <path d="M15 20 C15 12, 22 8, 30 10 C35 6, 42 8, 45 12 C48 8, 55 10, 58 15 C60 18, 58 22, 55 25 C58 28, 55 32, 50 34 C45 36, 40 34, 35 35 C30 36, 25 34, 20 32 C15 30, 12 25, 15 20 Z" 
+          fill="url(#brainGradient)" 
+          stroke="#1565C0" 
+          stroke-width="2.5"/>
+    
+    <!-- Brain folds/details -->
+    <path d="M20 18 C25 16, 30 18, 35 16" fill="none" stroke="#1565C0" stroke-width="1.5" stroke-linecap="round"/>
+    <path d="M22 25 C28 23, 33 25, 38 23" fill="none" stroke="#1565C0" stroke-width="1.5" stroke-linecap="round"/>
+    <path d="M18 30 C24 28, 30 30, 36 28" fill="none" stroke="#1565C0" stroke-width="1.5" stroke-linecap="round"/>
+    
+    <!-- Brain stem -->
+    <ellipse cx="37" cy="35" rx="8" ry="6" fill="url(#stemGradient)" stroke="#1565C0" stroke-width="2"/>
+    
+    <!-- Medical cross in center -->
+    <circle cx="37" cy="22" r="8" fill="#FFFFFF" stroke="#1565C0" stroke-width="2"/>
+    <rect x="33" y="18" width="8" height="2" fill="#1565C0" rx="1"/>
+    <rect x="36" y="15" width="2" height="8" fill="#1565C0" rx="1"/>
+  </g>
+  
+  <!-- Text -->
+  <text x="75" y="25" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#1565C0">BRAIN</text>
+  <text x="75" y="42" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#1565C0">CARE</text>
+</svg>

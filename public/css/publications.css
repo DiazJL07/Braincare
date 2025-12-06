@@ -1,0 +1,324 @@
+:root {
+  --vl-primary: #6a1b9a;       /* Morado Oscuro */
+  --vl-primary-light: #9c4dcc; /* Morado Claro */
+  --vl-accent: #f3e5f5;        /* Fondo etiquetas */
+  --vl-text: #333;
+  --vl-text-light: #666;
+  --vl-bg: #f9f9f9;
+  --vl-white: #ffffff;
+  --vl-radius: 8px;
+  --vl-shadow: 0 2px 5px rgba(0,0,0,0.08);
+  --vl-shadow-hover: 0 5px 15px rgba(106, 27, 154, 0.15);
+}
+
+/* --- LAYOUT GENERAL --- */
+.vl-section {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background-color: var(--vl-bg);
+  min-height: 100vh;
+  margin: 0;
+  padding-bottom: 40px;
+}
+
+.vl-container {
+  max-width: 900px; /* Ancho máximo controlado para la lista */
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* --- HEADER / HERO --- */
+.vl-hero {
+  background: linear-gradient(135deg, var(--vl-primary) 0%, var(--vl-primary-light) 100%);
+  color: var(--vl-white);
+  padding: 50px 20px;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.vl-hero h2 {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 400;
+}
+
+/* --- NUEVO: CONTENEDOR DE LISTA VERTICAL --- */
+/* Reemplaza a .vl-grid anterior */
+.vl-list-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 20px; /* Espacio vertical entre tarjetas */
+}
+
+.vl-empty {
+  text-align: center;
+  color: var(--vl-text-light);
+  padding: 40px;
+  background: white;
+  border-radius: var(--vl-radius);
+  box-shadow: var(--vl-shadow);
+}
+
+/* --- CARD DESIGN (Horizontal Look) --- */
+/* La tarjeta ahora ocupa el 100% del ancho de la pila */
+.vl-card {
+  background: var(--vl-white);
+  border-radius: var(--vl-radius);
+  box-shadow: var(--vl-shadow);
+  transition: transform 0.2s, box-shadow 0.2s;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column; /* Mantenemos estructura interna vertical */
+  border: 1px solid #e0e0e0;
+}
+
+.vl-card:hover {
+  /* Efecto de "levantar" sutil al pasar el mouse */
+  transform: translateY(-3px);
+  box-shadow: var(--vl-shadow-hover);
+  border-color: var(--vl-primary-light);
+}
+
+/* Header de la Card */
+.vl-card-header {
+  padding: 15px 20px;
+  border-bottom: 1px solid #f0f0f0;
+  background: #fafafa;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.vl-card-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--vl-primary);
+  margin: 0;
+}
+
+.vl-card-price {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #444;
+  white-space: nowrap; /* Evita que el precio se rompa en dos líneas */
+}
+
+/* Cuerpo de la Card */
+.vl-card-body {
+  padding: 20px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.vl-card-meta {
+  font-size: 0.9rem;
+  color: var(--vl-text-light);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px; /* Espacio entre elementos meta */
+}
+
+.vl-meta-item strong {
+  color: #555;
+}
+
+.vl-card-desc {
+  font-size: 0.95rem;
+  color: #555;
+  line-height: 1.6;
+}
+
+/* Etiquetas / Tags */
+.vl-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 5px;
+}
+
+.vl-chip {
+  background-color: var(--vl-accent);
+  color: var(--vl-primary);
+  font-size: 0.75rem;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-weight: 600;
+}
+
+.vl-date {
+  padding: 0 20px;
+  font-size: 0.75rem;
+  color: #aaa;
+  margin-bottom: 10px;
+  text-align: right;
+}
+
+/* Footer y Botones */
+.vl-card-footer {
+  padding: 15px 20px;
+  display: flex;
+  gap: 10px;
+  border-top: 1px solid #f0f0f0;
+  background: #fff;
+  justify-content: flex-end; /* Botones a la derecha */
+}
+
+.vl-btn {
+  display: inline-block;
+  text-align: center;
+  padding: 10px 18px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.2s;
+  cursor: pointer;
+  border: none;
+  font-size: 0.9rem;
+}
+
+.vl-btn-primary {
+  background-color: var(--vl-primary);
+  color: white;
+}
+
+.vl-btn-primary:hover {
+  background-color: var(--vl-primary-light);
+  box-shadow: 0 2px 5px rgba(106, 27, 154, 0.3);
+}
+
+.vl-btn-outline {
+  background-color: transparent;
+  border: 2px solid var(--vl-primary);
+  color: var(--vl-primary);
+  padding: 8px 16px; /* Ajuste ligero por el borde */
+}
+
+.vl-btn-outline:hover {
+  background-color: var(--vl-accent);
+}
+
+/* --- MODALES (Sin cambios funcionales) --- */
+.vl-modal, .vl-side-modal {
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background-color: rgba(0,0,0,0.6); /* Fondo oscuro */
+  z-index: 99999; /* Siempre encima de todo */
+  display: none;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
+  backdrop-filter: blur(3px);
+}
+
+/* Al activar el modal con el ID en la URL */
+.vl-modal:target, .vl-side-modal:target {
+  display: flex;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* CAPA DE FONDO (Para cerrar al hacer clic fuera) */
+/* Esta era la causante probable del bloqueo: ahora tiene position absolute */
+.vl-modal-backdrop {
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  z-index: 1; /* Detrás del diálogo */
+  cursor: default;
+}
+
+/* LA CAJA BLANCA DEL MODAL */
+.vl-modal-dialog {
+  background: white;
+  width: 90%;
+  max-width: 480px; /* Ancho cómodo */
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+  position: relative;
+  z-index: 10; /* Delante del backdrop */
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh; /* Para que no se salga en móviles */
+}
+
+.vl-modal-header {
+  padding: 15px 20px;
+  background: var(--vl-primary); /* Morado */
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 12px 12px 0 0;
+}
+
+.vl-modal-body {
+  padding: 20px;
+  overflow-y: auto; /* Scroll si el contenido es largo */
+}
+
+/* --- CALENDARIO ROBUSTO --- */
+.vl-cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+  margin-top: 15px;
+}
+
+/* Corrección para que el clic funcione en todo el círculo */
+.vl-cal-day {
+  aspect-ratio: 1/1; /* Mantiene forma cuadrada/redonda */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+  position: relative; /* Asegura contexto de apilamiento */
+  z-index: 20; /* Asegura que esté por encima de cualquier decoración */
+}
+
+.vl-cal-day.booked {
+  background-color: #f0f0f0;
+  color: #ccc;
+  cursor: not-allowed;
+}
+
+.vl-cal-day.available {
+  background-color: white;
+  border: 2px solid var(--vl-primary-light);
+  color: var(--vl-primary);
+  cursor: pointer;
+}
+
+.vl-cal-day.available:hover {
+  background-color: var(--vl-primary);
+  color: white;
+  transform: scale(1.1);
+}
+
+.vl-cal-day.selected {
+  background-color: var(--vl-primary);
+  color: white;
+  border-color: var(--vl-primary);
+  box-shadow: 0 0 0 3px var(--vl-accent);
+}
+
+/* Side Modal (Chat) */
+.vl-side-modal { justify-content: flex-end; }
+.vl-side-dialog { background: white; width: 100%; max-width: 450px; height: 100vh; box-shadow: -5px 0 25px rgba(0,0,0,0.2); display: flex; flex-direction: column; }
+.vl-side-header { background: var(--vl-primary); color: white; padding: 20px; display: flex; justify-content: space-between; align-items: center;}
+.vl-side-body { flex-grow: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; background: #f4f7f6;}
+.vl-chat-thread { flex-grow: 1; overflow-y: auto; border: 1px solid #eee; border-radius: 12px; padding: 15px; margin-bottom: 15px; background: white; box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);}
+.vl-chat-input { width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 25px; margin-bottom: 10px; outline: none; transition: border 0.2s;}
+.vl-chat-input:focus { border-color: var(--vl-primary); }
+.vl-chat-form { display: flex; flex-direction: column; }
+
+/* List Group (Horarios) */
+.list-group { padding: 0; list-style: none; border: 1px solid #eee; border-radius: 8px; overflow: hidden;}
+.list-group-item { padding: 12px 15px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; background: white;}
+.list-group-item:last-child { border-bottom: none; }
+
+@keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }

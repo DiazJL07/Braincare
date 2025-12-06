@@ -1,0 +1,590 @@
+/* Estilos nativos para reemplazar Bootstrap en el header */
+
+/* Contenedor principal del navbar */
+.nav-container {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+}
+
+/* Elementos de navegación */
+.nav-list {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* Marca/Logo */
+.nav-brand {
+  font-size: 1.25rem;
+  text-decoration: none;
+  color: #212529;
+  font-weight: 600;
+  padding: 15px 25px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  line-height: 1;
+  border-bottom: 1px solid #e9ecef;
+  transition: all 0.3s ease;
+}
+
+.nav-brand:hover {
+  background-color: #f8f9fa;
+  color: #007bff;
+  text-decoration: none;
+}
+
+/* Logo SVG */
+.nav-logo {
+  height: 32px;
+  width: auto;
+  max-width: 120px;
+  transition: transform 0.2s ease;
+  vertical-align: middle;
+  display: inline-block;
+  margin-right: 0;
+}
+
+.nav-logo:hover {
+  transform: scale(1.05);
+}
+
+/* Responsive logo */
+@media (max-width: 768px) {
+  .nav-logo {
+    height: 50px;
+    max-width: 120px;
+  }
+}
+
+@media (max-width: 480px) {
+  .nav-logo {
+    height: 28px;
+    max-width: 100px;
+  }
+}
+
+/* Menú Hamburguesa Nativo */
+.hamburger-menu {
+  display: none;
+  flex-direction: column;
+  justify-content: space-around;
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 2px solid #007bff;
+  border-radius: 6px;
+  cursor: pointer;
+  padding: 8px;
+  z-index: 1001;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.hamburger-menu:hover {
+  background: rgba(0, 123, 255, 0.1);
+  border-color: #0056b3;
+  transform: scale(1.05);
+}
+
+.hamburger-line {
+  width: 22px;
+  height: 3px;
+  background-color: #007bff;
+  border-radius: 2px;
+  transition: all 0.3s ease;
+  transform-origin: center;
+  margin: 2px 0;
+}
+
+.hamburger-menu:hover .hamburger-line {
+  background-color: #0056b3;
+}
+
+/* Animación del menú hamburguesa */
+.hamburger-menu.active .hamburger-line:nth-child(1) {
+  transform: rotate(45deg) translate(6px, 6px);
+}
+
+.hamburger-menu.active .hamburger-line:nth-child(2) {
+  opacity: 0;
+}
+
+.hamburger-menu.active .hamburger-line:nth-child(3) {
+  transform: rotate(-45deg) translate(6px, -6px);
+}
+
+/* Menú móvil */
+.mobile-menu {
+  position: fixed;
+  top: 0;
+  left: -100%;
+  width: 280px;
+  height: 100vh;
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  box-shadow: 2px 0 15px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  transition: left 0.3s ease;
+  overflow-y: auto;
+}
+
+.mobile-menu.active {
+  left: 0;
+}
+
+.mobile-menu-content {
+  padding: 80px 0 20px 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.mobile-menu-item {
+  display: flex;
+  align-items: center;
+  padding: 15px 25px;
+  color: #333;
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: 500;
+  border-bottom: 1px solid #e9ecef;
+  transition: all 0.3s ease;
+}
+
+.mobile-menu-item:hover {
+  background-color: #f8f9fa;
+  color: #007bff;
+  text-decoration: none;
+}
+
+.mobile-menu-item.disabled {
+  color: #6c757d;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.mobile-menu-item.disabled:hover {
+  background-color: transparent;
+  color: #6c757d;
+}
+
+.mobile-menu-item i {
+  margin-right: 10px;
+  width: 20px;
+  text-align: center;
+}
+
+/* Sección de administración */
+.mobile-menu-section {
+  border-bottom: 1px solid #e9ecef;
+}
+
+.mobile-menu-title {
+  display: block;
+  padding: 15px 25px 10px 25px;
+  color: #007bff;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background-color: #f8f9fa;
+}
+
+.mobile-menu-subitem {
+  display: flex;
+  align-items: center;
+  padding: 12px 25px 12px 45px;
+  color: #555;
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: 400;
+  border-bottom: 1px solid #f1f3f4;
+  transition: all 0.3s ease;
+}
+
+.mobile-menu-subitem:hover {
+  background-color: #e3f2fd;
+  color: #1976d2;
+  text-decoration: none;
+}
+
+.mobile-menu-subitem i {
+  margin-right: 8px;
+  width: 16px;
+  text-align: center;
+}
+
+/* Divisor */
+.mobile-menu-divider {
+  height: 1px;
+  background-color: #dee2e6;
+  margin: 10px 0;
+}
+
+/* Elementos especiales */
+.mobile-menu-item.user-info {
+  background-color: #e3f2fd;
+  color: #1976d2;
+  font-weight: 600;
+}
+
+.mobile-menu-item.logout {
+  color: #dc3545;
+  font-weight: 600;
+}
+
+.mobile-menu-item.logout:hover {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+/* Overlay para cerrar el menú */
+.mobile-menu-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+}
+
+.mobile-menu-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Responsive - Mostrar menú hamburguesa en móviles */
+@media (max-width: 992px) {
+  .hamburger-menu {
+    display: flex !important;
+    position: relative;
+    z-index: 1002;
+  }
+  
+  .nav-list {
+    display: none !important;
+  }
+  
+  .navbar-nav {
+    display: none !important;
+  }
+}
+
+/* Ajustes para pantallas muy pequeñas */
+@media (max-width: 480px) {
+  .mobile-menu {
+    width: 100%;
+  }
+  
+  .mobile-menu-content {
+    padding-top: 70px;
+  }
+}
+
+/* Botón de navegación para móviles */
+.nav-toggler {
+  padding: 0.25rem 0.75rem;
+  font-size: 1.25rem;
+  line-height: 1;
+  background-color: transparent;
+  border: 1px solid transparent;
+  border-radius: 0.25rem;
+  display: none;
+}
+
+@media (max-width: 992px) {
+  .nav-toggler {
+    display: block;
+  }
+  
+  .nav-collapse:not(.show) {
+    display: none;
+  }
+  
+  .nav-list {
+    flex-direction: column;
+  }
+}
+
+.nav-collapse {
+  display: flex;
+  flex-basis: 100%;
+  flex-grow: 1;
+  align-items: center;
+}
+
+.nav-item {
+  margin: 0 10px;
+  position: relative;
+}
+
+/* Contenedor para botones de login/registro */
+.navbar-nav {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  flex-direction: row;
+  align-items: center;
+}
+
+/* Estilo específico para los botones de login/registro */
+.navbar-nav .nav-item {
+  margin: 0 5px;
+}
+
+.navbar-nav .nav-link {
+  padding: 8px 15px;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.navbar-nav .nav-link:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.nav-link {
+  color: #212529;
+  text-decoration: none;
+  padding: 8px 12px;
+  display: inline-block;
+  transition: color 0.15s ease-in-out;
+}
+
+.nav-link:hover {
+  color: #0a58ca;
+}
+
+/* Dropdown */
+.nav-dropdown {
+  position: relative;
+}
+
+.dropdown-toggle::after {
+  display: inline-block;
+  margin-left: 0.255em;
+  vertical-align: 0.255em;
+  content: "";
+  border-top: 0.3em solid;
+  border-right: 0.3em solid transparent;
+  border-bottom: 0;
+  border-left: 0.3em solid transparent;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 1000;
+  display: none;
+  min-width: 10rem;
+  padding: 0.5rem 0;
+  margin: 0.125rem 0 0;
+  background-color: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 0.25rem;
+}
+
+.dropdown-menu.show {
+  display: block;
+}
+
+.dropdown-item {
+  display: block;
+  width: 100%;
+  padding: 0.25rem 1.5rem;
+  clear: both;
+  font-weight: 400;
+  color: #212529;
+  text-align: inherit;
+  text-decoration: none;
+  white-space: nowrap;
+  background-color: transparent;
+  border: 0;
+}
+
+.dropdown-divider {
+  height: 0;
+  margin: 0.5rem 0;
+  overflow: hidden;
+  border-top: 1px solid #e9ecef;
+}
+
+.dropdown-header {
+  display: block;
+  padding: 0.5rem 1.5rem;
+  margin-bottom: 0;
+  font-size: 0.875rem;
+  color: #ffffff;
+  white-space: nowrap;
+}
+
+/* Botones */
+.btn {
+  display: inline-block;
+  font-weight: 400;
+  text-align: center;
+  vertical-align: middle;
+  user-select: none;
+  padding: 0.375rem 0.75rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  border-radius: 0.25rem;
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
+}
+
+.btn-sm {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  border-radius: 0.2rem;
+}
+
+.btn-outline-danger {
+  color: #dc3545;
+  border: 1px solid #dc3545;
+  background-color: transparent;
+}
+
+.btn-outline-danger:hover {
+  color: #000000;
+  background-color: #dc3545;
+  border-color: #dc3545;
+}
+
+/* Badges */
+.badge {
+  display: inline-block;
+  padding: 0.25em 0.4em;
+  font-size: 75%;
+  font-weight: 700;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: baseline;
+  border-radius: 0.25rem;
+}
+
+.badge-danger {
+  color: #000000;
+  background-color: #dc3545;
+}
+
+.badge-pill {
+  padding-right: 0.6em;
+  padding-left: 0.6em;
+  border-radius: 10rem;
+}
+
+/* Posicionamiento */
+.position-relative {
+  position: relative;
+}
+
+.position-absolute {
+  position: absolute;
+}
+
+.top-0 {
+  top: 0;
+}
+
+.start-100 {
+  left: 100%;
+}
+
+.translate-middle {
+  transform: translate(-50%, -50%);
+}
+
+/* Utilidades de texto */
+.text-center {
+  text-align: center;
+}
+
+.text-danger {
+  color: #dc3545;
+}
+
+.text-warning {
+  color: #ffc107;
+}
+
+.text-muted {
+  color: #6c757d;
+}
+
+.text-info {
+  color: #0dcaf0;
+}
+
+/* Espaciado */
+.me-auto {
+  margin-right: auto;
+}
+
+.me-1 {
+  margin-right: 0.25rem;
+}
+
+.me-3 {
+  margin-right: 1rem;
+}
+
+.py-3 {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
+/* Utilidades de display */
+.d-none {
+  display: none;
+}
+
+.d-block {
+  display: block;
+}
+
+/* Clases para elementos deshabilitados */
+.disabled-section {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+/* Media Queries Responsivas */
+/* Mostrar menú hamburguesa en dispositivos móviles */
+@media (max-width: 991.98px) {
+  .hamburger-menu {
+    display: flex !important;
+  }
+  
+  .navbar-nav {
+    display: none !important;
+  }
+  
+  .nav-list {
+    display: none !important;
+  }
+}
+
+/* Ocultar menú hamburguesa en pantallas grandes */
+@media (min-width: 992px) {
+  .hamburger-menu {
+    display: none !important;
+  }
+  
+  .mobile-menu {
+    display: none !important;
+  }
+  
+  .mobile-menu-overlay {
+    display: none !important;
+  }
+}

@@ -1,0 +1,708 @@
+ 
+<link rel="stylesheet" href="/css/ForoDetail.css">
+<script src="/js/strip-inline-styles.js" defer></script>
+
+
+
+<div class="nx-core-wrapper">
+  
+  <div class="nx-central-column">
+
+    <div class="nx-nav-header">
+      <a href="/foro" class="nx-btn-ghost-back">
+        <i class="fas fa-arrow-left"></i> Regresar al foro
+      </a>
+      
+      <nav aria-label="breadcrumb">
+        <ol class="nx-breadcrumbs-list">
+          <li><a href="/">Inicio</a></li>
+          <li>/</li>
+          <li><a href="/foro">Foro</a></li>
+          <li>/</li>
+          <li class="nx-crumb-active" aria-current="page"><%= foro.title %></li>
+        </ol>
+      </nav>
+      
+      <div id="alertContainer"></div>
+    </div>
+
+    <article class="nx-article-card">
+      
+      <% if (foro.image) { %>
+        <div class="nx-hero-img-container">
+          <img src="<%= foro.image %>" class="nx-hero-img" alt="<%= foro.title %>">
+          <div class="nx-hero-overlay"></div>
+        </div>
+      <% } %>
+
+      <div class="nx-article-body">
+        <div class="nx-topic-wrapper">
+          <span class="nx-topic-pill">
+            <%= (foro.topic && foro.topic.name) ? foro.topic.name : 'General' %>
+          </span>
+        </div>
+
+        <h1 class="nx-headline"><%= foro.title %></h1>
+
+        <div class="nx-meta-row">
+          <div class="nx-meta-item">
+             <span>Publicado el</span>
+             <%= new Date(foro.publicationDate).toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' }) %>
+           </div>
+           <span>•</span>
+           <div class="nx-meta-item">
+             <i class="fas fa-comments"></i>
+             <span class="nx-stat-value"><%= foro.comments ? foro.comments.length : 0 %></span>
+           </div>
+           <span>•</span>
+           <div class="nx-meta-item">
+            <span class="nx-stat-value"><%= foro.views %></span>
+              <span>Vistas</span>
+             
+           </div>
+           
+        </div>
+
+        <div class="nx-content-renderer">
+          <%- foro.content %>
+        </div>
+
+        <div class="nx-action-dock">
+          <button class="nx-btn-action <%= (user && foro.likes && foro.likes.some(function(x){ return x.toString() === user._id.toString(); })) ? 'nx-btn-like-active' : 'nx-btn-like-outline' %> like-btn" data-post-id="<%= foro._id %>">
+            <i class="fas fa-heart"></i>
+           
+            <span style="margin-left: 6px;">Me gusta (<span class="likes-count"><%= foro.likes ? foro.likes.length : 0 %></span>)</span>
+          </button>
+
+          <% if (user && foro.author && user._id.toString() !== foro.author._id.toString()) { %>
+            <button class="nx-btn-action nx-btn-warn report-btn" data-post-id="<%= foro._id %>" data-content-type="foro" title="Reportar" data-bs-toggle="modal" data-bs-target="#reportModal">
+              <i class="fas fa-flag"></i> Reportar
+            </button>
+          <% } %>
+
+          <% if (user && user.role === 'admin') { %>
+            <button class="nx-btn-action nx-btn-destruct" onclick="confirmDeleteForoDetail('<%= foro._id %>', '<%= foro.title %>')">
+              <i class="fas fa-trash"></i> Eliminar
+            </button>
+          <% } %>
+        </div>
+
+      </div>
+    </article>
+
+    <div class="nx-comments-wrapper">
+      
+      <div class="nx-comments-header">
+        <h3 class="nx-sec-title">
+          Comentarios <span class="nx-count-bubble"><%= foro.comments ? foro.comments.length : 0 %></span>
+        </h3>
+        <small style="color: var(--nx-text-sec);">Únete a la charla</small>
+      </div>
+
+      <div class="nx-compose-box">
+        <% if (user) { %>
+          <form id="main-comment-form" action="/foro/<%= foro._id %>/comments" method="POST">
+            <div class="nx-user-mini-header">
+               <% if (user.profileImage) { %>
+                  <img src="<%= user.profileImage %>" class="nx-avatar-circle" alt="Tú">
+               <% } else { %>
+                  <div class="nx-avatar-placeholder"><i class="fas fa-user"></i></div>
+               <% } %>
+               <span style="font-weight: 600; color: var(--nx-primary);"><%= user.name %></span>
+            </div>
+            
+            <textarea class="nx-textarea-clean" name="content" rows="3" placeholder="Escribe tu opinión aquí..." required></textarea>
+            <input type="hidden" name="postId" value="<%= foro._id %>">
+            
+            <div style="text-align: right;">
+              <button type="submit" class="nx-btn-primary-send">
+                <i class="fas fa-paper-plane"></i> Publicar
+              </button>
+            </div>
+          </form>
+        <% } else { %>
+          <div style="text-align: center; padding: 20px;">
+            <i class="fas fa-lock" style="color: #cbd5e1; font-size: 2rem; margin-bottom: 10px;"></i>
+            <p>Debes iniciar sesión para comentar.</p>
+            <a href="/login" class="nx-btn-primary-send" style="text-decoration: none; display: inline-block;">Ingresar</a>
+          </div>
+        <% } %>
+      </div>
+
+      <div class="nx-comments-list">
+        <% if (foro.comments && foro.comments.length > 0) { %>
+          <% foro.comments.forEach(comment => { %>
+            <% if (!comment.isReply) { %>
+              
+              <div class="nx-comment-node" id="comment-<%= comment._id %>">
+                <div class="nx-comment-sidebar">
+                  <a href="/user/public/<%= comment.author ? comment.author._id : '#' %>">
+                    <% if (comment.author && comment.author.profileImage) { %>
+                      <img src="<%= comment.author.profileImage %>" class="nx-avatar-circle">
+                    <% } else { %>
+                      <div class="nx-avatar-placeholder <%= !comment.author ? 'nx-avatar-deleted' : '' %>">
+                        <i class="fas fa-<%= comment.author ? 'user' : 'user-slash' %>"></i>
+                      </div>
+                    <% } %>
+                  </a>
+                </div>
+
+                <div class="nx-comment-body-group">
+                  <div class="nx-comment-bubble">
+                    <div class="nx-comment-meta">
+                       <% if (comment.author) { %>
+                         <a href="/user/public/<%= comment.author._id %>" class="nx-author-name"><%= comment.author.name %></a>
+                       <% } else { %>
+                         <span class="nx-author-name" style="color: #9ca3af;">Usuario Eliminado</span>
+                       <% } %>
+                       <span class="nx-date-txt">• <%= new Date(comment.createdAt).toLocaleDateString() %></span>
+                       <% if (comment.edited) { %><small style="color: #d97706;">(Editado)</small><% } %>
+                       <% if (user && user.role === 'admin' && comment.author) { %>
+                          <form action="/admin/users/<%= comment.author._id %>/ban" method="POST" class="d-inline ban-form">
+                            <button type="button" class="nx-tool-btn ban-user-btn" data-user-id="<%= comment.author._id %>" data-user-name="<%= comment.author.name %>" title="Banear">
+                               <i class="fas fa-ban"></i>
+                            </button>
+                          </form>
+                       <% } %>
+                    </div>
+
+                    <div class="nx-comment-txt"><%= comment.content %></div>
+                  </div>
+
+                  <div class="nx-comment-toolbar">
+                     <button class="nx-tool-btn like-comment-btn <%= (user && comment.likes && comment.likes.some(function(x){ return x.toString() === user._id.toString(); })) ? 'liked' : '' %>" data-comment-id="<%= comment._id %>">
+                        <i class="fas fa-heart"></i> <span class="likes-count"><%= comment.likes ? comment.likes.length : 0 %></span> Me gusta
+                     </button>
+                     
+                     <% if (user) { %>
+                        <button class="nx-tool-btn reply-btn" data-comment-id="<%= comment._id %>">
+                           <i class="fas fa-reply"></i> Responder
+                        </button>
+                     <% } %>
+
+                     <% if (user && comment.author && user._id.toString() !== comment.author._id.toString()) { %>
+                        <button class="nx-tool-btn report-btn" data-comment-id="<%= comment._id %>" data-content-type="comment" data-bs-toggle="modal" data-bs-target="#reportModal">
+                           <i class="fas fa-flag"></i> Reportar
+                        </button>
+                     <% } %>
+
+                     <% if (user && (user.role === 'admin' || (comment.author && user._id.toString() === comment.author._id.toString()))) { %>
+                        <button class="nx-tool-btn delete-comment-btn" data-comment-id="<%= comment._id %>">
+                           <i class="fas fa-trash"></i> Eliminar
+                        </button>
+                     <% } %>
+                  </div>
+
+                  <div class="edit-form" id="edit-form-<%= comment._id %>" style="display: none; margin-top: 10px;">
+                    <form class="edit-comment-form" action="/foro/<%= foro._id %>/comments/<%= comment._id %>" method="POST" data-comment-id="<%= comment._id %>">
+                       <textarea class="nx-textarea-clean" name="content" required><%= comment.content %></textarea>
+                       <div style="margin-top: 5px;">
+                          <button type="submit" class="nx-btn-primary-send" style="padding: 5px 10px; font-size: 0.8rem;">Guardar</button>
+                          <button type="button" class="nx-tool-btn cancel-edit-btn" style="display:inline-block;">Cancelar</button>
+                       </div>
+                    </form>
+                  </div>
+
+                  <div class="reply-form" id="reply-form-<%= comment._id %>" style="display: none; margin-top: 10px;">
+                     <form class="reply-comment-form" action="/foro/<%= foro._id %>/comments" method="POST" data-parent-id="<%= comment._id %>">
+                        <textarea class="nx-textarea-clean" name="content" placeholder="Escribe tu respuesta..." required></textarea>
+                        <input type="hidden" name="postId" value="<%= foro._id %>">
+                        <input type="hidden" name="parentCommentId" value="<%= comment._id %>">
+                        <div style="margin-top: 5px;">
+                           <button type="submit" class="nx-btn-primary-send" style="padding: 5px 10px; font-size: 0.8rem;">Enviar</button>
+                           <button type="button" class="nx-tool-btn cancel-reply-btn" style="display:inline-block;">Cancelar</button>
+                        </div>
+                     </form>
+                  </div>
+
+                  <% if (comment.replies && comment.replies.length > 0) { %>
+                    <div class="nx-replies-thread">
+                      <% comment.replies.forEach(reply => { %>
+                        <div class="nx-comment-node" id="reply-<%= reply._id %>" style="margin-bottom: 15px;">
+                           
+                              <div class="nx-comment-sidebar">
+                              <a href="/user/public/<%= reply.author ? reply.author._id : '#' %>">
+                                 <% if (reply.author && reply.author.profileImage) { %>
+                                    <img src="<%= reply.author.profileImage %>" class="nx-avatar-circle" style="width:30px; height:30px;">
+                                 <% } else { %>
+                                    <div class="nx-avatar-placeholder <%= !reply.author ? 'nx-avatar-deleted' : '' %>" style="width:30px; height:30px; font-size: 0.8rem;">
+                                       <i class="fas fa-<%= reply.author ? 'user' : 'user-slash' %>"></i>
+                                    </div>
+                                 <% } %>
+                              </a>
+                              <div class="nx-comment-meta">
+                                <% if (reply.author) { %>
+                                  <a href="/user/public/<%= reply.author._id %>" class="nx-author-name"><%= reply.author.name %></a>
+                                <% } else { %>
+                                  <span class="nx-author-name" style="color: #9ca3af;">Usuario Eliminado</span>
+                                <% } %>
+                                <span class="nx-date-txt">• <%= new Date(reply.createdAt).toLocaleDateString() %></span>
+                                <% if (reply.edited) { %><small style="color: #d97706;">(Editado)</small><% } %>
+                              </div>
+                           </div>
+
+                              <div class="nx-comment-body-group">
+                                 <div class="nx-comment-bubble" style="background: #f8fafc;">
+                                 <div class="nx-comment-meta">
+                                    
+                                   
+                                 </div>
+                                 <div class="nx-comment-txt" style="font-size: 0.9rem;"><%= reply.content %></div>
+                              </div>
+                              
+                              <div class="nx-comment-toolbar">
+                                 <button class="nx-tool-btn like-comment-btn <%= (user && reply.likes && reply.likes.some(function(x){ return x.toString() === user._id.toString(); })) ? 'liked' : '' %>" data-comment-id="<%= reply._id %>">
+                                    <i class="fas fa-heart"></i> <span class="likes-count"><%= reply.likes ? reply.likes.length : 0 %></span>
+                                 </button>
+                                 <% if (user && reply.author && user._id.toString() !== reply.author._id.toString()) { %>
+                                    <button class="nx-tool-btn report-btn" data-comment-id="<%= reply._id %>" data-content-type="comment" data-bs-toggle="modal" data-bs-target="#reportModal">
+                                       <i class="fas fa-flag"></i>
+                                    </button>
+                                 <% } %>
+                                 <% if (user && (user.role === 'admin' || (reply.author && user._id.toString() === reply.author._id.toString()))) { %>
+                                    <button class="nx-tool-btn delete-comment-btn" data-comment-id="<%= reply._id %>">
+                                       <i class="fas fa-trash"></i>
+                                    </button>
+                                 <% } %>
+                              </div>
+                           </div>
+
+                        </div>
+                      <% }); %>
+                    </div>
+                  <% } %>
+
+                </div> </div> <% } %>
+          <% }); %>
+        <% } else { %>
+          <div style="text-align: center; padding: 40px; color: var(--nx-text-sec);">
+             <i class="far fa-comments" style="font-size: 2rem; opacity: 0.5;"></i>
+             <p>Aún no hay comentarios. ¡Sé el primero!</p>
+          </div>
+        <% } %>
+      </div>
+
+    </div> </div> </div> <div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content nx-modal-content">
+      <div class="nx-modal-header">
+        <h5 class="nx-sec-title"><i class="fas fa-flag text-warning"></i> Reportar</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form id="reportForm">
+        <div class="nx-modal-body" style="text-align: left;">
+           <div style="margin-bottom: 15px;">
+             <label class="form-label fw-bold">Razón:</label>
+             <select class="form-select" name="reason" required>
+               <option value="">Selecciona...</option>
+               <option value="Contenido inapropiado">Contenido inapropiado</option>
+               <option value="Spam">Spam</option>
+               <option value="Acoso o bullying">Acoso o bullying</option>
+               <option value="Lenguaje ofensivo">Lenguaje ofensivo</option>
+               <option value="Información falsa">Información falsa</option>
+               <option value="Violación de términos">Violación de términos</option>
+               <option value="Otro">Otro</option>
+             </select>
+           </div>
+           <div>
+             <label class="form-label">Detalles:</label>
+             <textarea class="form-control" name="description" rows="3"></textarea>
+           </div>
+        </div>
+        <div class="modal-footer border-0">
+          <button type="button" class="nx-btn-action nx-btn-like-outline" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="nx-btn-action nx-btn-warn">Enviar Reporte</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="banUserModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content nx-modal-content">
+      <div class="nx-modal-body">
+        <div style="font-size: 3rem; color: var(--nx-danger); margin-bottom: 15px;">
+           <i class="fas fa-ban"></i>
+        </div>
+        <h4>Banear Usuario</h4>
+        <p>¿Estás seguro de banear a <span id="banUserName" class="fw-bold"></span>?</p>
+        <div style="display: flex; justify-content: center; gap: 10px; margin-top: 20px;">
+           <button type="button" class="nx-btn-action nx-btn-like-outline" data-bs-dismiss="modal">Cancelar</button>
+           <button type="button" class="nx-btn-action nx-btn-like-active" id="confirmBanBtn">Sí, Banear</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="/js/comments.js"></script>
+
+<script>
+  // Manejar botones de baneo
+  let currentBanForm = null;
+  
+  document.addEventListener('DOMContentLoaded', function() {
+    const banButtons = document.querySelectorAll('.ban-user-btn');
+    const banModal = new bootstrap.Modal(document.getElementById('banUserModal'));
+    const confirmBanBtn = document.getElementById('confirmBanBtn');
+    const banUserNameElement = document.getElementById('banUserName');
+    
+    // Manejar click en botones de baneo
+    banButtons.forEach(button => {
+      button.addEventListener('click', function() {
+        const userId = this.getAttribute('data-user-id');
+        const userName = this.getAttribute('data-user-name');
+        currentBanForm = this.closest('.ban-form');
+        
+        // Establecer el nombre del usuario en el modal
+        banUserNameElement.textContent = userName;
+        
+        // Mostrar el modal
+        banModal.show();
+      });
+    });
+    
+    // Manejar confirmación de baneo
+    confirmBanBtn.addEventListener('click', async function() {
+      if (!currentBanForm) return;
+      
+      try {
+        // Enviar el formulario
+        currentBanForm.submit();
+        
+        // Cerrar el modal
+        banModal.hide();
+      } catch (error) {
+        console.error('Error al banear usuario:', error);
+        showAlert('danger', 'Error al banear usuario');
+      }
+    });
+  });
+</script>
+
+<!-- Modal de confirmación para eliminar -->
+
+<div class="modal fade" id="deleteForoDetailModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content nx-modal-content">
+      <div class="nx-modal-body">
+        <div style="font-size: 3rem; color: var(--nx-danger); margin-bottom: 15px;">
+           <i class="fas fa-trash-alt"></i>
+        </div>
+        <h4>Eliminar Publicación</h4>
+        <p id="foroDetailTitle" class="fw-bold"></p>
+        <p class="text-muted small">Esta acción es irreversible.</p>
+        <div style="display: flex; justify-content: center; gap: 10px; margin-top: 20px;">
+           <button type="button" class="nx-btn-action nx-btn-like-outline" data-bs-dismiss="modal">Cancelar</button>
+           <button type="button" class="nx-btn-action nx-btn-like-active" id="confirmDeleteDetailBtn">Eliminar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="deleteCommentModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content nx-modal-content">
+      <div class="nx-modal-body">
+        <div style="font-size: 3rem; color: var(--nx-danger); margin-bottom: 15px;">
+           <i class="fas fa-trash-alt"></i>
+        </div>
+        <h4>Eliminar Comentario</h4>
+        <p class="text-muted small">Esta acción no se puede deshacer.</p>
+        <div style="display: flex; justify-content: center; gap: 10px; margin-top: 20px;">
+           <button type="button" class="nx-btn-action nx-btn-like-outline" data-bs-dismiss="modal">Cancelar</button>
+           <button type="button" class="nx-btn-action nx-btn-like-active" id="confirmDeleteCommentBtn">Eliminar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  let currentForoDetailId = null;
+  
+  function confirmDeleteForoDetail(foroId, title) {
+    currentForoDetailId = foroId;
+    
+    // Establecer el título de la publicación en el modal
+    document.getElementById('foroDetailTitle').textContent = title;
+    
+    // Mostrar el modal de confirmación
+    const deleteModal = new bootstrap.Modal(document.getElementById('deleteForoDetailModal'));
+    deleteModal.show();
+    
+    return false;
+  }
+  
+  // Manejar la confirmación de eliminación
+  document.getElementById('confirmDeleteDetailBtn').addEventListener('click', async function() {
+    if (!currentForoDetailId) return;
+    
+    try {
+      const response = await fetch(`/foro/admin/${currentForoDetailId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        // Cerrar el modal
+        const deleteModal = bootstrap.Modal.getInstance(document.getElementById('deleteForoDetailModal'));
+        deleteModal.hide();
+        
+        // Mostrar mensaje de éxito
+        showAlert('success', result.message);
+        
+        // Redirigir al foro después de un breve delay
+        setTimeout(() => {
+          window.location.href = '/foro';
+        }, 1500);
+      } else {
+        showAlert('danger', result.message || 'Error al eliminar la publicación');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      showAlert('danger', 'Error de conexión al eliminar la publicación');
+    }
+  });
+  
+  function showAlert(type, message) {
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+    alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+    alertDiv.innerHTML = `
+      ${message}
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    document.body.appendChild(alertDiv);
+    
+    // Auto-remove after 5 seconds
+    setTimeout(() => {
+      if (alertDiv.parentNode) {
+        alertDiv.remove();
+      }
+    }, 5000);
+  }
+
+  // Manejar formulario principal de comentarios
+  const mainForm = document.getElementById('main-comment-form');
+  console.log('Formulario encontrado:', mainForm);
+  
+  if (mainForm) {
+    mainForm.addEventListener('submit', async function(e) {
+      console.log('=== FORMULARIO ENVIADO ===');
+      console.log('Evento:', e);
+      console.log('Formulario:', this);
+      console.log('Action:', this.action);
+      console.log('Method:', this.method);
+      
+      e.preventDefault();
+    
+    const form = this;
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const textarea = form.querySelector('textarea[name="content"]');
+    
+    // Deshabilitar botón durante envío
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Enviando...';
+    
+    try {
+      const formData = new URLSearchParams();
+      formData.append('content', textarea.value);
+      formData.append('postId', form.querySelector('input[name="postId"]').value);
+      
+      console.log('=== DATOS A ENVIAR ===');
+      console.log('Content:', textarea.value);
+      console.log('PostId:', form.querySelector('input[name="postId"]').value);
+      console.log('URL destino:', form.action);
+      console.log('URLSearchParams entries:');
+      for (let [key, value] of formData.entries()) {
+        console.log(key, value);
+      }
+      
+      const response = await fetch(form.action, {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'X-Requested-With': 'XMLHttpRequest'
+        },
+        credentials: 'same-origin'
+      });
+      
+      const result = await response.json();
+      
+      if (response.ok) {
+        showAlert('success', result.message || 'Comentario agregado exitosamente');
+        textarea.value = ''; // Limpiar textarea
+        // Recargar la página para mostrar el nuevo comentario
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
+      } else {
+        if (response.status === 401) {
+          showAlert('danger', 'Debes iniciar sesión para comentar. Redirigiendo...');
+          setTimeout(() => { window.location.href = '/auth/login'; }, 1200);
+        } else if (response.status === 403 && window.handleFetchError) {
+          window.handleFetchError(response, result);
+        } else {
+          showAlert('danger', result.message || 'Error al agregar comentario');
+        }
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      showAlert('danger', 'Error de conexión al agregar comentario');
+    } finally {
+      // Rehabilitar botón
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Comentar';
+    }
+  });
+  }
+
+  // Manejar formularios de edición de comentarios
+  document.querySelectorAll('.edit-comment-form').forEach(form => {
+    form.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const submitBtn = this.querySelector('button[type="submit"]');
+      const textarea = this.querySelector('textarea[name="content"]');
+      const commentId = this.dataset.commentId;
+      
+      // Deshabilitar botón durante envío
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Guardando...';
+      
+      try {
+        const formData = new FormData(this);
+        const response = await fetch(this.action, {
+          method: 'POST',
+          body: formData,
+          headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+          },
+          credentials: 'same-origin'
+        });
+        
+        const result = await response.json();
+        
+        if (response.ok) {
+          showAlert('success', result.message || 'Comentario actualizado exitosamente');
+          // Recargar la página para mostrar los cambios
+          setTimeout(() => {
+            window.location.reload();
+          }, 1000);
+        } else {
+          if (response.status === 401) {
+            showAlert('danger', 'Debes iniciar sesión para editar. Redirigiendo...');
+            setTimeout(() => { window.location.href = '/auth/login'; }, 1200);
+          } else if (response.status === 403 && window.handleFetchError) {
+            window.handleFetchError(response, result);
+          } else {
+            showAlert('danger', result.message || 'Error al actualizar comentario');
+          }
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        showAlert('danger', 'Error de conexión al actualizar comentario');
+      } finally {
+        // Rehabilitar botón
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Guardar';
+      }
+    });
+  });
+
+  // Manejar formularios de respuesta
+  document.querySelectorAll('.reply-comment-form').forEach(form => {
+    form.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const submitBtn = this.querySelector('button[type="submit"]');
+      const textarea = this.querySelector('textarea[name="content"]');
+      
+      // Deshabilitar botón durante envío
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Enviando...';
+      
+      try {
+        const formData = new FormData(this);
+        const response = await fetch(this.action, {
+          method: 'POST',
+          body: formData,
+          headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+          },
+          credentials: 'same-origin'
+        });
+        
+        const result = await response.json();
+        
+        if (response.ok) {
+          showAlert('success', result.message || 'Respuesta agregada exitosamente');
+          textarea.value = ''; // Limpiar textarea
+          
+          // Ocultar el formulario de respuesta
+          const replyForm = this.closest('.reply-form');
+          replyForm.style.display = 'none';
+          
+          // Recargar solo después de un breve delay para mostrar la nueva respuesta
+          setTimeout(() => {
+            window.location.reload();
+          }, 500);
+        } else {
+          if (response.status === 401) {
+            showAlert('danger', 'Debes iniciar sesión para responder. Redirigiendo...');
+            setTimeout(() => { window.location.href = '/auth/login'; }, 1200);
+          } else if (response.status === 403 && window.handleFetchError) {
+            window.handleFetchError(response, result);
+          } else {
+            showAlert('danger', result.message || 'Error al agregar respuesta');
+          }
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        showAlert('danger', 'Error de conexión al agregar respuesta');
+      } finally {
+        // Rehabilitar botón
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Enviar';
+      }
+    });
+  });
+</script>
+
+  <!-- Tu JS primero, para que el callback global exista antes de cargar el script de Google -->
+  <script src="/js/tradux.js"></script>
+  <!-- Script oficial de Google (callback definido en translate.js) -->
+  <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+  
+  <!-- Script para cargar estadísticas del usuario -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const authorId = '<%= foro.author._id %>';
+      const forumsCountElement = document.getElementById('user-forums-count');
+      
+      // Hacer petición para obtener el número de foros del usuario
+      if (forumsCountElement) {
+        fetch(`/api/user/${authorId}/forums-count`)
+          .then(response => response.json())
+          .then(data => {
+            forumsCountElement.textContent = data && data.success ? data.count : '0';
+          })
+          .catch(error => {
+            console.error('Error al cargar estadísticas del usuario:', error);
+            forumsCountElement.textContent = '0';
+          });
+      }
+    });
+  </script>
+
+<%- include('../partials/footer') %>
+
+

@@ -1,0 +1,235 @@
+.guide_edit_wrapper {
+    max-width: 1000px;
+    margin: 40px auto;
+    padding: 0 20px;
+    font-family: system-ui, -apple-system, sans-serif;
+    box-sizing: border-box;
+  }
+
+  .guide_edit_main_title {
+    margin-bottom: 30px;
+    font-size: 28px;
+    font-weight: 600;
+    color: #333;
+  }
+
+
+  .guide_edit_card {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+  }
+
+  .guide_edit_card_body {
+    padding: 30px;
+  }
+
+  
+  .guide_edit_form_layout {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px; 
+  }
+
+  .guide_edit_column {
+    flex: 1 1 100%; 
+    min-width: 280px; 
+  }
+
+  /* Formulario */
+  .guide_edit_form_group {
+    margin-bottom: 25px;
+  }
+
+  .guide_edit_label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #212529;
+  }
+
+  .guide_edit_input,
+  .guide_edit_select {
+    display: block;
+    width: 100%;
+    padding: 10px 12px;
+    font-size: 16px;
+    line-height: 1.5;
+    color: #212529;
+    background-color: #fff;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    box-sizing: border-box;
+    transition: border-color .15s ease-in-out;
+  }
+
+  .guide_edit_input:focus,
+  .guide_edit_select:focus {
+    border-color: #86b7fe;
+    outline: 0;
+    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.25);
+  }
+
+  .guide_edit_helper_text {
+    display: block;
+    margin-top: 6px;
+    font-size: 0.875em;
+    color: #6c757d;
+  }
+
+  /* Previsualización y Archivos Actuales */
+  .guide_edit_current_file {
+    margin-top: 10px;
+  }
+  
+  .guide_edit_current_file p {
+      margin: 5px 0;
+      font-size: 0.95em;
+  }
+
+  .guide_edit_img_preview {
+    display: block;
+    max-height: 150px;
+    border: 1px solid #dee2e6;
+    padding: 5px;
+    border-radius: 4px;
+    object-fit: contain;
+  }
+
+  /* Alerta */
+  .guide_edit_alert_danger {
+    padding: 15px;
+    margin-bottom: 20px;
+    border: 1px solid #f5c2c7;
+    border-radius: 4px;
+    color: #842029;
+    background-color: #f8d7da;
+    font-size: 0.95rem;
+  }
+
+  /* Botones de Acción */
+  .guide_edit_actions_footer {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 40px;
+  }
+
+  .guide_edit_btn {
+    display: inline-block;
+    font-weight: 500;
+    text-align: center;
+    padding: 10px 24px;
+    font-size: 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    text-decoration: none;
+    transition: background-color 0.2s;
+  }
+
+  .guide_edit_btn_primary {
+    color: #fff;
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+  }
+
+  .guide_edit_btn_primary:hover {
+    background-color: #0b5ed7;
+  }
+
+  .guide_edit_btn_secondary {
+    color: #fff;
+    background-color: #6c757d;
+    border-color: #6c757d;
+  }
+
+  .guide_edit_btn_secondary:hover {
+    background-color: #5c636a;
+  }
+
+  /* Modal de Error (Reemplazando clases modal y dialog) */
+  .guide_edit_modal_overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 1050;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .guide_edit_modal_box {
+    background: #fff;
+    width: 100%;
+    max-width: 500px;
+    border-radius: 8px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    overflow: hidden;
+    margin: 20px;
+  }
+
+  .guide_edit_modal_header {
+    padding: 15px 20px;
+    border-bottom: 1px solid #dee2e6;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .guide_edit_modal_title {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+
+  .guide_edit_modal_close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    line-height: 1;
+    cursor: pointer;
+    color: #aaa;
+    padding: 0 5px;
+  }
+
+  .guide_edit_modal_body {
+    padding: 20px;
+  }
+
+  .guide_edit_modal_footer {
+    padding: 15px 20px;
+    border-top: 1px solid #dee2e6;
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  
+  @media (min-width: 768px) {
+    .guide_edit_wrapper {
+      max-width: 900px; 
+      padding: 0 40px;
+    }
+    
+    .guide_edit_form_layout {
+      gap: 40px; 
+    }
+
+    .guide_edit_column {
+      flex: 1 1 calc(50% - 20px); 
+    }
+
+    .guide_edit_card_body {
+        padding: 40px;
+    }
+  }
+
+  /* Desktop XL (Min 1200px) */
+  @media (min-width: 1200px) {
+    .guide_edit_wrapper {
+      max-width: 1100px;  
+    }
+  }

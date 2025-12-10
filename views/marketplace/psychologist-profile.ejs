@@ -1,0 +1,106 @@
+<div class="container">
+  <div class="d-flex align-items-center gap-3">
+    <img src="<%= profile.photoUrl || '/img/default-avatar.svg' %>" style="width:80px;height:80px;border-radius:50%;object-fit:cover;">
+    <div>
+      <h3><%= profile.user ? profile.user.name : 'Psicólogo' %></h3>
+      <div><%= profile.bio %></div>
+      <div>$ <%= profile.price %> • <%= profile.durationMinutes %> min</div>
+    </div>
+  </div>
+  <h4 class="mt-4">Horarios disponibles<% if (typeof selectedDayIso !== 'undefined' && selectedDayIso) { %> para <%= new Date(selectedDayIso).toLocaleDateString('es-ES') %><% } %></h4>
+  <ul class="list-group">
+    <% slots.forEach(s => { %>
+      <li class="list-group-item d-flex justify-content-between align-items-center">
+        <span><%= new Date(s.start).toLocaleString('es-ES') %> - <%= new Date(s.end).toLocaleString('es-ES') %></span>
+        <form action="/psych/p/<%= profile.user._id %>/book" method="POST">
+          <input type="hidden" name="slotId" value="<%= s._id %>">
+          <button class="btn btn-primary btn-sm" type="submit">Reservar sesión</button>
+        </form>
+      </li>
+    <% }) %>
+  </ul>
+</div>
+
+<div id="book" class="ps-modal-view" aria-hidden="true">
+  <div class="ps-modal-view-dialog" role="dialog" aria-modal="true">
+    <div class="ps-modal-view-header">
+      <h3>Días disponibles para agendar cita</h3>
+      <a href="#" class="ps-modal-view-close" aria-label="Cerrar">×</a>
+    </div>
+    <div class="ps-modal-view-body">
+      <div class="ps-calendar">
+        <% var wsRaw = (typeof windowStart !== 'undefined' && windowStart) ? new Date(windowStart) : new Date();
+           var ws = isNaN(wsRaw.getTime()) ? new Date() : wsRaw;
+           var weRaw = (typeof windowEnd !== 'undefined' && windowEnd) ? new Date(windowEnd) : new Date(ws.getTime() + 30*24*60*60*1000);
+           var we = isNaN(weRaw.getTime()) ? new Date(ws.getTime() + 30*24*60*60*1000) : weRaw;
+           if (we < ws) we = new Date(ws.getTime());
+           var booked = (typeof bookedDays !== 'undefined' && Array.isArray(bookedDays)) ? bookedDays : [];
+           var available = (typeof availableDays !== 'undefined' && Array.isArray(availableDays)) ? availableDays : [];
+           var start = new Date(ws); start.setHours(0,0,0,0);
+           var end = new Date(we); end.setHours(0,0,0,0); %>
+        <div class="ps-cal-info">
+          <span>Inicio: <strong><%= ws.toLocaleDateString('es-ES') %></strong></span>
+          <span>Fin: <strong><%= we.toLocaleDateString('es-ES') %></strong></span>
+        </div>
+        <div class="ps-cal-grid">
+          <% for (let d = new Date(start); d <= end; d.setDate(d.getDate()+1)) { 
+               const iso = new Date(d).toISOString().slice(0,10)
+               const isBooked = booked.includes(iso)
+               const isAvailable = available.includes(iso)
+               const isStart = iso === new Date(start).toISOString().slice(0,10)
+               const isEnd = iso === new Date(end).toISOString().slice(0,10)
+          %>
+            <% if (isAvailable) { %>
+              <a class="ps-cal-day<%= isAvailable ? ' available' : '' %><%= isStart ? ' start' : '' %><%= isEnd ? ' end' : '' %><%= (typeof selectedDayIso !== 'undefined' && selectedDayIso === iso) ? ' selected' : '' %>" href="?date=<%= iso %>#book">
+                <div class="ps-cal-day-num"><%= d.getDate() %></div>
+              </a>
+            <% } else { %>
+              <div class="ps-cal-day<%= isBooked ? ' booked' : '' %><%= isStart ? ' start' : '' %><%= isEnd ? ' end' : '' %>">
+                <div class="ps-cal-day-num"><%= d.getDate() %></div>
+              </div>
+            <% } %>
+          <% } %>
+        </div>
+        <% if (typeof selectedDayIso !== 'undefined' && selectedDayIso) { %>
+          <div class="ps-modal-view-body" style="margin-top:12px;">
+            <div class="ps-modal-view-line">Horarios para <strong><%= new Date(selectedDayIso).toLocaleDateString('es-ES') %></strong></div>
+            <ul class="list-group">
+              <% if (slots && slots.length) { %>
+                <% slots.forEach(ds => { %>
+                  <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <span><%= new Date(ds.start).toLocaleString('es-ES') %> - <%= new Date(ds.end).toLocaleString('es-ES') %></span>
+                    <form action="/psych/p/<%= profile.user._id %>/book" method="POST">
+                      <input type="hidden" name="slotId" value="<%= ds._id %>">
+                      <input type="hidden" name="returnUrl" value="/psych/p/<%= profile.user._id %>?date=<%= selectedDayIso %>#book">
+                      <button class="ps-btn" type="submit">Reservar sesión</button>
+                    </form>
+                  </li>
+                <% }) %>
+              <% } else { %>
+                <li class="list-group-item">No hay horarios disponibles ese día.</li>
+              <% } %>
+            </ul>
+            <% if (slots && slots.length) { %>
+              <form action="/psych/p/<%= profile.user._id %>/book" method="POST" style="margin-top:12px; display:flex; justify-content:flex-end;">
+                <input type="hidden" name="slotId" value="<%= slots[0]._id %>">
+                <input type="hidden" name="returnUrl" value="/psych/p/<%= profile.user._id %>?date=<%= selectedDayIso %>#book">
+                <button class="ps-btn" type="submit">Agendar día</button>
+              </form>
+            <% } %>
+          </div>
+        <% } %>
+        <div class="ps-cal-legend">
+          <span class="legend"><span class="box available"></span> Disponible</span>
+          <span class="legend"><span class="box booked"></span> Ocupado</span>
+          <span class="legend"><span class="box start"></span> Inicio</span>
+          <span class="legend"><span class="box end"></span> Fin</span>
+        </div>
+      </div>
+    </div>
+    <div class="ps-modal-view-actions">
+      <a class="ps-btn" href="#">Cerrar</a>
+    </div>
+  </div>
+</div>
+
+<link rel="stylesheet" href="/css/psych-services.css">

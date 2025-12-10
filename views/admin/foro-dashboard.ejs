@@ -1,0 +1,369 @@
+ 
+
+
+<link rel="stylesheet" href="/css/dashboard-general.css">
+
+<!-- JS Específico del Foro (Se mantiene) -->
+<script src="/js/admin-foro-dashboard.js" defer></script>
+
+
+<div class="gen-dash-wrapper animate-fade-in">
+
+  <!-- Header -->
+  <div class="gen-header-row">
+    <div>
+      <h1 class="gen-page-title">Dashboard de Administración del Foro</h1>
+      <p class="gen-page-subtitle">Gestiona publicaciones, temas y estadísticas</p>
+    </div>
+    <div class="gen-header-actions">
+      <a href="/admin/topics" class="gen-btn gen-btn-outline" data-action="topics">
+        <i class="fas fa-tags"></i> Gestionar Topics
+      </a>
+      <!-- CORREGIDO: Usamos genOpenPostModal para evitar conflicto con JS externo -->
+      <button class="gen-btn gen-btn-primary" data-action="new-topic" onclick="genOpenPostModal()">
+        <i class="fas fa-plus"></i> Nueva Publicación
+      </button>
+    </div>
+  </div>
+
+  <!-- Panel de Filtros -->
+  <div class="gen-panel">
+    <div class="gen-filter-container">
+      <div class="gen-filter-header">
+        <h2 class="gen-filter-title">
+          <i class="fas fa-filter" style="color: var(--gen-text-secondary);"></i> Filtros y Búsqueda
+        </h2>
+        <button class="gen-btn gen-btn-ghost articles-filters-toggle" onclick="genToggleAdvancedFilters()">
+          <i class="fas fa-cog"></i> Filtros Avanzados
+        </button>
+      </div>
+      
+      <div class="gen-filter-grid">
+        <div class="gen-form-group">
+          <label class="gen-label"><i class="fas fa-search"></i> Buscar Publicaciones</label>
+          <!-- CORREGIDO: onkeyup apunta a genFilterForum -->
+          <input type="text" class="gen-input" id="foroSearchInput" 
+                 placeholder="Título, contenido..." onkeyup="genFilterForum()">
+        </div>
+        
+        <div class="gen-form-group">
+          <label for="foroTopicFilter" class="gen-label"><i class="fas fa-tag"></i> Tema</label>
+          <!-- CORREGIDO: onchange apunta a genFilterForum -->
+          <select class="gen-select" id="foroTopicFilter" onchange="genFilterForum()">
+            <option value="all">Todos los temas</option>
+            <% if (allTopics && allTopics.length > 0) { %>
+              <% allTopics.forEach(topic => { %>
+                <option value="<%= topic.name ? topic.name : topic %>"><%= topic.name ? topic.name : topic %></option>
+              <% }); %>
+            <% } %>
+          </select>
+        </div>
+      </div>
+      
+      <!-- Filtros Avanzados -->
+      <div class="gen-advanced-filters" id="foroAdvancedFilters" style="display: none;">
+        <div class="gen-filter-grid">
+          <div class="gen-form-group">
+            <label class="gen-label"><i class="fas fa-calendar-alt"></i> Fecha</label>
+            <div class="gen-date-range">
+              <input type="date" class="gen-input" id="foroDateFrom" onchange="genFilterForum()">
+              <span>a</span>
+              <input type="date" class="gen-input" id="foroDateTo" onchange="genFilterForum()">
+            </div>
+          </div>
+          
+          <div class="gen-form-group">
+            <label class="gen-label"><i class="fas fa-eye"></i> Vistas</label>
+            <div class="gen-date-range">
+              <input type="number" class="gen-input" id="foroViewsMin" placeholder="Mín" onchange="genFilterForum()">
+              <input type="number" class="gen-input" id="foroViewsMax" placeholder="Máx" onchange="genFilterForum()">
+            </div>
+          </div>
+          
+          <div class="gen-form-group">
+            <label class="gen-label"><i class="fas fa-user-edit"></i> Autor</label>
+            <select class="gen-select" id="foroAuthorFilter" onchange="genFilterForum()">
+              <option value="all">Todos</option>
+              <% if (foros && foros.length > 0) { %>
+                <% const uniqueAuthors = [...new Set(foros.map(f => f.author && f.author.name ? f.author.name : 'Desconocido'))]; %>
+                <% uniqueAuthors.forEach(author => { %>
+                  <option value="<%= author %>"><%= author %></option>
+                <% }); %>
+              <% } %>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Panel de Tabla -->
+  <div class="gen-panel" style="padding:0;">
+    <div class="gen-table-header">
+      <h2 class="gen-filter-title">
+        <i class="fas fa-list" style="color: var(--gen-accent);"></i> Gestión de Publicaciones
+      </h2>
+      <div class="foro-real-time-indicator">
+        <div class="foro-real-time-dot"></div>
+        <span>En tiempo real</span>
+      </div>
+    </div>
+    
+    <div class="gen-table-responsive">
+      <table class="gen-table">
+        <thead>
+          <tr>
+            <th>Título</th>
+            <th>Tema</th>
+            <th>Autor</th>
+            <th>Fecha</th>
+            <th>Vistas</th>
+            <th>Likes</th>
+            <th>Comentarios</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="foroTableBody">
+          <% if (foros && foros.length > 0) { %>
+            <% foros.forEach(foro => { %>
+              <tr class="gen-table-row" data-foro-id="<%= foro._id %>">
+                <!-- Columna Título (Index 0) -->
+                <td>
+                  <a href="/foro/<%= foro._id %>" class="gen-link-primary"><%= foro.title %></a>
+                </td>
+                <!-- Columna Tema (Index 1) -->
+                <td>
+                  <span class="gen-badge gen-badge-neutral"><%= foro.topic ? (foro.topic.name || foro.topic) : 'Sin tema' %></span>
+                </td>
+                <!-- Columna Autor (Index 2) -->
+                <td>
+                  <div class="gen-user-cell">
+                    <div class="gen-avatar-circle">
+                      <%= foro.author && foro.author.name ? foro.author.name.charAt(0).toUpperCase() : '?' %>
+                    </div>
+                    <span style="font-weight: 500;">
+                      <%= foro.author && foro.author.name ? foro.author.name : 'Desconocido' %>
+                    </span>
+                  </div>
+                </td>
+                <!-- Columna Fecha (Index 3) -->
+                <td><%= new Date(foro.publicationDate).toLocaleDateString() %></td>
+                <td><i class="fas fa-eye" style="color:var(--gen-text-secondary); margin-right:4px;"></i> <%= foro.views || 0 %></td>
+                <td><i class="fas fa-heart" style="color:var(--gen-text-secondary); margin-right:4px;"></i> <%= foro.likes ? foro.likes.length : 0 %></td>
+                <td><i class="fas fa-comment" style="color:var(--gen-text-secondary); margin-right:4px;"></i> <%= foro.comments ? foro.comments.length : 0 %></td>
+                <td>
+                  <div class="gen-action-group">
+                    <a href="/foro/<%= foro._id %>" class="gen-action-btn-sm" title="Ver">
+                      <i class="fas fa-eye"></i>
+                    </a>
+                    
+                    <button type="button" class="gen-action-btn-sm delete" 
+                            data-post-id="<%= foro._id %>"
+                            data-post-title="<%= foro.title %>"
+                            onclick="ForoAdminDashboard.confirmDeleteForo(this.dataset.postId, this.dataset.postTitle)"
+                            title="Eliminar">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            <% }) %>
+          <% } else { %>
+            <tr>
+              <td colspan="8" style="text-align: center; padding: 4rem;">
+                <div style="color: var(--gen-text-secondary);">
+                  <i class="fas fa-comments" style="font-size: 3rem; margin-bottom: 1rem; color: #d1d5db;"></i>
+                  <h3>No hay publicaciones</h3>
+                </div>
+              </td>
+            </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div id="foroPagination" class="gen-pagination"></div>
+
+</div>
+
+<!-- ================= MODALES ================= -->
+
+<!-- Modal Eliminar -->
+<div class="gen-modal-overlay" id="deleteForoModal">
+  <div class="gen-modal-card" style="max-width: 450px;">
+    <div class="gen-modal-header" style="background: var(--gen-danger); color: white;">
+      <h3 class="gen-modal-title" style="color: white;">Confirmar eliminación</h3>
+      <button id="closeDeleteModal" type="button" class="gen-btn gen-btn-ghost" style="color: white;">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="gen-modal-body" style="text-align: center; padding: 2rem;">
+      <p>¿Eliminar <strong id="foroTitle" style="color: var(--gen-danger);"></strong>?</p>
+      <small>Esta acción no se puede deshacer.</small>
+    </div>
+    <div class="gen-modal-footer" style="justify-content: center;">
+      <button id="cancelDeleteBtn" class="gen-btn gen-btn-outline">Cancelar</button>
+      <!-- Aquí puedes añadir el form real si usas submit directo, o manejarlo con JS -->
+      <button id="confirmDeleteBtn" class="gen-btn gen-btn-danger">
+        <i class="fas fa-trash-alt"></i> Eliminar
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Nueva Publicación -->
+<div class="gen-modal-overlay" id="newPostModal">
+  <div class="gen-modal-card" style="max-width: 800px;">
+    <div class="gen-modal-header">
+      <h2 class="gen-modal-title">Nueva Publicación</h2>
+      <button type="button" class="gen-btn gen-btn-ghost" onclick="genClosePostModal()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    
+    <div class="gen-modal-body">
+      <form id="newForoForm" enctype="multipart/form-data">
+        <div class="gen-form-group" style="margin-bottom: 1rem;">
+          <label class="gen-label">Título</label>
+          <input type="text" class="gen-input" id="modalTitle" name="title" required>
+        </div>
+        
+        <div class="gen-form-group" style="margin-bottom: 1rem;">
+          <label class="gen-label">Categoría</label>
+          <select class="gen-select" id="modalTopic" name="topic" required>
+            <option value="" disabled selected>Cargando categorías...</option>
+            <% if (allTopics && allTopics.length > 0) { %>
+              <% allTopics.forEach(topic => { %>
+                <option value="<%= topic._id %>"><%= topic.name %></option>
+              <% }); %>
+            <% } %>
+          </select>
+        </div>
+        
+        <div class="gen-form-group" style="margin-bottom: 1rem;">
+          <label class="gen-label">Contenido</label>
+          
+          <!-- Toolbar -->
+          <div class="gen-editor-toolbar">
+            <div style="display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap;">
+              <button type="button" class="gen-editor-btn" onclick="toggleAdminBold()"><i class="fas fa-bold"></i></button>
+              <button type="button" class="gen-editor-btn" onclick="toggleAdminItalic()"><i class="fas fa-italic"></i></button>
+              <button type="button" class="gen-editor-btn" onclick="toggleAdminUnderline()"><i class="fas fa-underline"></i></button>
+              <input type="color" class="color-picker" id="adminTextColor" onchange="changeAdminTextColor()">
+            </div>
+          </div>
+          
+          <textarea class="gen-editor-textarea" id="modalContent" name="content" required></textarea>
+        </div>
+        
+        <div class="gen-form-group">
+          <label class="gen-label">Imagen</label>
+          <div class="gen-file-upload">
+            <input type="file" class="gen-file-input" id="modalImage" name="image" accept="image/*" onchange="this.nextElementSibling.innerHTML = this.files[0].name">
+            <div class="gen-file-preview"><i class="fas fa-cloud-upload-alt"></i> <span>Seleccionar</span></div>
+          </div>
+        </div>
+      </form>
+    </div>
+    
+    <div class="gen-modal-footer">
+      <button type="button" class="gen-btn gen-btn-outline" onclick="genClosePostModal()">Cancelar</button>
+      <button type="submit" form="newForoForm" class="gen-btn gen-btn-primary">Publicar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= SCRIPTS RESTAURADOS ================= -->
+<script>
+  // 1. Funciones únicas para evitar conflictos con JS externo
+  
+  function genToggleAdvancedFilters() {
+    const filters = document.getElementById('foroAdvancedFilters');
+    if (filters.style.display === 'none') {
+      filters.style.display = 'block';
+      filters.classList.add('active');
+    } else {
+      filters.style.display = 'none';
+      filters.classList.remove('active');
+    }
+  }
+
+  function genOpenPostModal() {
+    const modal = document.getElementById('newPostModal');
+    modal.classList.add('show');
+    // Forzamos display por si algún JS externo lo ocultó
+    modal.style.display = 'flex';
+  }
+
+  function genClosePostModal() {
+    const modal = document.getElementById('newPostModal');
+    modal.classList.remove('show');
+    setTimeout(() => { modal.style.display = 'none'; }, 300);
+  }
+
+  // Variables para eliminación
+  let deleteTargetId = null;
+
+  function genConfirmDelete(id, title) { try { ForoAdminDashboard.confirmDeleteForo(id, title); } catch(_){} }
+  function genCloseDeleteModal() { try { ForoAdminDashboard.closeDeleteModal(); } catch(_){} }
+
+  // 2. Filtro de Tabla (Reescrito para la nueva estructura HTML)
+  function genFilterForum() {
+    const search = document.getElementById('foroSearchInput').value.toLowerCase();
+    const topic = document.getElementById('foroTopicFilter').value;
+    const author = document.getElementById('foroAuthorFilter').value;
+    
+    const rows = document.querySelectorAll('.gen-table-row');
+    
+    rows.forEach(row => {
+      let show = true;
+      // Index 0: Título (dentro de <a>)
+      const titleText = row.cells[0].innerText.toLowerCase();
+      // Index 1: Tema (dentro de badge)
+      const topicText = row.cells[1].innerText.trim();
+      // Index 2: Autor (dentro de span)
+      const authorText = row.cells[2].innerText.toLowerCase();
+
+      if (search && !titleText.includes(search)) show = false;
+      
+      // Comparación exacta o parcial para topic
+      if (topic !== 'all' && !topicText.toLowerCase().includes(topic.toLowerCase())) show = false;
+      
+      // Comparación para autor
+      if (author !== 'all' && !authorText.includes(author.toLowerCase())) show = false;
+
+      row.style.display = show ? '' : 'none';
+    });
+  }
+
+  // 3. Editor simple
+  function toggleAdminBold() {
+    const ta = document.getElementById('modalContent');
+    ta.style.fontWeight = ta.style.fontWeight === 'bold' ? 'normal' : 'bold';
+  }
+  function toggleAdminItalic() {
+    const ta = document.getElementById('modalContent');
+    ta.style.fontStyle = ta.style.fontStyle === 'italic' ? 'normal' : 'italic';
+  }
+  function toggleAdminUnderline() {
+    const ta = document.getElementById('modalContent');
+    ta.style.textDecoration = ta.style.textDecoration === 'underline' ? 'none' : 'underline';
+  }
+  function changeAdminTextColor() {
+    document.getElementById('modalContent').style.color = document.getElementById('adminTextColor').value;
+  }
+
+  // Cerrar al hacer click fuera
+  window.onclick = function(event) {
+    if (event.target.classList.contains('gen-modal-overlay')) {
+      event.target.classList.remove('show');
+      setTimeout(() => { event.target.style.display = 'none'; }, 300);
+    }
+  }
+</script>
+
+<script src="/js/tradux.js"></script>
+<script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+<%- include('../partials/footer') %>

@@ -1,0 +1,395 @@
+/* Correcciones específicas para problemas visuales de botones y texto */
+/* Dashboard Administrativo - Fixes */
+
+/* Corrección de botones de acción rápida */
+.quick-action-btn {
+  background: linear-gradient(135deg, #6c5ce7, #a29bfe) !important;
+  color: white !important;
+  border: none !important;
+  padding: 12px 24px !important;
+  border-radius: 8px !important;
+  font-size: 0.95rem !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  transition: all 0.3s ease !important;
+  text-decoration: none !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  min-height: 44px !important;
+  line-height: 1.2 !important;
+  text-align: center !important;
+  box-shadow: 0 2px 8px rgba(108, 92, 231, 0.2) !important;
+}
+
+.quick-action-btn:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 20px rgba(108, 92, 231, 0.4) !important;
+  color: white !important;
+  text-decoration: none !important;
+  background: linear-gradient(135deg, #5a4fcf, #9085e8) !important;
+}
+
+.quick-action-btn:focus {
+  outline: 2px solid #6c5ce7 !important;
+  outline-offset: 2px !important;
+  color: white !important;
+}
+
+.quick-action-btn:active {
+  transform: translateY(0) !important;
+  box-shadow: 0 2px 8px rgba(108, 92, 231, 0.3) !important;
+}
+
+/* Corrección de botones de acción en tabla */
+.action-btn {
+  padding: 8px 16px !important;
+  border: none !important;
+  border-radius: 6px !important;
+  font-size: 0.875rem !important;
+  font-weight: 500 !important;
+  cursor: pointer !important;
+  transition: all 0.3s ease !important;
+  text-decoration: none !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  min-height: 36px !important;
+  line-height: 1.2 !important;
+  text-align: center !important;
+  white-space: nowrap !important;
+}
+
+.btn-view {
+  background-color: #17a2b8 !important;
+  color: white !important;
+  box-shadow: 0 2px 4px rgba(23, 162, 184, 0.2) !important;
+}
+
+.btn-view:hover {
+  background-color: #138496 !important;
+  transform: translateY(-1px) !important;
+  color: white !important;
+  text-decoration: none !important;
+  box-shadow: 0 4px 8px rgba(23, 162, 184, 0.3) !important;
+}
+
+.btn-edit {
+  background-color: #ffc107 !important;
+  color: #212529 !important;
+  box-shadow: 0 2px 4px rgba(255, 193, 7, 0.2) !important;
+}
+
+.btn-edit:hover {
+  background-color: #e0a800 !important;
+  transform: translateY(-1px) !important;
+  color: #212529 !important;
+  text-decoration: none !important;
+  box-shadow: 0 4px 8px rgba(255, 193, 7, 0.3) !important;
+}
+
+.btn-ban {
+  background-color: #dc3545 !important;
+  color: white !important;
+  box-shadow: 0 2px 4px rgba(220, 53, 69, 0.2) !important;
+}
+
+.btn-ban:hover {
+  background-color: #c82333 !important;
+  transform: translateY(-1px) !important;
+  color: white !important;
+  text-decoration: none !important;
+  box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3) !important;
+}
+
+/* Corrección de texto en títulos y encabezados */
+.dashboard-header h1 {
+  color: #2c3e50 !important;
+  font-weight: 700 !important;
+  font-size: 2.5rem !important;
+  line-height: 1.2 !important;
+  margin-bottom: 0.5rem !important;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+}
+
+.dashboard-header p {
+  color: #6c757d !important;
+  font-size: 1.1rem !important;
+  font-weight: 400 !important;
+  line-height: 1.4 !important;
+  margin: 0 !important;
+}
+
+.welcome-info h2 {
+  color: #495057 !important;
+  font-weight: 600 !important;
+  font-size: 1.8rem !important;
+  line-height: 1.3 !important;
+  margin-bottom: 0.5rem !important;
+}
+
+.welcome-info p {
+  color: #6c757d !important;
+  font-size: 1rem !important;
+  font-weight: 400 !important;
+  line-height: 1.4 !important;
+  margin: 0 !important;
+}
+
+/* Corrección de texto en tarjetas de estadísticas */
+.stat-label {
+  color: #6c757d !important;
+  font-size: 0.9rem !important;
+  font-weight: 500 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+  margin-bottom: 8px !important;
+  line-height: 1.2 !important;
+}
+
+.stat-number {
+  color: #2c3e50 !important;
+  font-size: 2.5rem !important;
+  font-weight: 700 !important;
+  line-height: 1 !important;
+  margin-bottom: 8px !important;
+}
+
+.stat-change {
+  font-size: 0.85rem !important;
+  font-weight: 500 !important;
+  line-height: 1.2 !important;
+}
+
+.stat-change.positive {
+  color: #28a745 !important;
+}
+
+.stat-change.negative {
+  color: #dc3545 !important;
+}
+
+/* Corrección de texto en tarjetas de acción rápida */
+.quick-action-title {
+  color: #495057 !important;
+  font-size: 1.2rem !important;
+  font-weight: 600 !important;
+  line-height: 1.3 !important;
+  margin-bottom: 8px !important;
+}
+
+.quick-action-description {
+  color: #6c757d !important;
+  font-size: 0.9rem !important;
+  font-weight: 400 !important;
+  line-height: 1.4 !important;
+  margin-bottom: 20px !important;
+}
+
+/* Corrección de texto en tabla */
+.users-table th {
+  color: white !important;
+  font-size: 0.9rem !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+  line-height: 1.2 !important;
+}
+
+.users-table td {
+  color: #495057 !important;
+  font-size: 0.95rem !important;
+  font-weight: 400 !important;
+  line-height: 1.4 !important;
+}
+
+/* Corrección de badges de rol */
+.role-badge {
+  color: white !important;
+  font-size: 0.75rem !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+  line-height: 1 !important;
+  padding: 6px 12px !important;
+  border-radius: 15px !important;
+  display: inline-block !important;
+}
+
+.role-admin {
+  background-color: #667eea !important;
+}
+
+.role-user {
+  background-color: #6c757d !important;
+}
+
+/* Corrección de alertas */
+.alert-title {
+  font-weight: 600 !important;
+  font-size: 1rem !important;
+  line-height: 1.3 !important;
+  margin-bottom: 5px !important;
+}
+
+.alert-message {
+  font-size: 0.9rem !important;
+  font-weight: 400 !important;
+  line-height: 1.4 !important;
+  margin: 0 !important;
+}
+
+/* Corrección de tiempo actual */
+.current-time {
+  color: #6c757d !important;
+  font-size: 1.1rem !important;
+  font-weight: 500 !important;
+  line-height: 1.2 !important;
+}
+
+/* Corrección de actividad reciente */
+.activity-item {
+  color: #495057 !important;
+  font-size: 0.9rem !important;
+  font-weight: 400 !important;
+  line-height: 1.4 !important;
+}
+
+.activity-time {
+  color: #6c757d !important;
+  font-size: 0.8rem !important;
+  font-weight: 400 !important;
+}
+
+/* Corrección de títulos de sección */
+.chart-title,
+.section-title {
+  color: #495057 !important;
+  font-size: 1.3rem !important;
+  font-weight: 600 !important;
+  line-height: 1.3 !important;
+  margin-bottom: 1rem !important;
+}
+
+/* Corrección de enlaces */
+a {
+  color: #6c5ce7 !important;
+  text-decoration: none !important;
+  transition: color 0.3s ease !important;
+}
+
+a:hover {
+  color: #5a4fcf !important;
+  text-decoration: underline !important;
+}
+
+/* Corrección de contraste para accesibilidad */
+.text-muted {
+  color: #6c757d !important;
+}
+
+.text-primary {
+  color: #6c5ce7 !important;
+}
+
+.text-success {
+  color: #28a745 !important;
+}
+
+.text-danger {
+  color: #dc3545 !important;
+}
+
+.text-warning {
+  color: #ffc107 !important;
+}
+
+.text-info {
+  color: #17a2b8 !important;
+}
+
+/* Corrección de botones modales */
+.boton-cancelar {
+  background-color: #6c757d !important;
+  color: white !important;
+  border: none !important;
+  padding: 10px 20px !important;
+  border-radius: 6px !important;
+  cursor: pointer !important;
+  transition: all 0.3s ease !important;
+  font-size: 0.9rem !important;
+  font-weight: 500 !important;
+  line-height: 1.2 !important;
+}
+
+.boton-cancelar:hover {
+  background-color: #5a6268 !important;
+  color: white !important;
+  text-decoration: none !important;
+}
+
+/* Corrección de iconos */
+i, .fa, .fas, .far, .fab {
+  line-height: 1 !important;
+  vertical-align: baseline !important;
+}
+
+/* Corrección de espaciado y alineación */
+.action-buttons {
+  display: flex !important;
+  gap: 8px !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+}
+
+/* Corrección para dispositivos móviles */
+@media (max-width: 768px) {
+  .quick-action-btn {
+    padding: 10px 20px !important;
+    font-size: 0.9rem !important;
+    min-height: 40px !important;
+  }
+  
+  .action-btn {
+    padding: 6px 12px !important;
+    font-size: 0.8rem !important;
+    min-height: 32px !important;
+  }
+  
+  .dashboard-header h1 {
+    font-size: 2rem !important;
+  }
+  
+  .welcome-info h2 {
+    font-size: 1.5rem !important;
+  }
+  
+  .stat-number {
+    font-size: 2rem !important;
+  }
+}
+
+/* Corrección de z-index para elementos superpuestos */
+.quick-action-btn,
+.action-btn {
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+/* Corrección de cursor para elementos interactivos */
+.quick-action-card,
+.dashboard-stat-card,
+.action-option {
+  cursor: pointer !important;
+}
+
+/* Corrección de selección de texto */
+.quick-action-btn,
+.action-btn {
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+}

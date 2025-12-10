@@ -1,0 +1,437 @@
+/* ===== ADMIN TOPICS MODERN DESIGN ===== */
+
+/* Variables CSS para consistencia */
+:root {
+  --primary-foro-topics: #7C3AED;
+  --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  --warning-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+  --danger-gradient: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+  --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  --card-shadow-hover: 0 20px 40px rgba(0, 0, 0, 0.15);
+  --border-radius: 16px;
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Contenedor principal con fondo mejorado */
+.container-fluid {
+  min-height: 100vh;
+  padding-top: 5%;
+}
+
+/* Header mejorado */
+.topics-header {
+  background: var( --primary-foro-topics);
+  padding: 1rem;
+  margin-bottom: 2rem;
+  box-shadow: var(--card-shadow);
+  color: white;
+  position: relative;
+  overflow: hidden;
+}
+
+.topics-header h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.topics-header p {
+  font-size: 1.1rem;
+  opacity: 0.9;
+  margin-bottom: 0;
+}
+
+/* Botón principal mejorado */
+.btn-create-topic {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    padding: 12px 24px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 500;
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-create-topic:hover {
+    background: rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: translateY(-2px);
+    color: white;
+    text-decoration: none;
+}
+
+/* Tarjetas de estadísticas mejoradas */
+.stats-card {
+  background: white;
+  border-radius: var(--border-radius);
+  padding: 2rem;
+  box-shadow: var(--card-shadow);
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+  border: none;
+}
+
+.stats-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: var(--primary-gradient);
+}
+
+.stats-card:hover {
+  transform: translateY(-8px);
+  box-shadow: var(--card-shadow-hover);
+}
+
+
+
+.stats-card.warning::before {
+  background: var(--warning-gradient);
+}
+
+.stats-card.danger::before {
+  background: var(--danger-gradient);
+}
+
+.stats-icon {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem;
+  position: relative;
+}
+
+.stats-icon.primary {
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+  color: #667eea;
+}
+
+.stats-icon.success {
+  background: linear-gradient(135deg, rgba(79, 172, 254, 0.1) 0%, rgba(0, 242, 254, 0.1) 100%);
+  color: #4facfe;
+}
+
+.stats-icon.warning {
+  background: linear-gradient(135deg, rgba(250, 112, 154, 0.1) 0%, rgba(254, 225, 64, 0.1) 100%);
+  color: #fa709a;
+}
+
+.stats-number {
+  font-size: 3rem;
+  font-weight: 800;
+  margin-bottom: 0.5rem;
+  background-color: rgb(66, 66, 66);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.stats-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #6c757d;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Tabla mejorada */
+.topics-table-container {
+  background: white;
+  max-width: 83.33%;
+  margin: 0 auto;
+  border-radius: var(--border-radius);
+  box-shadow: var(--card-shadow);
+  overflow: hidden;
+  margin-top: 2rem;
+}
+
+.topics-table-header {
+  background-color: #6366f1;
+  color: rgb(255, 255, 255);
+  padding: 1.5rem 2rem;
+  border: none;
+}
+
+.topics-table-header h5 {
+  
+  margin: 0;
+  font-weight: 600;
+  font-size: 1.2rem;
+}
+
+.table {
+  margin: 0;
+}
+
+.table thead th {
+  background-color:#6366f1; 
+  color: white;
+  border: none;
+  padding: 1rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
+}
+
+.table tbody tr {
+  transition: var(--transition);
+  border: none;
+}
+
+
+.table tbody tr:hover {
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+  transform: scale(1.01);
+}
+
+.table tbody td {
+  padding: 1.5rem 1rem;
+  border: none;
+  vertical-align: middle;
+}
+
+/* Iconos de tema mejorados */
+.topic-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--primary-gradient);
+  color: white;
+  font-size: 1.2rem;
+  margin-right: 1rem;
+}
+
+.topic-name {
+  font-weight: 600;
+  color: #2d3748;
+  font-size: 1.1rem;
+}
+
+/* Badges mejorados */
+.badge {
+  padding: 8px 16px;
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+
+
+/* Botones de acción mejorados */
+.action-buttons {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.btn-action {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border: 1px solid ;
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-action.edit {
+    color: #7C3AED;
+    border-color:  #8B5CF6;
+}
+
+.btn-action.delete {
+    color: #E74C3C;
+    border-color: #E74C3C;
+}
+
+.btn-action:hover {
+  transform: translateY(-2px) scale(1.1);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+/* Modales mejorados */
+.modal-content {
+  background-color: #fefefe;
+  margin: 0% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 800px;
+  max-width: 1200px;
+  border-radius: 5px;
+}
+
+.modal-header {
+  background: var(--primary-gradient);
+  color: white;
+  border: none;
+  padding: 2rem;
+}
+
+.modal-header.bg-danger {
+  background: rgb(219, 0, 0);
+}
+
+.modal-title {
+  font-weight: 600;
+  font-size: 1.3rem;
+}
+
+.modal-body {
+  padding: 2rem;
+}
+
+.modal-footer {
+  padding: 1.5rem 2rem;
+  border: none;
+  background: #f8f9fa;
+}
+
+/* Formularios mejorados */
+.form-control {
+  border-radius: 12px;
+  border: 2px solid #e9ecef;
+  padding: 12px 16px;
+  transition: var(--transition);
+  font-size: 1rem;
+}
+
+.form-control:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+
+.form-label {
+  font-weight: 600;
+  color: #495057;
+  margin-bottom: 8px;
+}
+
+/* Alertas mejoradas */
+.alert {
+  border-radius: 12px;
+  border: none;
+  padding: 1rem 1.5rem;
+  font-weight: 500;
+}
+
+.alert-success {
+  background: linear-gradient(135deg, rgba(79, 172, 254, 0.1) 0%, rgba(0, 242, 254, 0.1) 100%);
+  color: #0c5460;
+}
+
+.alert-danger {
+  background: linear-gradient(135deg, rgba(255, 107, 107, 0.1) 0%, rgba(238, 90, 36, 0.1) 100%);
+  color: #721c24;
+}
+
+.alert-info {
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+  color: #0c5460;
+}
+
+/* Estado vacío mejorado */
+.empty-state {
+  padding: 4rem 2rem;
+  text-align: center;
+}
+
+.empty-state i {
+  font-size: 4rem;
+  color: #dee2e6;
+  margin-bottom: 1.5rem;
+  opacity: 0.5;
+}
+
+.empty-state h5 {
+  color: #6c757d;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.empty-state p {
+  color: #adb5bd;
+  font-size: 1rem;
+}
+
+/* Animaciones de entrada */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in-up {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .topics-header {
+    padding: 1.5rem;
+    text-align: center;
+  }
+  
+  .topics-header h2 {
+    font-size: 2rem;
+  }
+  
+  .stats-card {
+    margin-bottom: 1rem;
+  }
+  
+  .table-responsive {
+    border-radius: 0;
+  }
+  
+  .action-buttons {
+    flex-direction: column;
+    gap: 4px;
+  }
+}
+
+/* Efectos de carga */
+.loading {
+  position: relative;
+  overflow: hidden;
+}
+
+.loading::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% { left: -100%; }
+  100% { left: 100%; }
+}

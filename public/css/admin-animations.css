@@ -1,0 +1,328 @@
+/* Animaciones para Dashboard Administrativo */
+
+/* Keyframes para animaciones de entrada */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    backdrop-filter: blur(0px);
+  }
+  to {
+    opacity: 1;
+    backdrop-filter: blur(5px);
+  }
+}
+
+@keyframes modalFadeOut {
+  from {
+    opacity: 1;
+    backdrop-filter: blur(5px);
+  }
+  to {
+    opacity: 0;
+    backdrop-filter: blur(0px);
+  }
+}
+
+@keyframes modalScaleIn {
+  from {
+    transform: scale(0.7) translateY(-50px);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes modalScaleOut {
+  from {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: scale(0.7) translateY(-50px);
+    opacity: 0;
+  }
+}
+
+@keyframes ripple {
+  to {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+@keyframes bounce {
+  0%, 20%, 53%, 80%, 100% {
+    transform: translate3d(0, 0, 0);
+  }
+  40%, 43% {
+    transform: translate3d(0, -8px, 0);
+  }
+  70% {
+    transform: translate3d(0, -4px, 0);
+  }
+  90% {
+    transform: translate3d(0, -2px, 0);
+  }
+}
+
+/* Clases de animación */
+.fade-in-up {
+  animation: fadeInUp 0.6s ease-out forwards;
+}
+
+.slide-in-right {
+  animation: slideInRight 0.6s ease-out forwards;
+}
+
+.slide-down {
+  animation: slideDown 0.5s ease-out forwards;
+}
+
+.modal-fade-in {
+  animation: modalFadeIn 0.3s ease-out forwards;
+}
+
+.modal-fade-out {
+  animation: modalFadeOut 0.3s ease-out forwards;
+}
+
+.modal-scale-in {
+  animation: modalScaleIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.modal-scale-out {
+  animation: modalScaleOut 0.3s ease-in forwards;
+}
+
+.animate-in-view {
+  animation: fadeInUp 0.8s ease-out forwards;
+}
+
+/* Efectos de hover mejorados */
+.quick-action-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.quick-action-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+  transition: left 0.5s;
+}
+
+.quick-action-card:hover::before {
+  left: 100%;
+}
+
+.stat-card {
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+}
+
+/* Efecto ripple para botones */
+.ripple-effect {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.6);
+  transform: scale(0);
+  animation: ripple 0.6s linear;
+  pointer-events: none;
+}
+
+/* Transiciones de página */
+.page-transition-out {
+  opacity: 0;
+  transform: scale(0.95);
+  transition: all 0.3s ease-in-out;
+}
+
+body {
+  transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+}
+
+/* Animaciones para elementos específicos del dashboard */
+.dashboard-header {
+  opacity: 0;
+  transform: translateY(-30px);
+}
+
+.dashboard-quick-actions .quick-action-card {
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+.dashboard-stats .stat-card {
+  opacity: 0;
+  transform: translateX(50px);
+}
+
+/* Efectos de carga */
+.loading-shimmer {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Animaciones para tablas */
+.admin-table tbody tr {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInUp 0.5s ease-out forwards;
+}
+
+.admin-table tbody tr:nth-child(1) { animation-delay: 0.1s; }
+.admin-table tbody tr:nth-child(2) { animation-delay: 0.2s; }
+.admin-table tbody tr:nth-child(3) { animation-delay: 0.3s; }
+.admin-table tbody tr:nth-child(4) { animation-delay: 0.4s; }
+.admin-table tbody tr:nth-child(5) { animation-delay: 0.5s; }
+
+/* Efectos para formularios */
+.form-group {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInUp 0.6s ease-out forwards;
+}
+
+.form-group:nth-child(1) { animation-delay: 0.1s; }
+.form-group:nth-child(2) { animation-delay: 0.2s; }
+.form-group:nth-child(3) { animation-delay: 0.3s; }
+.form-group:nth-child(4) { animation-delay: 0.4s; }
+
+/* Animaciones para notificaciones */
+.notification {
+  animation: slideInRight 0.5s ease-out;
+}
+
+.notification.removing {
+  animation: slideInRight 0.3s ease-in reverse;
+}
+
+/* Efectos de focus mejorados */
+input:focus, textarea:focus, select:focus {
+  transform: scale(1.02);
+  transition: all 0.3s ease;
+}
+
+/* Animaciones para iconos */
+.action-icon {
+  transition: all 0.3s ease;
+}
+
+.quick-action-card:hover .action-icon {
+  transform: scale(1.1) rotate(5deg);
+}
+
+/* Efectos de scroll suave */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Animaciones para gráficos y charts */
+.chart-container {
+  opacity: 0;
+  transform: scale(0.9);
+  transition: all 0.8s ease-out;
+}
+
+.chart-container.animate-in-view {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Efectos para elementos de navegación */
+.nav-item {
+  transition: all 0.3s ease;
+}
+
+.nav-item:hover {
+  transform: translateY(-2px);
+}
+
+/* Animaciones responsivas */
+@media (max-width: 768px) {
+  .fade-in-up, .slide-in-right {
+    animation-duration: 0.4s;
+  }
+  
+  .quick-action-card:hover {
+    transform: translateY(-4px) scale(1.01);
+  }
+  
+  .stat-card:hover {
+    transform: translateY(-3px);
+  }
+}
+
+/* Reducir animaciones para usuarios que prefieren menos movimiento */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

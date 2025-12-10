@@ -1,0 +1,95 @@
+ 
+<link rel="stylesheet" href="/css/edit-guide.css">
+<div class="guide_edit_wrapper">
+  <h1 class="guide_edit_main_title"><%= guide._id ? 'Editar' : 'Nueva' %> Guía</h1>
+  
+  <% if (locals.error) { %>
+    <div class="guide_edit_alert_danger">
+      <%= error %>
+    </div>
+  <% } %>
+  
+  <div class="guide_edit_card">
+    <div class="guide_edit_card_body">
+      <form action="<%= guide._id ? `/guides/admin/${guide._id}` : '/guides/admin' %>" method="POST" enctype="multipart/form-data">
+        <div class="guide_edit_form_layout">
+          
+          <div class="guide_edit_column">
+            <div class="guide_edit_form_group">
+              <label for="title" class="guide_edit_label">Título</label>
+              <input type="text" class="guide_edit_input" id="title" name="title" value="<%= guide.title || '' %>" required>
+            </div>
+            
+            <div class="guide_edit_form_group">
+              <label for="topic" class="guide_edit_label">Tema</label>
+              <select class="guide_edit_select" id="topic" name="topic" required>
+                <option value="" disabled <%= !guide.topic ? 'selected' : '' %>>Selecciona un tema</option>
+                <option value="Transtornos" <%= guide.topic === 'Transtornos' ? 'selected' : '' %>>Transtornos</option>
+                <option value="Recomendaciones" <%= guide.topic === 'Recomendaciones' ? 'selected' : '' %>>Recomendaciones</option>
+                <option value="Tratamientos" <%= guide.topic === 'Tratamientos' ? 'selected' : '' %>>Tratamientos</option>
+                <option value="Prevencion" <%= guide.topic === 'Prevencion' ? 'selected' : '' %>>Prevención</option>
+                <option value="Investigacion" <%= guide.topic === 'Investigacion' ? 'selected' : '' %>>Investigación</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="guide_edit_column">
+            <div class="guide_edit_form_group">
+              <label for="image" class="guide_edit_label">Imagen de portada (opcional)</label>
+              <input type="file" class="guide_edit_input" id="image" name="image" accept="image/*">
+              <small class="guide_edit_helper_text">Tamaño máximo: 5MB. Formatos: JPG, PNG, GIF</small>
+              
+              <% if (guide.image) { %>
+                <div class="guide_edit_current_file">
+                  <p style="font-weight: bold;">Imagen actual:</p>
+                  <img src="<%= guide.image %>" alt="Imagen actual" class="guide_edit_img_preview">
+                  <small class="guide_edit_helper_text">Sube una nueva imagen para reemplazar la actual</small>
+                </div>
+              <% } %>
+            </div>
+            
+            <div class="guide_edit_form_group">
+              <label for="pdfFile" class="guide_edit_label">Archivo PDF <%= !guide.pdfFile ? '(requerido)' : '(opcional)' %></label>
+              <input type="file" class="guide_edit_input" id="pdfFile" name="pdfFile" accept="application/pdf" <%= !guide.pdfFile ? 'required' : '' %>>
+              <small class="guide_edit_helper_text">Tamaño máximo: 10MB. Solo archivos PDF.</small>
+              
+              <% if (guide.pdfFile) { %>
+                <div class="guide_edit_current_file">
+                  <p style="font-weight: bold;">PDF actual: <a href="<%= guide.pdfFile %>" target="_blank"><%= guide.title %>.pdf</a></p>
+                  <small class="guide_edit_helper_text">Sube un nuevo PDF para reemplazar el actual</small>
+                </div>
+              <% } %>
+            </div>
+          </div>
+        </div>
+        
+        <div class="guide_edit_actions_footer">
+          <a href="/guides/admin/dashboard" class="guide_edit_btn guide_edit_btn_secondary">Cancelar</a>
+          <button type="submit" class="guide_edit_btn guide_edit_btn_primary">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+  <script src="/js/tradux.js"></script>
+  <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+<%- include('../partials/footer') %>
+
+<% if (typeof error !== 'undefined' && error) { %>
+<div class="guide_edit_modal_overlay" id="guideErrorModal" style="display:block;">
+  <div class="guide_edit_modal_box">
+    <div class="guide_edit_modal_header">
+      <h5 class="guide_edit_modal_title">Error al subir archivo</h5>
+      <button type="button" class="guide_edit_modal_close" onclick="document.getElementById('guideErrorModal').style.display='none'">&times;</button>
+    </div>
+    <div class="guide_edit_modal_body">
+      <p><%= error %></p>
+    </div>
+    <div class="guide_edit_modal_footer">
+      <button type="button" class="guide_edit_btn guide_edit_btn_secondary" onclick="document.getElementById('guideErrorModal').style.display='none'">Cerrar</button>
+    </div>
+  </div>
+</div>
+<% } %>

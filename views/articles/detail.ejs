@@ -1,0 +1,98 @@
+
+
+<link rel="stylesheet" href="/css/articles-detail.css">
+
+<div class="article-wrapper">
+
+  <!-- 1. Navegación (Breadcrumbs) -->
+  <nav class="breadcrumb-nav">
+    <ul class="breadcrumb-list">
+      <li>
+        <a href="/" class="breadcrumb-link"><i class="fas fa-home"></i> Inicio</a>
+      </li>
+      <li class="breadcrumb-separator">/</li>
+      <li>
+        <a href="/articles" class="breadcrumb-link">Artículos</a>
+      </li>
+      <li class="breadcrumb-separator">/</li>
+      <li class="breadcrumb-current">Lectura actual</li>
+    </ul>
+  </nav>
+
+  <!-- 2. Contenido del Artículo -->
+  <article>
+    
+    <!-- Cabecera -->
+    <header class="article-header">
+      
+      <!-- Topic Badge -->
+      <span class="article-topic-badge"><%= article.topic %></span>
+      
+      <!-- Título Principal -->
+      <h1 class="article-main-title"><%= article.title %></h1>
+      
+      <!-- Fila de Metadatos (Autor y Stats) -->
+      <div class="article-meta-row">
+        
+        <!-- Info Autor -->
+        <div class="meta-author">
+          <% if (article.author && article.author.profileImage) { %>
+             <img src="<%= article.author.profileImage %>" alt="Autor" class="meta-avatar">
+          <% } else { %>
+             <!-- Avatar por defecto con inicial -->
+             <div class="meta-avatar" style="display:flex;align-items:center;justify-content:center;color:#64748B;font-weight:bold;font-size:1.2rem;">
+               <%= article.author ? article.author.name.charAt(0) : 'A' %>
+             </div>
+          <% } %>
+          
+          <div class="meta-info">
+            <span class="author-name"><%= article.author ? article.author.name : 'Autor desconocido' %></span>
+            <span class="author-role">
+              <%= new Date(article.publicationDate).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' }) %>
+              <% if (article.author && article.author.role === 'psychologist') { %> • Psicólogo Certificado <% } %>
+            </span>
+          </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="meta-stats">
+          <div class="stat-item" title="Vistas">
+            <i class="far fa-eye"></i> <%= article.views || 0 %>
+          </div>
+          
+        </div>
+
+      </div>
+    </header>
+
+    <!-- Imagen Principal -->
+    <% if (article.image) { %>
+      <img src="<%= article.image %>" class="article-featured-image" alt="<%= article.title %>">
+    <% } else { %>
+      <!-- Placeholder sutil si no hay imagen -->
+      <div class="no-image-placeholder">
+        <i class="fas fa-image" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.3;"></i>
+      </div>
+    <% } %>
+
+    <!-- Cuerpo del Contenido (Renderiza HTML) -->
+    <div class="article-content">
+      <%- article.content %>
+    </div>
+
+    <!-- Pie del Artículo -->
+    <footer class="article-footer">
+      <a href="/articles" class="btn-back">
+        <i class="fas fa-arrow-left"></i> Volver a Artículos
+      </a>
+    </footer>
+
+  </article>
+
+</div>
+
+  <!-- Tu JS primero, para que el callback global exista antes de cargar el script de Google -->
+  <script src="/js/tradux.js"></script>
+  <!-- Script oficial de Google (callback definido en translate.js) -->
+  <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+<%- include('../partials/footer') %>

@@ -1,0 +1,145 @@
+ 
+
+<!-- CSS General del Sistema -->
+<link rel="stylesheet" href="/css/dashboard-general.css">
+<!-- CSS Específico del Formulario -->
+<link rel="stylesheet" href="/css/user-form-desing.css">
+
+
+
+<div class="gen-dash-wrapper animate-fade-in">
+  
+  <!-- Contenedor centrado -->
+  <div class="user-form-container">
+    
+    <!-- Header: Título y Botón Volver -->
+    <div class="gen-header-row">
+      <div>
+        <h1 class="gen-page-title">
+          <i class="fas <%= targetUser._id ? 'fa-user-edit' : 'fa-user-plus' %>" style="color: var(--gen-accent); margin-right: 0.5rem;"></i>
+          <%= targetUser._id ? 'Editar Usuario' : 'Crear Nuevo Usuario' %>
+        </h1>
+        <p class="gen-page-subtitle">
+          <%= targetUser._id ? 'Modifica la información del usuario seleccionado' : 'Completa el formulario para agregar un nuevo usuario' %>
+        </p>
+      </div>
+      
+      <div class="gen-header-actions">
+        <a href="/admin/dashboard" class="gen-btn gen-btn-outline">
+          <i class="fas fa-arrow-left"></i> Volver
+        </a>
+      </div>
+    </div>
+
+    <!-- Panel del Formulario -->
+    <div class="gen-panel user-form-panel">
+      
+      <!-- Alertas de Error -->
+      <% if (typeof error !== 'undefined' && error) { %>
+        <div class="user-alert user-alert-danger" role="alert">
+          <i class="fas fa-exclamation-triangle"></i>
+          <span><%= error %></span>
+        </div>
+      <% } %>
+
+      <!-- Alertas de Éxito -->
+      <% if (typeof success !== 'undefined' && success) { %>
+        <div class="user-alert user-alert-success" role="alert">
+          <i class="fas fa-check-circle"></i>
+          <span><%= success %></span>
+        </div>
+      <% } %>
+
+      <!-- Inicio del Formulario (Funcionalidad intacta) -->
+      <form method="POST" action="<%= targetUser._id ? `/admin/users/${targetUser._id}` : '/admin/users' %>" 
+            novalidate id="userForm" 
+            data-auto-save="true" data-form-id="user-form-<%= targetUser._id || 'new' %>">
+        
+        <% if (targetUser._id) { %>
+          <input type="hidden" name="_method" value="PUT">
+        <% } %>
+
+        <!-- Campo: Nombre -->
+        <div class="gen-form-group">
+          <label for="name" class="gen-label">
+            Nombre Completo <span style="color: var(--gen-danger)">*</span>
+          </label>
+          <div class="user-input-wrapper">
+            <input type="text" class="gen-input with-icon" id="name" name="name" 
+                   value="<%= targetUser.name || '' %>" required placeholder="Ingresa el nombre completo"
+                   data-sync-field="name" data-user-id="<%= targetUser._id || '' %>"
+                   minlength="2" maxlength="100" data-validate="true">
+            <i class="fas fa-user user-input-icon"></i>
+          </div>
+          <div class="user-form-text">
+            Ingresa el nombre completo del usuario
+          </div>
+        </div>
+
+        <!-- Campo: Email -->
+        <div class="gen-form-group">
+          <label for="email" class="gen-label">
+            Correo Electrónico <span style="color: var(--gen-danger)">*</span>
+          </label>
+          <div class="user-input-wrapper">
+            <input type="email" class="gen-input with-icon" id="email" name="email" 
+                   value="<%= targetUser.email || '' %>" required placeholder="usuario@ejemplo.com"
+                   data-validate="true" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$">
+            <i class="fas fa-envelope user-input-icon"></i>
+          </div>
+          <div class="user-form-text">
+            Debe ser una dirección de correo válida y única
+          </div>
+        </div>
+
+        <!-- Campo: Contraseña (Solo si es nuevo usuario) -->
+        <% if (!targetUser._id) { %>
+          <div class="gen-form-group">
+            <label for="password" class="gen-label">
+              Contraseña <span style="color: var(--gen-danger)">*</span>
+            </label>
+            <div class="user-input-wrapper">
+              <input type="password" class="gen-input with-icon" id="password" name="password" 
+                     required placeholder="Mínimo 6 caracteres" minlength="6" maxlength="50" data-validate="true">
+              <i class="fas fa-lock user-input-icon"></i>
+            </div>
+            <div class="user-form-text">
+              La contraseña debe tener al menos 6 caracteres
+            </div>
+          </div>
+        <% } %>
+
+        <!-- Campo: Rol -->
+        <div class="gen-form-group">
+          <label for="role" class="gen-label">
+            Rol del Usuario <span style="color: var(--gen-danger)">*</span>
+          </label>
+          <select class="gen-select" id="role" name="role" required data-validate="true">
+            <option value="">Seleccionar rol...</option>
+            <option value="user" <%= (targetUser.role === 'user' || !targetUser.role) ? 'selected' : '' %>>Usuario - Acceso básico al sistema</option>
+            <option value="admin" <%= targetUser.role === 'admin' ? 'selected' : '' %>>Administrador - Acceso completo al sistema</option>
+            <option value="psychologist" <%= targetUser.role === 'psychologist' ? 'selected' : '' %>>Psicólogo - Gestión de artículos y guías propias</option>
+          </select>
+          <div class="user-form-text">
+            Define los permisos y nivel de acceso del usuario
+          </div>
+        </div>
+
+        <!-- Botón Submit -->
+        <div class="gen-form-group">
+          <button type="submit" class="gen-btn gen-btn-primary user-form-submit" id="submitBtn">
+            <i class="fas <%= targetUser._id ? 'fa-save' : 'fa-user-plus' %>"></i>
+            <%= targetUser._id ? 'Actualizar Usuario' : 'Crear Usuario' %>
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>
+
+<script src="/js/admin-user-form.js"></script>
+<script src="/js/tradux.js"></script>
+<script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+<%- include('../partials/footer') %>

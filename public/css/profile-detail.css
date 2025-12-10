@@ -1,0 +1,220 @@
+/* --- VARIABLES --- */
+:root {
+    --primary: #4f46e5;
+    --primary-dark: #4338ca;
+    --bg-body: #ffffff;
+    --white: #ffffff;
+    --text-main: #1e293b;
+    --text-muted: #64748b;
+    --border: #e2e8f0;
+    --radius: 12px;
+    --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+body{
+    background-color: var(--bg-body) !important;
+}
+/* --- LAYOUT PRINCIPAL --- */
+.public-profile-container {
+    max-width: 1800px;
+    margin: 40px auto; /* Margen superior ajustado */
+    width: 95%;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    color: var(--text-main);
+}
+
+/* --- BANNER --- */
+.public-banner {
+    height: 240px;
+    width: 100%;
+   
+    overflow: hidden;
+    background-color: #cbd5e1;
+    position: relative;
+}
+
+.public-banner img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* --- GRID SYSTEM (Sidebar + Contenido) --- */
+.public-grid {
+    display: grid;
+    grid-template-columns: 320px 1fr; /* Sidebar fijo 320px | Resto flexible */
+    gap: 30px;
+    align-items: start;
+}
+
+/* --- SIDEBAR CARD (Izquierda) --- */
+.profile-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 0 25px 30px;
+    text-align: center;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+    margin-top: -80px; /* EFECTO FLOTANTE */
+    position: relative;
+    z-index: 10;
+}
+
+.avatar-container {
+    width: 160px;
+    height: 160px;
+    margin: -80px auto 20px; /* Sube la mitad de la foto */
+    position: relative;
+}
+
+.profile-avatar {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 6px solid var(--white);
+    object-fit: cover;
+    background: var(--white);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.avatar-placeholder {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 6px solid var(--white);
+    background: #64748b;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    font-weight: bold;
+}
+
+/* Tipografía Sidebar */
+.profile-name {
+    font-size: 1.6rem;
+    margin: 0 0 10px;
+    font-weight: 700;
+}
+
+/* Badges de Rol */
+.badge-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 50px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+.badge-admin { background: #fee2e2; color: #991b1b; }
+.badge-psych { background: #dcfce7; color: #166534; }
+.badge-user { background: #e0e7ff; color: #3730a3; }
+
+/* Stats y Datos */
+.info-list {
+    text-align: left;
+    margin-top: 20px;
+    border-top: 1px solid var(--border);
+    padding-top: 20px;
+}
+
+.info-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+.info-item strong { color: var(--text-main); }
+.status-active { color: #16a34a; font-weight: bold; }
+.status-banned { color: #dc2626; font-weight: bold; }
+
+/* Botón Volver */
+.btn-back {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 12px;
+    margin-top: 20px;
+    background: white;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+.btn-back:hover { background: #f1f5f9; color: var(--text-main); }
+
+/* --- MAIN CONTENT (Derecha) --- */
+.content-area {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.content-section {
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 30px;
+    border: 1px solid var(--border);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.section-title {
+    font-size: 1.2rem;
+    margin-top: 0;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #f1f5f9;
+    color: var(--text-main);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.section-title i { color: var(--primary); }
+
+.bio-text {
+    line-height: 1.7;
+    color: #334155;
+    white-space: pre-wrap; /* Mantiene saltos de línea */
+}
+
+/* Tags / Pills Visuales */
+.tags-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.tag-pill {
+    background: #f1f5f9;
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    color: #475569;
+    border: 1px solid var(--border);
+}
+.tag-highlight {
+    background: #eef2ff;
+    color: var(--primary);
+    border-color: #c7d2fe;
+}
+
+/* --- RESPONSIVE --- */
+@media (max-width: 850px) {
+    .public-grid {
+        grid-template-columns: 1fr; /* Una sola columna */
+    }
+    .profile-card {
+        margin-top: -60px;
+    }
+    .content-area {
+        margin-top: 0;
+    }
+}

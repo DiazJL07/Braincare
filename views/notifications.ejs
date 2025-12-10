@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Notificaciones - Brain.IA</title>
+    <!-- CSS Nativo - Sin dependencias externas -->
+  <link rel="stylesheet" href="/css/native-grid.css">
+  <link rel="stylesheet" href="/css/native-components.css">
+  <link rel="stylesheet" href="/css/native-navbar.css">
+    <style>
+        .notification-item {
+            border-left: 4px solid #dee2e6;
+            transition: all 0.3s ease;
+        }
+        .notification-item.unread {
+            border-left-color: #0d6efd;
+            background-color: #f8f9fa;
+        }
+        .notification-item:hover {
+            background-color: #e9ecef;
+            transform: translateX(5px);
+        }
+        .notification-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+        .notification-icon.report_resolved {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+        .notification-icon.warning {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        .notification-icon.ban {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .badge-action {
+            font-size: 0.75rem;
+        }
+        
+        .btn-delete {
+            position: relative;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 8px;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .btn-delete svg {
+            width: 18px;
+            height: 18px;
+            transition: all 0.3s ease;
+            fill: #6c757d;
+        }
+        
+        .btn-delete:hover svg {
+            fill: #dc3545;
+            transform: scale(1.1);
+        }
+        
+        .btn-delete::after {
+            content: "ELIMINAR";
+            position: absolute;
+            top: -100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #333;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .btn-delete:hover::after {
+            opacity: 1;
+            top: -120%;
+        }
+        
+        .btn-delete:active {
+            transform: scale(0.95);
+        }
+        
+        /* Estilos nativos para dropdowns */
+        .notification-actions {
+            position: relative;
+        }
+        
+        .dropdown-toggle-native {
+            background: transparent;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 6px 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .dropdown-toggle-native:hover {
+            background-color: #f8f9fa;
+            border-color: #adb5bd;
+        }
+        
+        .dropdown-menu-native {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            min-width: 160px;
+            z-index: 1000;
+            padding: 8px 0;
+            margin-top: 4px;
+        }
+        
+        .dropdown-item-native {
+            display: block;
+            width: 100%;
+            padding: 8px 16px;
+            text-decoration: none;
+            color: #212529;
+            background: transparent;
+            border: none;
+            text-align: left;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        .dropdown-item-native:hover {
+            background-color: #f8f9fa;
+            color: #16181b;
+        }
+        
+        .btn-close-native {
+            background: transparent;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-close-native:hover {
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-close-native::before {
+            content: '×';
+            font-weight: bold;
+        }
+        
+        /* Animación para spinner nativo */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Utilidades nativas para reemplazar Bootstrap */
+        .text-center { text-align: center; }
+        .d-flex { display: flex; }
+        .justify-content-between { justify-content: space-between; }
+        .align-items-center { align-items: center; }
+        .mb-4 { margin-bottom: 1.5rem; }
+        .my-4 { margin: 1.5rem 0; }
+        .mt-2 { margin-top: 0.5rem; }
+        .py-5 { padding: 3rem 0; }
+        .col-12 { width: 100%; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 15px; }
+        .row { display: flex; flex-wrap: wrap; margin: 0 -15px; }
+        .btn { 
+            display: inline-block;
+            padding: 0.375rem 0.75rem;
+            margin-bottom: 0;
+            font-size: 1rem;
+            font-weight: 400;
+            line-height: 1.5;
+            text-align: center;
+            text-decoration: none;
+            vertical-align: middle;
+            cursor: pointer;
+            border: 1px solid transparent;
+            border-radius: 0.375rem;
+            transition: all 0.15s ease-in-out;
+        }
+        .btn-outline-primary {
+            color: #0d6efd;
+            border-color: #0d6efd;
+            background-color: transparent;
+        }
+        .btn-outline-primary:hover {
+            color: #fff;
+            background-color: #0d6efd;
+            border-color: #0d6efd;
+        }
+        .btn-outline-secondary {
+            color: #6c757d;
+            border-color: #6c757d;
+            background-color: transparent;
+        }
+        .btn-outline-secondary:hover {
+            color: #fff;
+            background-color: #6c757d;
+            border-color: #6c757d;
+        }
+        .btn-sm {
+             padding: 0.25rem 0.5rem;
+             font-size: 0.875rem;
+             border-radius: 0.25rem;
+         }
+         
+         /* Estilos de tarjetas nativas */
+         .card {
+             background-color: #fff;
+             border: 1px solid rgba(0,0,0,.125);
+             border-radius: 0.375rem;
+             box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,.075);
+         }
+         .card-body {
+             padding: 1rem;
+         }
+         .card-title {
+             margin-bottom: 0.5rem;
+             font-size: 1.25rem;
+             font-weight: 500;
+         }
+         .card-text {
+             margin-bottom: 1rem;
+         }
+         
+         /* Sistema de grid nativo */
+         .row {
+             display: flex;
+             flex-wrap: wrap;
+             margin-right: -0.75rem;
+             margin-left: -0.75rem;
+         }
+         .col {
+             flex: 1 0 0%;
+             padding-right: 0.75rem;
+             padding-left: 0.75rem;
+         }
+         .col-auto {
+             flex: 0 0 auto;
+             width: auto;
+             padding-right: 0.75rem;
+             padding-left: 0.75rem;
+         }
+         
+         /* Utilidades adicionales */
+         .flex-grow-1 { flex-grow: 1; }
+         .align-items-start { align-items: flex-start; }
+         .gap-3 { gap: 1rem; }
+         .mb-1 { margin-bottom: 0.25rem; }
+         .mb-2 { margin-bottom: 0.5rem; }
+         .mb-3 { margin-bottom: 1rem; }
+         .ms-2 { margin-left: 0.5rem; }
+         .text-muted { color: #6c757d; }
+         .fa-3x { font-size: 3em; }
+         
+         /* Badges nativos */
+         .badge {
+             display: inline-block;
+             padding: 0.35em 0.65em;
+             font-size: 0.75em;
+             font-weight: 700;
+             line-height: 1;
+             color: #fff;
+             text-align: center;
+             white-space: nowrap;
+             vertical-align: baseline;
+             border-radius: 0.375rem;
+         }
+         .bg-primary {
+             background-color: #0d6efd;
+         }
+     </style>
+</head>
+<body>
+    <div class="container my-4">
+        <div class="row">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2><i class="fas fa-bell"></i> Mis Notificaciones</h2>
+                    <div>
+                        <button class="btn btn-outline-primary btn-sm" onclick="markAllAsRead()">
+                            <i class="fas fa-check-double"></i> Marcar todas como leídas
+                        </button>
+                        <button class="btn btn-outline-secondary btn-sm" onclick="refreshNotifications()">
+                            <i class="fas fa-sync-alt"></i> Actualizar
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Sin filtros - mostrar todas las notificaciones -->
+                
+                <!-- Lista de notificaciones -->
+                <div id="notificationsContainer">
+                    <div class="text-center" id="loadingSpinner" style="padding: 3rem 0;">
+                        <div class="native-spinner" style="
+                            width: 40px;
+                            height: 40px;
+                            border: 4px solid #f3f3f3;
+                            border-top: 4px solid #007bff;
+                            border-radius: 50%;
+                            animation: spin 1s linear infinite;
+                            margin: 0 auto;
+                        "></div>
+                        <p style="margin-top: 1rem; color: #6c757d;">Cargando notificaciones...</p>
+                    </div>
+                    
+                    <div id="noNotificationsMessage" class="text-center py-5" style="display: none;">
+                        <i class="fas fa-bell-slash fa-3x text-muted mb-3"></i>
+                        <h4 class="text-muted">No tienes notificaciones</h4>
+                        <p class="text-muted">Cuando recibas notificaciones aparecerán aquí.</p>
+                    </div>
+                    
+                    <div id="notificationsList"></div>
+                </div>
+                
+                <!-- Sin paginación - mostrar todas las notificaciones -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bootstrap eliminado - usando funcionalidad nativa -->
+    <script>
+        const currentUserId = '<%= (user && user._id) ? user._id.toString() : '' %>';
+        const currentUserRole = '<%= user ? user.role : '' %>';
+        let allNotifications = [];
+        
+        // Cargar todas las notificaciones
+        async function loadNotifications() {
+            try {
+                document.getElementById('loadingSpinner').style.display = 'block';
+                document.getElementById('notificationsList').innerHTML = '';
+                
+                const response = await fetch('/admin/api/notifications');
+                const data = await response.json();
+                
+                if (data.success) {
+                    allNotifications = data.notifications || [];
+                    
+                    document.getElementById('loadingSpinner').style.display = 'none';
+                    
+                    if (allNotifications.length === 0) {
+                        document.getElementById('noNotificationsMessage').style.display = 'block';
+                    } else {
+                        document.getElementById('noNotificationsMessage').style.display = 'none';
+                        displayNotifications();
+                    }
+                }
+            } catch (error) {
+                console.error('Error al cargar notificaciones:', error);
+                document.getElementById('loadingSpinner').style.display = 'none';
+                showAlert('Error al cargar las notificaciones', 'danger');
+            }
+        }
+        
+        // Mostrar todas las notificaciones
+        function displayNotifications() {
+            const container = document.getElementById('notificationsList');
+            container.innerHTML = '';
+            
+            allNotifications.forEach(notification => {
+                const notificationElement = createNotificationElement(notification);
+                container.appendChild(notificationElement);
+            });
+        }
+        
+        // Crear elemento de notificación
+        function createNotificationElement(notification) {
+            const div = document.createElement('div');
+            div.className = `card mb-3 notification-item ${!notification.read ? 'unread' : ''}`;
+            div.setAttribute('data-notification-id', notification._id);
+            
+            const iconClass = getNotificationIcon(notification.type);
+            const actionBadge = getActionBadge(notification.actionTaken);
+            
+            div.innerHTML = `
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-auto">
+                            <div class="notification-icon ${notification.type}">
+                                <i class="${iconClass}"></i>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div class="flex-grow-1">
+                                    <h6 class="card-title mb-1">
+                                        ${notification.title}
+                                        ${!notification.read ? '<span class="badge bg-primary ms-2">Nuevo</span>' : ''}
+                                    </h6>
+                                    <p class="card-text text-muted mb-2">${notification.message}</p>
+                                    <div class="d-flex align-items-center gap-3">
+                                        <small class="text-muted">
+                                            <i class="fas fa-clock"></i> ${new Date(notification.createdAt).toLocaleString()}
+                                        </small>
+                                        ${actionBadge}
+                                    </div>
+                                </div>
+                                <div class="dropdown">
+                                    <div class="notification-actions">
+                                        <button class="btn btn-sm btn-outline-secondary dropdown-toggle-native" type="button" onclick="toggleNotificationDropdown(this)">
+                                            <i class="fas fa-ellipsis-v"></i>
+                                        </button>
+                                        <div class="dropdown-menu-native" style="display: none;">
+                                            ${!notification.read ? `<a class="dropdown-item-native" href="#" onclick="markAsRead('${notification._id}')"><i class="fas fa-check"></i> Marcar como leída</a>` : ''}
+                                            <button class="btn-delete dropdown-item-native" onclick="deleteNotification('${notification._id}')" title="Eliminar notificación"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6h14zM10 11v6M14 11v6"/></svg> Eliminar</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Marcar como leída al hacer clic
+            if (!notification.read) {
+                div.addEventListener('click', () => markAsRead(notification._id));
+                div.style.cursor = 'pointer';
+            }
+            
+            return div;
+        }
+
+        
+        // Obtener icono según tipo de notificación
+        function getNotificationIcon(type) {
+            switch (type) {
+                case 'report_resolved': return 'fas fa-gavel';
+                case 'warning': return 'fas fa-exclamation-triangle';
+                case 'ban': return 'fas fa-ban';
+                default: return 'fas fa-bell';
+            }
+        }
+        
+        // Obtener badge de acción
+        function getActionBadge(action) {
+            if (!action || action === 'none') return '';
+            
+            const badges = {
+                'warning': '<span class="badge bg-warning text-dark badge-action">Advertencia</span>',
+                'temp_ban': '<span class="badge bg-danger badge-action">Baneo temporal</span>',
+                'permanent_ban': '<span class="badge bg-dark badge-action">Baneo permanente</span>'
+            };
+            
+            return badges[action] || '';
+        }
+        
+        // Marcar notificación como leída
+        async function markAsRead(notificationId) {
+            try {
+                await fetch('/admin/api/notifications/mark-read', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ notificationId })
+                });
+                
+                // Actualizar en el array local
+                const notification = allNotifications.find(n => n._id === notificationId);
+                if (notification) {
+                    notification.read = true;
+                }
+                
+                displayNotifications();
+                showAlert('Notificación marcada como leída', 'success');
+            } catch (error) {
+                console.error('Error marking notification as read:', error);
+                showAlert('Error al marcar la notificación', 'danger');
+            }
+        }
+        
+        // Marcar todas como leídas
+        async function markAllAsRead() {
+            try {
+                await fetch('/admin/api/notifications/mark-all-read', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                // Actualizar en el array local
+                allNotifications.forEach(n => n.read = true);
+                
+                displayNotifications();
+                showAlert('Todas las notificaciones marcadas como leídas', 'success');
+            } catch (error) {
+                console.error('Error marking all notifications as read:', error);
+                showAlert('Error al marcar las notificaciones', 'danger');
+            }
+        }
+        
+
+        
+        // Actualizar notificaciones
+        function refreshNotifications() {
+            loadNotifications();
+        }
+        
+        // Mostrar alerta
+        function showAlert(message, type) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
+            alertDiv.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close-native" onclick="this.parentElement.remove()"></button>
+            `;
+            
+            const container = document.querySelector('.container');
+            container.insertBefore(alertDiv, container.firstChild);
+            
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 5000);
+        }
+        
+        // Función para toggle de dropdown nativo
+        function toggleNotificationDropdown(button) {
+            const dropdown = button.nextElementSibling;
+            const isVisible = dropdown.style.display === 'block';
+            
+            // Cerrar todos los dropdowns abiertos
+            document.querySelectorAll('.dropdown-menu-native').forEach(menu => {
+                menu.style.display = 'none';
+            });
+            
+            // Toggle del dropdown actual
+            dropdown.style.display = isVisible ? 'none' : 'block';
+        }
+        
+        // Cerrar dropdowns al hacer clic fuera
+        document.addEventListener('click', function(event) {
+            if (!event.target.closest('.notification-actions')) {
+                document.querySelectorAll('.dropdown-menu-native').forEach(menu => {
+                    menu.style.display = 'none';
+                });
+            }
+        });
+        
+        // Cargar notificaciones al cargar la página
+        document.addEventListener('DOMContentLoaded', loadNotifications);
+    </script>
+</body>
+  <!-- Tu JS primero, para que el callback global exista antes de cargar el script de Google -->
+  <script src="/js/tradux.js"></script>
+  <!-- Script oficial de Google (callback definido en translate.js) -->
+  <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+</html>

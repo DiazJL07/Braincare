@@ -1,0 +1,325 @@
+ 
+<link rel="stylesheet" href="/css/admin-reports.css">
+
+<style>
+  body { padding-top: 0; }
+  /* Ajuste para asegurar que la paginación se vea bien */
+  .adm-rep-pagination {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    margin-top: 1.5rem;
+  }
+  .adm-rep-page-btn {
+    background: white;
+    border: 1px solid #e5e7eb;
+    padding: 0.5rem 1rem;
+    border-radius: 0.375rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .adm-rep-page-btn.active {
+    background: #2563eb;
+    color: white;
+    border-color: #2563eb;
+  }
+</style>
+
+<div class="adm-reports-wrapper animate-fade-in">
+  
+  <div class="adm-rep-header-row">
+    <h1 class="adm-rep-page-title">Gestión de Reportes</h1>
+    <div>
+      <a href="/admin/dashboard" class="adm-rep-nav-back">
+        <i class="fas fa-arrow-left"></i> Volver al Dashboard
+      </a>
+    </div>
+  </div>
+
+  <div class="adm-rep-filter-bar animate-slide-in">
+    <div class="adm-rep-filter-label">
+      <i class="fas fa-filter" style="color: #374151;"></i>
+      Filtros:
+    </div>
+    
+    <form method="GET" class="adm-rep-inline-form" id="filterForm">
+      <select name="status" id="statusFilter" class="adm-rep-select-minimal">
+        <option value="all" <%= currentStatus === 'all' ? 'selected' : '' %>>Todos los estados</option>
+        <option value="pending" <%= currentStatus === 'pending' ? 'selected' : '' %>>Pendientes</option>
+        <option value="reviewed" <%= currentStatus === 'reviewed' ? 'selected' : '' %>>Revisados</option>
+        <option value="resolved" <%= currentStatus === 'resolved' ? 'selected' : '' %>>Resueltos</option>
+        <option value="dismissed" <%= currentStatus === 'dismissed' ? 'selected' : '' %>>Descartados</option>
+      </select>
+
+      <button type="submit" class="adm-rep-btn-filter">
+        <i class="fas fa-search"></i> Aplicar Filtros
+      </button>
+    </form>
+  </div>
+
+  <div class="adm-rep-kpi-grid animate-slide-in">
+    <div class="adm-rep-kpi-card">
+      <div class="adm-rep-kpi-data">
+        <div class="adm-rep-kpi-value"><%= total %></div>
+        <div class="adm-rep-kpi-label">Total Reportes</div>
+      </div>
+      <div class="adm-rep-kpi-icon-box box-variant-blue"><i class="fas fa-flag"></i></div>
+    </div>
+    
+    <div class="adm-rep-kpi-card">
+      <div class="adm-rep-kpi-data">
+        <div class="adm-rep-kpi-value"><%= pendingCount %></div>
+        <div class="adm-rep-kpi-label">Pendientes</div>
+      </div>
+      <div class="adm-rep-kpi-icon-box box-variant-yellow"><i class="fas fa-clock"></i></div>
+    </div>
+    
+    <div class="adm-rep-kpi-card">
+      <div class="adm-rep-kpi-data">
+        <div class="adm-rep-kpi-value"><%= total - pendingCount %></div>
+        <div class="adm-rep-kpi-label">Procesados</div>
+      </div>
+      <div class="adm-rep-kpi-icon-box box-variant-green"><i class="fas fa-check-circle"></i></div>
+    </div>
+    
+    <div class="adm-rep-kpi-card">
+      <div class="adm-rep-kpi-data">
+        <div class="adm-rep-kpi-value"><%= Math.round((pendingCount / total) * 100) || 0 %>%</div>
+        <div class="adm-rep-kpi-label">Tasa Pendiente</div>
+      </div>
+      <div class="adm-rep-kpi-icon-box box-variant-red"><i class="fas fa-percentage"></i></div>
+    </div>
+  </div>
+
+  <div class="adm-rep-table-panel animate-slide-in">
+    <div class="adm-rep-section-header">
+      <h2 class="adm-rep-section-headline">
+        <i class="fas fa-list" style="color: #2563eb;"></i>
+        Lista de Reportes (<%= reports.length %>)
+      </h2>
+    </div>
+    
+    <% if (reports.length === 0) { %>
+      <div style="text-align:center; padding: 3rem; color: #6b7280;">
+        <i class="fas fa-inbox" style="font-size: 3rem; color: #d1d5db; margin-bottom: 1rem;"></i>
+        <h3>No hay reportes</h3>
+        <p>No se encontraron reportes que coincidan con los filtros seleccionados.</p>
+      </div>
+    <% } else { %>
+      <div class="adm-rep-scroll-wrapper">
+        <table class="adm-rep-data-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Tipo</th>
+              <th>Reportado por</th>
+              <th>Contenido</th>
+              <th>Motivo</th>
+              <th>Estado</th>
+              <th>Fecha</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody class="reports-table-body">
+            <% reports.forEach(report => { %>
+              <tr class="table-row">
+                <td><span class="adm-rep-id-mono">#<%= report._id.toString().slice(-6) %></span></td>
+                <td>
+                  <span class="adm-rep-status-pill pill-type-neutral">
+                    <i class="fas <%= report.contentType === 'foro' ? 'fa-file-alt' : 'fa-comment' %>"></i>
+                    <%= report.contentType === 'foro' ? 'Publicación' : 'Comentario' %>
+                  </span>
+                </td>
+                <td>
+                  <div class="adm-rep-user-cell">
+                    <% if (report.reporter) { %>
+                      <img src="<%= report.reporter.profileImage || '/img/default-avatar.svg' %>" 
+                           class="adm-rep-avatar-circle" onerror="this.src='/img/default-avatar.svg'">
+                      <span><%= report.reporter.name %></span>
+                    <% } else { %>
+                      <img src="/img/default-avatar.svg" class="adm-rep-avatar-circle">
+                      <span style="color: #9ca3af;">Eliminado</span>
+                    <% } %>
+                  </div>
+                </td>
+                <td>
+                  <div class="adm-rep-content-preview">
+                    <% if (report.contentType === 'foro' && report.reportedContent) { %>
+                      <%= report.reportedContent.title ? report.reportedContent.title.substring(0, 50) + '...' : '...' %>
+                    <% } else if (report.contentType === 'comment' && report.reportedContent) { %>
+                      <%= report.reportedContent.content ? report.reportedContent.content.substring(0, 50) + '...' : '...' %>
+                    <% } else { %>
+                      No disponible
+                    <% } %>
+                  </div>
+                </td>
+                <td><%= report.reason %></td>
+                <td>
+                  <span class="adm-rep-status-pill <%= 
+                    report.status === 'pending' ? 'pill-type-warning' : 
+                    report.status === 'reviewed' ? 'pill-type-info' :
+                    report.status === 'resolved' ? 'pill-type-success' : 'pill-type-error' %>">
+                    
+                    <i class="fas <%= 
+                      report.status === 'pending' ? 'fa-clock' : 
+                      report.status === 'reviewed' ? 'fa-eye' :
+                      report.status === 'resolved' ? 'fa-check' : 'fa-times' %>"></i>
+                    
+                    <%= 
+                      report.status === 'pending' ? 'Pendiente' : 
+                      report.status === 'reviewed' ? 'Revisado' :
+                      report.status === 'resolved' ? 'Resuelto' : 'Descartado' %>
+                  </span>
+                </td>
+                <td><%= new Date(report.createdAt).toLocaleDateString() %></td>
+                <td>
+                  <a href="/admin/reports/<%= report._id %>" class="adm-rep-action-link">
+                    <i class="fas fa-eye"></i> Detalles
+                  </a>
+                </td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+      
+    <% } %>
+ 
+  </div>
+     <div id="reportsPagination" class="adm-rep-pagination"></div>
+</div>
+
+
+<script>
+// Función de filtrado del lado del cliente (si se usa sin recargar)
+// Adaptada para buscar las clases "adm-rep-status-pill" en lugar de "badge"
+function filterReports() {
+  const statusFilter = document.getElementById('statusFilter').value;
+  // Buscamos dentro de tbody con la clase reports-table-body
+  const rows = document.querySelectorAll('.reports-table-body tr');
+  
+  rows.forEach(row => {
+    // ACTUALIZADO: Buscamos la nueva clase del badge
+    const badge = row.querySelector('.adm-rep-status-pill');
+    const status = badge ? badge.textContent.toLowerCase() : '';
+    
+    // Obtenemos el tipo de la segunda celda (índice 1)
+    const typeCell = row.cells[1]; 
+    const type = typeCell ? typeCell.textContent.toLowerCase() : '';
+    
+    let showRow = true;
+    
+    // Lógica de filtro de estado
+    if (statusFilter && statusFilter !== 'all') {
+        // Mapeo simple de valores del select a texto en español
+        const mapStatus = {
+            'pending': 'pendiente',
+            'reviewed': 'revisado',
+            'resolved': 'resuelto',
+            'dismissed': 'descartado'
+        };
+        const searchText = mapStatus[statusFilter] || statusFilter;
+        if (!status.includes(searchText)) {
+            showRow = false;
+        }
+    }
+    
+    row.style.display = showRow ? '' : 'none';
+  });
+
+  // Si existe la función de paginación global, hay que recalcular las páginas
+  if (window.filterReportsPage) {
+      window.filterReportsPage();
+  }
+}
+
+// Escuchar cambios en el select (opcional si usas el botón submit, pero bueno para UX)
+document.getElementById('statusFilter').addEventListener('change', function() {
+    // Si queremos que funcione solo con el botón "Aplicar", comenta la siguiente línea:
+    // filterReports(); 
+});
+
+// Auto-refresh cada 30 segundos
+setInterval(() => {
+  // ACTUALIZADO: Buscamos la nueva clase de alerta (amarilla)
+  if (document.querySelector('.pill-type-warning')) {
+    location.reload();
+  }
+}, 30000);
+</script>
+
+<script>
+  (function(){
+    let reportsCurrentPage = 1; 
+    const reportsPageSize = 15;
+    
+    // Seleccionamos las filas visibles
+    function getRows(){ 
+        return Array.from(document.querySelectorAll('.reports-table-body tr.table-row')).filter(r => r.style.display !== 'none'); 
+    }
+    
+    function applyPage(){
+      const all = Array.from(document.querySelectorAll('.reports-table-body tr.table-row'));
+      const vis = getRows();
+      
+      // Primero ocultamos todas las que no pasan el filtro visual
+      all.forEach(r => { 
+          if(!vis.includes(r)) r.style.display='none'; 
+      });
+      
+      const start = (reportsCurrentPage-1) * reportsPageSize;
+      const end = start + reportsPageSize;
+      
+      // Mostramos solo las de la página actual
+      vis.forEach((r,i) => { 
+          r.style.display = (i >= start && i < end) ? '' : 'none'; 
+      });
+    }
+    
+    function renderPag(){
+      const c = document.getElementById('reportsPagination'); 
+      if(!c) return;
+      
+      // Contamos filas visibles (después de aplicar filtros de búsqueda si los hubiera)
+      // Nota: Si el filtrado es Server-Side (PHP/Node), 'total' es simplemente la longitud de rows
+      const allRows = Array.from(document.querySelectorAll('.reports-table-body tr.table-row'));
+      // Hack: Para que la paginación cuente correctamente si no hay filtro JS activo, asumimos todas visibles
+      // Si usas filtro JS, getRows() filtrará.
+      const total = allRows.length; 
+      
+      const pages = Math.max(1, Math.ceil(total/reportsPageSize));
+      
+      if(reportsCurrentPage > pages) reportsCurrentPage = pages; 
+      c.innerHTML = '';
+      
+      for(let i=1; i<=pages; i++){ 
+        const b = document.createElement('button'); 
+        b.className = 'adm-rep-page-btn' + (i === reportsCurrentPage ? ' active' : ''); 
+        b.textContent = i; 
+        b.onclick = function(){ 
+          reportsCurrentPage = i; 
+          applyPage(); 
+          renderPag(); 
+        }; 
+        c.appendChild(b); 
+      }
+    }
+    
+    document.addEventListener('DOMContentLoaded', function(){ 
+      renderPag(); 
+      applyPage(); 
+    });
+    
+    // Exponemos la función para recalcular si se usa filtro JS externo
+    window.filterReportsPage = function(){ 
+        reportsCurrentPage = 1; // Reset a página 1 al filtrar
+        renderPag(); 
+        applyPage(); 
+    };
+  })();
+</script>
+
+<script src="/js/tradux.js"></script>
+<script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+<%- include('../partials/footer') %>

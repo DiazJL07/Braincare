@@ -1,0 +1,20 @@
+<div class="container">
+  <h2>Gestión de Psicólogos</h2>
+  <form action="/admin/psychologists/create" method="POST" class="row g-2 mb-3">
+    <div class="col"><input class="form-control" name="name" placeholder="Nombre"></div>
+    <div class="col"><input class="form-control" name="email" placeholder="Email"></div>
+    <div class="col"><button class="btn btn-primary" type="submit">Crear</button></div>
+  </form>
+  <table class="table">
+    <thead><tr><th>Nombre</th><th>Email</th><th>Estado</th></tr></thead>
+    <tbody>
+      <% users.forEach(u => { %>
+        <tr>
+          <td><%= u.name %></td>
+          <td><%= u.email %></td>
+          <td><%= u.isBanned ? 'Desactivado' : 'Activo' %></td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>

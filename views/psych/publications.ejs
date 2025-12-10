@@ -1,0 +1,253 @@
+<link rel="stylesheet" href="/css/publications.css">
+
+<section class="vl-section">
+  
+  <div class="vl-hero">
+    <div class="vl-container">
+      <h2>Publicaciones Disponibles</h2>
+      <p style="opacity: 0.9; margin-top: 10px;">Agenda tu próxima sesión con facilidad</p>
+    </div>
+  </div>
+
+  <div class="vl-container">
+    <div class="vl-list-stack">
+      <% if (services && services.length) { %>
+        <% services.forEach(s => { %>
+          
+          <article class="vl-card">
+            <div class="vl-card-header">
+              <h3 class="vl-card-title"><%= s.serviceType %></h3>
+              <div class="vl-card-price">$ <%= (s.price || 0).toFixed(2) %> <span style="font-weight:400; font-size:0.9em;">/ <%= s.durationMinutes %> min</span></div>
+            </div>
+
+            <div class="vl-card-body">
+              <div class="vl-card-meta">
+                <span class="vl-meta-item"><strong>Sesión:</strong> <%= s.sessionKind %></span>
+                <% if (s.specialty) { %><span class="vl-meta-item"><strong>Especialidad:</strong> <%= s.specialty.name %></span><% } %>
+                <% if (s.psychologist) { %><span class="vl-meta-item"><strong>Psicólogo:</strong> <%= s.psychologist.name %></span><% } %>
+              </div>
+              
+              <div class="vl-card-desc"><%= s.description %></div>
+              
+              <% if ((s.problems && s.problems.length) || s.problemsCustom) { %>
+              <div class="vl-tags">
+                <% (s.problems || []).forEach(p => { %>
+                  <span class="vl-chip"><%= p %></span>
+                <% }) %>
+                <% if (s.problemsCustom) { %><span class="vl-chip"><%= s.problemsCustom %></span><% } %>
+              </div>
+              <% } %>
+            </div>
+
+            <div class="vl-date">
+              <small>Publicado el <%= new Date(s.createdAt).toLocaleDateString('es-ES') %></small>
+            </div>
+
+            <div class="vl-card-footer">
+              <% if (s.psychologist) { %>
+                <a class="vl-btn vl-btn-outline" href="#chat-modal-<%= s.psychologist._id %>">💬 Chatear</a>
+                <a class="vl-btn vl-btn-primary" href="#schedule-modal-<%= s.psychologist._id %>">📅 Agendar Cita</a>
+              <% } %>
+            </div>
+          </article>
+          <% if (s.psychologist) { %>
+            
+            <div id="schedule-modal-<%= s.psychologist._id %>" class="vl-modal" aria-hidden="true">
+              <div class="vl-modal-backdrop" onclick="window.location.hash='#'"></div> <div class="vl-modal-dialog" role="dialog" aria-modal="true">
+                <div class="vl-modal-header">
+                  <h3>Disponibilidad</h3>
+                  <a href="#" class="vl-modal-close" aria-label="Cerrar">×</a>
+                </div>
+                <div class="vl-modal-body">
+                  <div class="vl-calendar">
+                    <% var pid=s.psychologist._id.toString(); var cal=(typeof calendarData!=='undefined'&&calendarData&&calendarData[pid])?calendarData[pid]:{}; var wsRaw=cal.windowStart?new Date(cal.windowStart):new Date(); var ws=isNaN(wsRaw.getTime())?new Date():wsRaw; var weRaw=cal.windowEnd?new Date(cal.windowEnd):new Date(ws.getTime()+30*24*60*60*1000); var we=isNaN(weRaw.getTime())?new Date(ws.getTime()+30*24*60*60*1000):weRaw; if(we<ws)we=new Date(ws.getTime()); var booked=Array.isArray(cal.bookedDays)?cal.bookedDays:[]; var available=Array.isArray(cal.availableDays)?cal.availableDays:[]; var start=new Date(ws); start.setHours(0,0,0,0); var end=new Date(we); end.setHours(0,0,0,0); %>
+                    
+                    <div class="vl-cal-info"><%=ws.toLocaleDateString('es-ES')%> - <%=we.toLocaleDateString('es-ES')%></div>
+                    
+                    <div class="vl-cal-grid">
+                      <% for(let d=new Date(start);d<=end;d.setDate(d.getDate()+1)){ const iso=new Date(d).toISOString().slice(0,10); const isBooked=booked.includes(iso); const isAvailable=available.includes(iso); %>
+                        <% if(isAvailable){ %>
+                          <a class="vl-cal-day available <%=(typeof selectedDayIso!=='undefined'&&selectedDayIso===iso&&typeof selectedPsychId!=='undefined'&&selectedPsychId===s.psychologist._id.toString())?' selected':''%>" 
+                             href="/psych/publications?psych=<%=s.psychologist._id%>&date=<%=iso%>#schedule-modal-<%=s.psychologist._id%>">
+                             <%=d.getDate()%>
+                          </a>
+                        <% }else{ %>
+                          <div class="vl-cal-day <%=isBooked?'booked':''%>"><%=d.getDate()%></div>
+                        <% } %>
+                      <% } %>
+                    </div>
+                  </div>
+
+                  <% if(typeof selectedPsychId!=='undefined'&&typeof selectedDayIso!=='undefined'&&selectedPsychId&&selectedDayIso&&selectedPsychId===s.psychologist._id.toString()){ %>
+                    <div style="margin-top:20px; border-top: 1px solid #eee; padding-top: 15px;">
+                      <div style="margin-bottom:10px; font-weight:bold; color:#333;">Horarios para el <%=new Date(selectedDayIso).toLocaleDateString('es-ES')%>:</div>
+                      <ul class="list-group">
+                        <% if(daySlots&&daySlots.length){ %>
+                          <% daySlots.forEach(ds=>{ %>
+                            <li class="list-group-item">
+                              <span style="font-size:0.9rem;"><%=new Date(ds.start).toLocaleString('es-ES',{hour:'2-digit',minute:'2-digit'})%> - <%=new Date(ds.end).toLocaleString('es-ES',{hour:'2-digit',minute:'2-digit'})%></span>
+                              
+                              <form class="vl-booking-form" action="/psych/p/<%=s.psychologist._id%>/book" method="POST">
+                                <input type="hidden" name="slotId" value="<%=ds._id%>">
+                                <input type="hidden" name="returnUrl" value="/psych/publications?psych=<%=s.psychologist._id%>&date=<%=selectedDayIso%>#schedule-modal-<%=s.psychologist._id%>">
+                                <button class="vl-btn vl-btn-primary" style="padding: 6px 15px; font-size: 0.85rem;" type="submit">Reservar</button>
+                              </form>
+
+                            </li>
+                          <% }) %>
+                        <% }else{ %>
+                          <li class="list-group-item" style="color:#999; justify-content:center;">No hay cupos disponibles.</li>
+                        <% } %>
+                      </ul>
+                    </div>
+                  <% } %>
+                </div>
+              </div>
+            </div>
+
+            <div id="chat-modal-<%= s.psychologist._id %>" class="vl-side-modal" aria-hidden="true">
+              <div class="vl-side-dialog" role="dialog" aria-modal="true">
+                <div class="vl-side-header">
+                  <span>Chat con <%= s.psychologist.name %></span>
+                  <a href="#" style="color:white; text-decoration:none; font-size:1.5rem;">×</a>
+                </div>
+                <div class="vl-side-body">
+                  <div class="vl-chat-thread" id="chat-thread-<%= s.psychologist._id %>"></div>
+                  <% if(locals.user){ %>
+                    <form class="vl-chat-form" action="/psych/chats/start" method="POST">
+                      <input type="hidden" name="psychId" value="<%= s.psychologist._id %>">
+                      <input type="hidden" name="returnUrl" value="/psych/publications?psych=<%= s.psychologist._id %>#chat-modal-<%= s.psychologist._id %>">
+                      <div style="display:flex; gap:5px;">
+                        <input type="text" class="vl-chat-input" name="text" placeholder="Escribe..." style="margin-bottom:0;">
+                        <button type="submit" class="vl-btn vl-btn-primary" style="padding: 0 15px;">➤</button>
+                      </div>
+                    </form>
+                  <% }else{ %>
+                    <div style="text-align:center; margin-top:10px;">
+                      <small>Inicia sesión para chatear.</small>
+                      <a href="/auth/login" class="vl-btn vl-btn-outline" style="margin-top:5px; display:inline-block;">Login</a>
+                    </div>
+                  <% } %>
+                </div>
+              </div>
+            </div>
+
+          <% } %> <% }) %>
+      <% } else { %>
+        <div class="vl-empty">No hay publicaciones disponibles en este momento.</div>
+      <% } %>
+    </div>
+  </div>
+</section>
+
+<% if (locals.user) { %>
+<script>
+  // Scripts del Chat (SSE) - Mantenidos igual
+  (function(){
+    function currentPsychIdFromHash(){
+      var h = window.location.hash || ''
+      var m = h.match(/#chat-modal-([A-Za-z0-9]+)/)
+      return m ? m[1] : null
+    }
+    var es = null
+    var userId = '<%= locals.user._id %>'
+    var activeChatId = null
+
+    function connectSSE(){
+      try { es = new EventSource('/api/user-updates/' + userId) } catch(e) { es = null }
+      if (!es) return
+      es.onmessage = function(ev){
+        try {
+          var data = JSON.parse(ev.data)
+          if (data && data.type === 'chat_message' && activeChatId && String(data.chatId) === String(activeChatId)) {
+            var pid = currentPsychIdFromHash()
+            var container = pid ? document.getElementById('chat-thread-' + pid) : null
+            if (container) {
+              var isOwn = String(data.senderId) === String(userId)
+              var wrap = document.createElement('div')
+              wrap.style.marginBottom = '10px'
+              wrap.style.display = 'flex'
+              wrap.style.justifyContent = isOwn ? 'flex-end' : 'flex-start'
+              
+              var bubble = document.createElement('div')
+              bubble.style.maxWidth = '75%'
+              bubble.style.padding = '8px 12px'
+              bubble.style.borderRadius = '12px'
+              bubble.style.background = isOwn ? '#f3e5f5' : '#eee'
+              
+              var text = document.createElement('div')
+              text.style.fontSize = '0.9rem'
+              text.textContent = data.text
+              
+              bubble.appendChild(text)
+              wrap.appendChild(bubble)
+              container.appendChild(wrap)
+              container.scrollTop = container.scrollHeight
+            }
+          }
+        } catch(e){}
+      }
+    }
+
+    async function loadThread(){
+      var pid = currentPsychIdFromHash()
+      if (!pid) return
+      try {
+        var res = await fetch('/psych/chats/thread?psych=' + pid, { credentials: 'same-origin' })
+        if (!res.ok) return
+        var data = await res.json()
+        activeChatId = data.chatId
+        var container = document.getElementById('chat-thread-' + pid)
+        if (container) {
+          container.innerHTML = ''
+          (data.messages || []).forEach(function(m){
+            var isOwn = m.sender && m.sender._id && String(m.sender._id) === String(userId)
+            var wrap = document.createElement('div')
+            wrap.style.marginBottom = '10px'
+            wrap.style.display = 'flex'
+            wrap.style.justifyContent = isOwn ? 'flex-end' : 'flex-start'
+            
+            var bubble = document.createElement('div')
+            bubble.style.maxWidth = '75%'
+            bubble.style.padding = '8px 12px'
+            bubble.style.borderRadius = '12px'
+            bubble.style.background = isOwn ? '#f3e5f5' : '#eee'
+            
+            var text = document.createElement('div')
+            text.style.fontSize = '0.9rem'
+            text.textContent = m.text
+            
+            bubble.appendChild(text)
+            wrap.appendChild(bubble)
+            container.appendChild(wrap)
+          })
+          container.scrollTop = container.scrollHeight
+        }
+      } catch(e) {}
+    }
+    document.addEventListener('DOMContentLoaded', function(){ connectSSE(); loadThread() })
+    window.addEventListener('hashchange', function(){ loadThread() })
+  })()
+</script>
+
+<script>
+  // SCRIPT CRITICO: Arregla las URLs de retorno para formularios de CHAT y RESERVA
+  (function(){
+    function ensureAbsoluteReturnUrl(){
+      // Selecciona tanto forms de chat como los nuevos de reserva
+      var forms = document.querySelectorAll('form.vl-chat-form, form.vl-booking-form')
+      forms.forEach(function(form){
+        var ru = form.querySelector('input[name="returnUrl"]')
+        if (ru && ru.value && ru.value.indexOf('http') !== 0) {
+          if (ru.value.charAt(0) !== '/') ru.value = '/' + ru.value
+          ru.value = window.location.origin + ru.value
+          console.log("URL de retorno corregida:", ru.value) // Debug para consola
+        }
+      })
+    }
+    document.addEventListener('DOMContentLoaded', ensureAbsoluteReturnUrl)
+    // Ejecutar también al cargar la ventana por si acaso
+    window.onload = ensureAbsoluteReturnUrl
+  })()
+</script>
+<% } %>

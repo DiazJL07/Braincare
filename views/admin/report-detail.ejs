@@ -1,0 +1,348 @@
+<link rel="stylesheet" href="/css/report-content.css">
+<div class="admin-dashboard-wrapper">
+  <header class="dashboard-page-header">
+    <h1 class="page-headline">
+      <i class="fas fa-flag"></i>
+      Detalles del Reporte
+    </h1>
+    <a href="/admin/reports" class="nav-return-link">
+      <i class="fas fa-arrow-left"></i> Volver a Lista
+    </a>
+  </header>
+
+  <div id="dashboardAlertContainer"></div>
+
+  <div class="admin-split-layout">
+
+    <div class="layout-evidence-column">
+      
+      <section class="admin-panel">
+        <div class="panel-top-bar">
+          <h2 class="panel-title"><i class="fas fa-info-circle"></i> Metadatos del Reporte</h2>
+        </div>
+        <div class="panel-interior">
+          <div class="info-grid-row">
+            <div class="data-point-group">
+              <span class="data-label">Fecha de Creación</span>
+              <span class="data-value"><%= new Date(report.createdAt).toLocaleString('es-ES') %></span>
+            </div>
+            <div class="data-point-group">
+              <span class="data-label">Estado Actual</span>
+              <% 
+                let statusClass = 'pill-neutral';
+                let statusText = report.status;
+                let statusIcon = 'fa-question';
+                if (report.status === 'pending') { statusClass = 'pill-warning'; statusText = 'Pendiente'; statusIcon = 'fa-clock'; } 
+                else if (report.status === 'reviewed') { statusClass = 'pill-info'; statusText = 'Revisado'; statusIcon = 'fa-eye'; }
+                else if (report.status === 'resolved') { statusClass = 'pill-success'; statusText = 'Resuelto'; statusIcon = 'fa-check'; }
+                else if (report.status === 'dismissed') { statusClass = 'pill-danger'; statusText = 'Descartado'; statusIcon = 'fa-times'; }
+              %>
+              <div>
+                <span class="status-pill <%= statusClass %>">
+                  <i class="fas <%= statusIcon %>"></i> <%= statusText %>
+                </span>
+              </div>
+            </div>
+            <div class="data-point-group">
+              <span class="data-label">Tipo & Razón</span>
+              <div style="display:flex; gap:5px;">
+                 <span class="status-pill <%= report.contentType === 'foro' ? 'pill-info' : 'pill-neutral' %>">
+                   <%= report.contentType === 'foro' ? 'Foro' : 'Comentario' %>
+                 </span>
+                 <span class="status-pill pill-warning"><%= report.reason %></span>
+              </div>
+            </div>
+          </div>
+
+          <% if (report.description) { %>
+            <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid #eee;">
+              <span class="data-label">Motivo descrito por el denunciante:</span>
+              <p style="margin-top: 0.5rem; font-style: italic;">"<%= report.description %>"</p>
+              <div style="font-size: 0.85rem; margin-top: 0.5rem;">
+                 <strong>Reportado por:</strong> 
+                 <% if (report.reporter) { %>
+                    <%= report.reporter.name %> (<%= report.reporter.email %>)
+                 <% } else { %>
+                    <span style="color:#991b1b;">Usuario eliminado</span>
+                 <% } %>
+              </div>
+            </div>
+          <% } %>
+        </div>
+      </section>
+
+      <section class="admin-panel">
+        <div class="panel-top-bar">
+          <h2 class="panel-title"><i class="fas fa-file-alt"></i> Contenido Reportado (Evidencia)</h2>
+        </div>
+        <div class="panel-interior">
+          <% if (reportedContent) { %>
+            
+            <% if (report.contentType === 'foro') { %>
+              <h3 style="font-size:1.2rem; margin:0 0 1rem 0;"><%= reportedContent.title %></h3>
+              <div class="post-meta-tags">
+                 <span class="meta-tag"><i class="fas fa-tag"></i> <%= reportedContent.topic %></span>
+                 <span class="meta-tag"><i class="fas fa-user"></i> <%= reportedContent.author.name %></span>
+                 <span class="meta-tag"><i class="fas fa-calendar"></i> <%= new Date(reportedContent.publicationDate).toLocaleDateString('es-ES') %></span>
+                 <a href="/foro/<%= reportedContent._id %>" target="_blank" class="link-external">
+                    <i class="fas fa-external-link-alt"></i> Ver publicación original
+                 </a>
+              </div>
+              <span class="data-label">Contenido:</span>
+              <div class="evidence-preview-box">
+                <%- reportedContent.content.substring(0, 500) %>
+                <% if (reportedContent.content.length > 500) { %>
+                  <span style="color:#6b7280;">... (contenido truncado)</span>
+                <% } %>
+              </div>
+
+            <% } else { %>
+              <div style="display:flex; justify-content:space-between; margin-bottom:1rem;">
+                 <div>
+                   <strong>Autor:</strong> <%= reportedContent.author.name %><br>
+                   <small style="color:#6b7280;"><%= new Date(reportedContent.createdAt).toLocaleDateString('es-ES') %></small>
+                 </div>
+                 <a href="/foro/<%= reportedContent.post %>" target="_blank" class="link-external">
+                    <i class="fas fa-external-link-alt"></i> Ver contexto
+                 </a>
+              </div>
+              <span class="data-label">Comentario:</span>
+              <div class="evidence-preview-box">
+                 <%= reportedContent.content %>
+              </div>
+            <% } %>
+
+          <% } else { %>
+            <div style="text-align:center; padding: 2rem; color:#991b1b;">
+               <i class="fas fa-exclamation-triangle fa-2x"></i>
+               <p>El contenido original ha sido eliminado.</p>
+            </div>
+          <% } %>
+        </div>
+      </section>
+
+      <% if (report.reviewedBy || report.adminAction) { %>
+        <section class="admin-panel">
+           <div class="panel-top-bar" style="background-color: #ecfdf5;">
+              <h2 class="panel-title" style="color: #065f46;"><i class="fas fa-check-circle"></i> Resolución Previa</h2>
+           </div>
+           <div class="panel-interior">
+              <div class="info-grid-row">
+                 <% if (report.reviewedBy) { %>
+                   <div class="data-point-group">
+                     <span class="data-label">Moderador</span>
+                     <span class="data-value"><%= report.reviewedBy.name %></span>
+                   </div>
+                 <% } %>
+                 <% if (report.adminAction) { %>
+                   <div class="data-point-group">
+                     <span class="data-label">Acción Tomada</span>
+                     <span class="status-pill pill-info"><%= report.adminAction %></span>
+                   </div>
+                 <% } %>
+              </div>
+              <% if (report.adminNotes) { %>
+                <div style="margin-top:1rem;">
+                   <span class="data-label">Notas del Staff:</span>
+                   <p style="background:#f3f4f6; padding:0.5rem; border-radius:4px;"><%= report.adminNotes %></p>
+                </div>
+              <% } %>
+           </div>
+        </section>
+      <% } %>
+
+    </div>
+
+    <div class="layout-action-column">
+      
+      <section class="admin-panel">
+        <div class="panel-top-bar">
+          <h2 class="panel-title"><i class="fas fa-user-shield"></i> Usuario Reportado</h2>
+        </div>
+        <div class="panel-interior">
+          <% if (report.reportedUser) { %>
+            <div style="text-align:center; margin-bottom:1.5rem;">
+               <div style="font-size:1.2rem; font-weight:bold;"><%= report.reportedUser.name %></div>
+               <div style="color:#6b7280; font-size:0.9rem;"><%= report.reportedUser.email %></div>
+            </div>
+            
+            <div style="display:flex; justify-content:space-between; border-top:1px solid #eee; padding-top:1rem;">
+               <div class="data-point-group">
+                 <span class="data-label">Reportes</span>
+                 <span class="status-pill <%= report.reportedUser.reportsReceived > 2 ? 'pill-danger' : 'pill-info' %>">
+                    <%= report.reportedUser.reportsReceived %> Total
+                 </span>
+               </div>
+               <div class="data-point-group" style="text-align:right;">
+                 <span class="data-label">Estado Cuenta</span>
+                 <% if (report.reportedUser.isBanned) { %>
+                    <span class="status-pill pill-danger">BANEADO</span>
+                 <% } else { %>
+                    <span class="status-pill pill-success">ACTIVO</span>
+                 <% } %>
+               </div>
+            </div>
+          <% } else { %>
+            <p style="color:#991b1b;">Usuario no encontrado en base de datos.</p>
+          <% } %>
+        </div>
+      </section>
+
+      <% if (report.status === 'pending') { %>
+        <section class="admin-panel" style="border-top: 4px solid #2563eb;">
+          <div class="panel-top-bar">
+            <h2 class="panel-title"><i class="fas fa-gavel"></i> Procesar Reporte</h2>
+          </div>
+          <div class="panel-interior">
+            
+            <form id="processReportForm" class="decision-form">
+              
+              <div class="form-field-block">
+                <label for="action" class="field-label">Decisión</label>
+                <select name="action" id="action" class="input-control-select" required>
+                  <option value="">Seleccionar</option>
+                  <option value="approved">Aprobar (Sancionar)</option>
+                  <option value="rejected">Rechazar (Descartar)</option>
+                </select>
+              </div>
+
+              <div id="sanctionDiv" style="display: none;" class="decision-form">
+                
+                <div class="form-field-block">
+                  <label for="sanction" class="field-label">Tipo de Sanción</label>
+                  <select name="sanction" id="sanction" class="input-control-select">
+                    <option value="none">Solo advertencia visual</option>
+                    <option value="warning">Advertencia Formal (Email)</option>
+                    <option value="temp_ban">Baneo Temporal</option>
+                    <option value="permanent_ban">Baneo Permanente</option>
+                  </select>
+                </div>
+
+                <div class="form-field-block" id="warningMessageDiv" style="display: none;">
+                  <label for="warningMessage" class="field-label">Mensaje al Usuario *</label>
+                  <textarea name="warningMessage" id="warningMessage" class="input-control-text" rows="3" placeholder="Explica la razón de la sanción..."></textarea>
+                  <span class="helper-text">Se enviará por correo electrónico.</span>
+                </div>
+
+                <div class="form-field-block" id="banDurationDiv" style="display: none;">
+                  <label for="banDuration" class="field-label">Duración (días)</label>
+                  <input type="number" name="banDuration" id="banDuration" class="input-control-number" min="1" max="365" value="7">
+                </div>
+
+              </div>
+
+              <div class="form-field-block">
+                <label for="adminNotes" class="field-label">Notas Internas</label>
+                <textarea name="adminNotes" id="adminNotes" class="input-control-text" rows="2" placeholder="Justificación para otros admins..."></textarea>
+              </div>
+
+              <button type="submit" class="primary-action-button">
+                <i class="fas fa-save"></i> Confirmar Decisión
+              </button>
+
+            </form>
+          </div>
+        </section>
+      <% } %>
+
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const actionSelect = document.getElementById('action');
+  const sanctionDiv = document.getElementById('sanctionDiv');
+  const sanctionSelect = document.getElementById('sanction');
+  const warningMessageDiv = document.getElementById('warningMessageDiv');
+  const banDurationDiv = document.getElementById('banDurationDiv');
+  const processForm = document.getElementById('processReportForm');
+
+  // Lógica de visualización de campos (Igual que antes, pero sin clases Bootstrap)
+  if (actionSelect) {
+    actionSelect.addEventListener('change', function() {
+      if (this.value === 'approved') {
+        sanctionDiv.style.display = 'flex';
+        sanctionDiv.style.flexDirection = 'column';
+        sanctionDiv.style.gap = '1.25rem';
+      } else {
+        sanctionDiv.style.display = 'none';
+        warningMessageDiv.style.display = 'none';
+        banDurationDiv.style.display = 'none';
+        document.getElementById('warningMessage').required = false;
+        document.getElementById('banDuration').required = false;
+      }
+    });
+  }
+
+  if (sanctionSelect) {
+    sanctionSelect.addEventListener('change', function() {
+      warningMessageDiv.style.display = 'none';
+      banDurationDiv.style.display = 'none';
+      document.getElementById('warningMessage').required = false;
+      document.getElementById('banDuration').required = false;
+      
+      if (this.value === 'warning') {
+        warningMessageDiv.style.display = 'flex';
+        document.getElementById('warningMessage').required = true;
+      } else if (this.value === 'temp_ban') {
+        banDurationDiv.style.display = 'flex';
+        document.getElementById('banDuration').required = true;
+      }
+    });
+  }
+
+  // Envío del formulario con nuevas Alertas
+  if (processForm) {
+    processForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const formData = new FormData(this);
+      const data = Object.fromEntries(formData);
+      const alertContainer = document.getElementById('dashboardAlertContainer');
+      
+      // Limpiar alertas previas
+      alertContainer.innerHTML = '';
+
+      try {
+        const response = await fetch(`/admin/reports/<%= report._id %>/process`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        
+        const result = await response.json();
+        
+        const alertDiv = document.createElement('div');
+        
+        if (response.ok) {
+          alertDiv.className = 'system-notification notify-success';
+          alertDiv.innerHTML = `
+            <span><i class="fas fa-check-circle"></i> Reporte procesado exitosamente.</span>
+          `;
+          alertContainer.appendChild(alertDiv);
+          
+          setTimeout(() => {
+            window.location.reload();
+          }, 1500);
+        } else {
+          alertDiv.className = 'system-notification notify-error';
+          alertDiv.innerHTML = `
+            <span><i class="fas fa-times-circle"></i> ${result.message}</span>
+            <button type="button" onclick="this.parentElement.remove()" style="background:none; border:none; cursor:pointer;">×</button>
+          `;
+          alertContainer.appendChild(alertDiv);
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        const alertDiv = document.createElement('div');
+        alertDiv.className = 'system-notification notify-error';
+        alertDiv.innerHTML = `<span>Error de conexión al procesar</span>`;
+        alertContainer.appendChild(alertDiv);
+      }
+    });
+  }
+});
+</script>
+
+<%- include('../partials/footer') %>

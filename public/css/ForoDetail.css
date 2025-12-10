@@ -1,0 +1,304 @@
+:root {
+    --nx-primary: #4f46e5;       /* Índigo moderno */
+    --nx-danger: #ef4444;        /* Rojo suave */
+    --nx-surface: #ffffff;       /* Blanco */
+    --nx-bg: #f9fafb;            /* Gris fondo */
+    --nx-text-main: #111827;     
+    --nx-text-header: #6b7280;   /* Gris oscuro para encabezados */
+    --nx-text-sec: #6b7280;      /* Gris texto */
+    --nx-border: #e5e7eb;        /* Borde sutil */
+    --nx-radius: 12px;           /* Redondeo */
+}
+
+body {
+    margin: 0;
+    padding-top: 0;
+}
+
+/* 1. Layout Principal (Reemplaza container/row/col) */
+.nx-core-wrapper {
+  
+    min-height: 100vh;
+    padding: 40px 20px;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    color: var(--nx-text-main);
+}
+
+.nx-central-column {
+    max-width: 800px; /* Ancho de lectura ideal */
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+/* 2. Navegación y Breadcrumbs */
+.nx-nav-header {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.nx-btn-ghost-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--nx-text-sec);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.9rem;
+    transition: color 0.2s;
+    background: none;
+    border: none;
+    cursor: pointer;
+    width: fit-content;
+}
+.nx-btn-ghost-back:hover { color: var(--nx-primary); }
+
+.nx-breadcrumbs-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    gap: 8px;
+    font-size: 0.85rem;
+    color: var(--nx-text-sec);
+}
+.nx-breadcrumbs-list a { color: var(--nx-text-sec); text-decoration: none; }
+.nx-breadcrumbs-list a:hover { text-decoration: underline; }
+.nx-crumb-active { color: var(--nx-text-main); font-weight: 600; }
+
+/* 3. Tarjeta del Post Principal */
+.nx-article-card {
+    background: var(--nx-surface);
+    border-radius: var(--nx-radius);
+    box-shadow: 0 4px 20px -5px rgba(0,0,0,0.05); /* Sombra sutil */
+    overflow: hidden;
+    position: relative;
+}
+
+.nx-hero-img-container {
+    width: 100%;
+    height: 350px;
+    position: relative;
+}
+.nx-hero-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+
+.nx-article-body {
+    padding: 40px; /* Espaciado generoso */
+}
+
+/* Títulos y Metadatos */
+.nx-topic-pill {
+    display: inline-block;
+    background-color: #e0e7ff;
+    color: var(--nx-primary);
+    padding: 4px 12px;
+    border-radius: 50px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 15px;
+}
+
+.nx-headline {
+    font-size: 1.875rem;
+    font-weight: 700;
+    margin: 0 0 10px 0;
+    color: #111827;
+}
+
+.nx-meta-row {
+    display: flex;
+    gap: 20px;
+    font-size: 0.85rem;
+    color: var(--nx-text-sec);
+    padding-bottom: 25px;
+    border-bottom: 1px solid var(--nx-border);
+    margin-bottom: 25px;
+}
+.nx-meta-item { 
+display: flex; 
+align-items: center; 
+gap: 6px; }
+.nx-stat-value { 
+font-weight: 400; 
+color: var(--nx-text-header); 
+}
+
+/* Contenido del Post */
+.nx-content-renderer {
+    font-size: 1rem;
+    line-height: 1.8;
+    color: #374151;
+    margin-bottom: 40px;
+}
+.nx-content-renderer span {
+    font-size: inherit !important;
+    color: inherit !important;
+    font-family: inherit !important;
+}
+
+.nx-comment-sidebar{
+    display: flex;
+    height: 20%;
+}
+.nx-content-renderer img { max-width: 100%; border-radius: 8px; }
+
+/* Botones de Acción (Like/Report/Delete) */
+.nx-action-dock {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.nx-btn-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+    text-decoration: none;
+}
+
+/* Estados de botones personalizados */
+.nx-btn-like-active { 
+    background-color: #fef2f2; 
+    color: var(--nx-danger); 
+    border-color: #fecaca;
+}
+.nx-btn-like-outline { 
+    background-color: white; 
+    border: 1px solid var(--nx-border); 
+    color: var(--nx-text-sec);
+}
+.nx-btn-like-outline:hover { border-color: var(--nx-danger); color: var(--nx-danger); }
+
+.nx-btn-warn { background: #fffbeb; color: #d97706; border: 1px solid #fde68a; }
+.nx-btn-destruct { background: white; color: var(--nx-danger); border: 1px solid var(--nx-border); }
+
+/* 4. Sección de Comentarios */
+.nx-comments-wrapper {
+    margin-top: 40px;
+   
+}
+
+.nx-comments-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 25px;
+    border-bottom: 2px solid var(--nx-border);
+    padding-bottom: 10px;
+}
+.nx-sec-title { font-size: 1.25rem; font-weight: 700; margin: 0; }
+.nx-count-bubble { 
+    background: var(--nx-text-main); color: white; 
+    padding: 2px 8px; border-radius: 10px; font-size: 0.8rem; margin-left: 8px; vertical-align: middle;
+}
+
+/* Caja de escribir comentario */
+.nx-compose-box {
+    background: white;
+    padding: 20px;
+    border-radius: var(--nx-radius);
+    border: 1px solid var(--nx-border);
+    margin-bottom: 30px;
+}
+.nx-user-mini-header { display: flex; align-items: center; gap: 12px; margin-bottom: 15px; }
+.nx-avatar-circle {
+    width: 40px; height: 40px; border-radius: 50%;
+    object-fit: cover; border: 2px solid white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.nx-avatar-placeholder {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: linear-gradient(135deg, #6366f1, #a855f7);
+    color: white; display: flex; align-items: center; justify-content: center;
+    font-weight: bold;
+}
+.nx-avatar-deleted { background: #9ca3af !important; }
+.nx-textarea-clean {
+    width: 100%; border: 1px solid var(--nx-border);
+    border-radius: 8px; padding: 12px;
+    font-family: inherit; resize: vertical; outline: none;
+    transition: border-color 0.2s;
+    background: #f9fafb;
+}
+.nx-textarea-clean:focus { border-color: var(--nx-primary); background: white; }
+
+.nx-btn-primary-send {
+    background: var(--nx-primary); color: white;
+    border: none; padding: 10px 20px; border-radius: 8px;
+    font-weight: 600; margin-top: 10px; cursor: pointer;
+    display: inline-flex; align-items: center; gap: 8px;
+}
+
+/* Lista de Comentarios */
+.nx-comment-node {
+    gap: 16px; margin-bottom: 24px;
+    animation: fadeIn 0.3s ease;
+}
+.nx-comment-body-group { flex: 1; }
+
+.nx-comment-bubble {
+    background: rgb(255, 255, 255);
+    padding: 10px;
+    border-radius: 5px;
+    
+}
+.nx-comment-meta {
+    display: flex; justify-content: space-between; margin-bottom: 8px;
+    font-size: 0.85rem;
+}
+.nx-author-name { font-weight: 700; color: var(--nx-text-main); text-decoration: none; }
+.nx-date-txt { color: var(--nx-text-sec); margin-left: 8px; }
+
+.nx-comment-txt { font-size: 0.95rem; line-height: 1.5; color: #4b5563; }
+
+.nx-comment-toolbar {
+    display: flex; gap: 15px; margin-top: 8px;
+    font-size: 0.8rem; font-weight: 600;
+}
+.nx-tool-btn { 
+    background: none; border: none; cursor: pointer; 
+    color: var(--nx-text-sec); display: flex; align-items: center; gap: 4px; padding: 0;
+}
+.nx-tool-btn:hover { color: var(--nx-primary); }
+.nx-tool-btn.liked { color: var(--nx-danger); }
+
+/* Respuestas anidadas */
+.nx-replies-thread {
+    margin-top: 15px;
+    margin-left: 20px;
+    padding-left: 15px;
+    border-left: 2px solid var(--nx-border);
+}
+
+/* Modales personalizados (Override visual) */
+.nx-modal-content {
+    border: none;
+    border-radius: 16px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    overflow: hidden;
+}
+.nx-modal-header {
+    background: var(--nx-bg);
+    padding: 20px;
+    border-bottom: 1px solid var(--nx-border);
+}
+.nx-modal-body { padding: 30px; text-align: center; }
+
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }

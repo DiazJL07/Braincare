@@ -1,0 +1,16 @@
+<div class="container">
+  <h2>Pagos y Finanzas</h2>
+  <table class="table">
+    <thead><tr><th>Fecha</th><th>Precio</th><th>Comisión</th><th>Neto</th></tr></thead>
+    <tbody>
+      <% sessions.forEach(s => { %>
+        <tr>
+          <td><%= new Date(s.createdAt).toLocaleString('es-ES') %></td>
+          <td>$ <%= (s.price || 0).toFixed(2) %></td>
+          <td>$ <%= (s.commissionAmount || 0).toFixed(2) %> (<%= (s.commissionPercent || 0) %>%)</td>
+          <td>$ <%= (s.netAmount || 0).toFixed(2) %></td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>

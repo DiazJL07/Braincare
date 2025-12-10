@@ -1,0 +1,105 @@
+<link rel="stylesheet" href="/css/auth-forms.css">
+
+<div class="auth-container">
+  <div class="auth-card">
+    <div class="auth-card-body">
+      <h2 class="auth-title">Crear tu perfil</h2>
+      <% if (typeof error !== 'undefined' && typeof error === 'string' && error.trim() !== '') { %>
+        <div class="auth-alert"><%= error %></div>
+      <% } else if (Array.isArray(error_msg) && error_msg.length > 0) { %>
+        <div class="auth-alert"><%= error_msg.join('<br>') %></div>
+      <% } %>
+      <% if (Array.isArray(success_msg) && success_msg.length > 0) { %>
+        <div class="auth-alert" style="background-color:#d4edda;border-color:#c3e6cb;color:#155724;"><%= success_msg.join('<br>') %></div>
+      <% } %>
+      
+      
+      <form action="/auth/register" method="POST" id="registerForm" 
+            data-auto-save="true" data-form-id="register-form">
+        <div class="auth-form-group">
+          
+          <input type="text" class="auth-input" id="name" name="name"  placeholder="Nombre" value="<%= typeof name !== 'undefined' ? name : '' %>" required 
+                 minlength="2" maxlength="100" data-validate="true">
+        </div>
+        
+        <div class="auth-form-group">
+       
+          <input type="email" class="auth-input" id="email" name="email" placeholder="Correo electrónico" value="<%= typeof email !== 'undefined' ? email : '' %>" required 
+                 data-validate="true" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$">
+        </div>
+        
+        <div class="auth-form-group">
+          <div class="password-input-container">
+            <input type="password" class="auth-input" id="password" placeholder="Contraseña" name="password" required minlength="8" maxlength="50" data-validate="true">
+            <span class="password-toggle" onclick="togglePassword('password')">
+              <svg class="eye-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+            </span>
+          </div>
+          <div class="auth-form-text">La contraseña debe tener al menos 8 caracteres.</div>
+        </div>
+        
+        <div class="auth-form-group">
+          <div class="password-input-container">
+            <input type="password" class="auth-input" id="confirmPassword" placeholder="Confirmar contraseña" name="confirmPassword" required minlength="8" maxlength="50" data-validate="true" data-match="password">
+            <span class="password-toggle" onclick="togglePassword('confirmPassword')">
+              <svg class="eye-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+            </span>
+          </div>
+        </div>
+        
+        <div class="auth-button-container">
+          <button type="submit" class="auth-button">Registrarse</button>
+        </div>
+      </form>
+      
+      <div class="auth-links">
+        <p>¿Ya tienes una cuenta? <a href="/auth/login">Iniciar sesión</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Función para mostrar/ocultar contraseña
+  function togglePassword(inputId) {
+    const input = document.getElementById(inputId);
+    const toggle = input.parentElement.querySelector('.password-toggle');
+    const eyeIcon = toggle.querySelector('.eye-icon');
+    
+    if (input.type === 'password') {
+      input.type = 'text';
+      eyeIcon.innerHTML = `
+        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+        <line x1="1" y1="1" x2="23" y2="23"></line>
+      `;
+    } else {
+      input.type = 'password';
+      eyeIcon.innerHTML = `
+        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+        <circle cx="12" cy="12" r="3"></circle>
+      `;
+    }
+  }
+
+  // Validación de contraseñas
+  document.querySelector('form').addEventListener('submit', function(e) {
+    const password = document.getElementById('password').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+    
+    if (password !== confirmPassword) {
+      e.preventDefault();
+      alert('Las contraseñas no coinciden');
+    }
+  });
+</script>
+
+  <!-- Tu JS primero, para que el callback global exista antes de cargar el script de Google -->
+  <script src="/js/tradux.js"></script>
+  <!-- Script oficial de Google (callback definido en translate.js) -->
+  <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>

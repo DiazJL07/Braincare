@@ -1,0 +1,329 @@
+<link rel="stylesheet" href="/css/dashboard-general.css">
+<style>
+  body { padding-top: 5%; }
+
+  /* --- Estilos Específicos para el Grid de Servicios --- */
+  .services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .service-card {
+    display: flex; flex-direction: column; height: 100%;
+    position: relative; transition: transform 0.2s, box-shadow 0.2s;
+    background: white; /* Asegurar fondo blanco */
+  }
+  .service-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--gen-shadow-md);
+    border-color: var(--gen-accent);
+  }
+
+  /* Header Tarjeta */
+  .service-header {
+    padding: 1.5rem;
+    border-bottom: 1px dashed var(--gen-border-color);
+    display: flex; justify-content: space-between; align-items: flex-start;
+    background: #fcfcfc;
+  }
+  .service-title {
+    font-size: 1.15rem; font-weight: 700; color: var(--gen-text-primary);
+    margin-bottom: 0.25rem;
+  }
+  .service-price {
+    font-size: 1.25rem; font-weight: 800; color: var(--gen-accent);
+    white-space: nowrap; background: #eff6ff; padding: 0.2rem 0.6rem; border-radius: 6px;
+  }
+  .service-duration {
+    font-size: 0.85rem; color: var(--gen-text-secondary); display: flex; align-items: center; gap: 0.4rem;
+  }
+
+  /* Cuerpo Tarjeta */
+  .service-body {
+    padding: 1.5rem; flex: 1; display: flex; flex-direction: column; gap: 1rem;
+  }
+  .service-desc {
+    font-size: 0.95rem; color: var(--gen-text-body); line-height: 1.6;
+    flex: 1;
+  }
+  .service-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .service-tag {
+    font-size: 0.75rem; background: #f1f5f9; color: var(--gen-text-secondary);
+    padding: 0.3rem 0.8rem; border-radius: 20px; font-weight: 600;
+  }
+
+  /* Footer Tarjeta */
+  .service-footer {
+    padding: 1rem 1.5rem; background: white;
+    border-top: 1px solid var(--gen-border-color);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .service-date { font-size: 0.75rem; color: #94a3b8; }
+
+  /* --- CORRECCIONES DEL MODAL --- */
+  
+  /* 1. Hacemos el modal un poco más ancho para este formulario */
+  #serviceModal .gen-modal-card {
+    max-width: 700px;
+    width: 95%;
+  }
+
+  /* 2. Grid para campos en línea (Precio/Duración, Fechas) */
+  .form-row-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Dos columnas iguales */
+    gap: 1.5rem;
+    margin-bottom: 1.2rem;
+  }
+
+  /* 3. Contenedor estilizado para Radios y Checkboxes */
+  .options-container {
+    background: #f8fafc;
+    border: 1px solid var(--gen-border-color);
+    border-radius: var(--gen-radius-sm);
+    padding: 1rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); /* Grid responsive de opciones */
+    gap: 0.8rem;
+  }
+
+  /* Item de opción individual */
+  .option-item {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.9rem;
+    color: var(--gen-text-body);
+    cursor: pointer;
+    user-select: none;
+  }
+  
+  /* Reset y estilo de los inputs radio/check */
+  .option-item input[type="radio"],
+  .option-item input[type="checkbox"] {
+    accent-color: var(--gen-accent);
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    cursor: pointer;
+  }
+
+  /* Responsive para el modal en móviles */
+  @media (max-width: 600px) {
+    .form-row-grid { grid-template-columns: 1fr; gap: 1rem; }
+    .options-container { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+<div class="gen-dash-wrapper animate-fade-in">
+
+  <!-- 1. Header -->
+  <div class="gen-header-row">
+    <div>
+      <h1 class="gen-page-title">
+        <% if (typeof user !== 'undefined' && user && (user.role === 'psychologist' || user.role === 'admin')) { %>
+          Gestión de Servicios Profesionales
+        <% } else { %>
+          Servicios Disponibles
+        <% } %>
+      </h1>
+      <p class="gen-page-subtitle">
+        <% if (typeof user !== 'undefined' && user && (user.role === 'psychologist' || user.role === 'admin')) { %>
+          Configura tus tarifas y horarios.
+        <% } else { %>
+          Explora las opciones de terapia.
+        <% } %>
+      </p>
+    </div>
+    <div class="gen-header-actions">
+      <% if (typeof user !== 'undefined' && user && (user.role === 'psychologist' || user.role === 'admin')) { %>
+        <button class="gen-btn gen-btn-primary" onclick="openServiceModal()">
+          <i class="fas fa-plus"></i> Crear Nuevo Servicio
+        </button>
+      <% } %>
+    </div>
+  </div>
+
+  <!-- 2. Lista de Servicios -->
+  <% if (services && services.length) { %>
+    <div class="services-grid">
+      <% services.forEach(s => { %>
+        <div class="gen-panel service-card">
+          <div class="service-header">
+            <div>
+              <div class="service-title"><%= s.serviceType %></div>
+              <div class="service-duration">
+                <i class="far fa-clock"></i> <%= s.durationMinutes %> min • 
+                <%= s.sessionKind === 'couple' ? 'Pareja' : (s.sessionKind === 'group' ? 'Grupal' : s.sessionKind === 'family' ? 'Familiar' : 'Individual') %>
+              </div>
+            </div>
+            <div class="service-price">$<%= (s.price || 0).toFixed(2) %></div>
+          </div>
+
+          <div class="service-body">
+            <% if (s.specialty) { %>
+              <div style="font-size:0.85rem; color:var(--gen-accent); font-weight:600;">
+                <i class="fas fa-certificate"></i> <%= s.specialty.name %>
+              </div>
+            <% } %>
+            
+            <div class="service-desc">
+              <%= s.description || 'Sin descripción detallada.' %>
+            </div>
+
+            <div class="service-tags">
+              <% (s.problems || []).forEach(p => { %>
+                <span class="service-tag"><%= p %></span>
+              <% }) %>
+              <% if (s.problemsCustom) { %>
+                <span class="service-tag" style="background:#e0f2fe; color:#0369a1;"><%= s.problemsCustom %></span>
+              <% } %>
+            </div>
+          </div>
+
+          <div class="service-footer">
+            <span class="service-date">Creado: <%= new Date(s.createdAt).toLocaleDateString() %></span>
+            
+            <% if (typeof user !== 'undefined' && user && (user.role === 'psychologist' || user.role === 'admin')) { %>
+              <div class="gen-action-group">
+                <% if (s.status === 'active') { %>
+                  <form action="/psych/services/<%= s._id %>/complete" method="POST" style="display:inline;">
+                    <button class="gen-btn gen-btn-ghost" title="Marcar como culminado">
+                      <i class="fas fa-check-circle text-success"></i>
+                    </button>
+                  </form>
+                <% } else { %>
+                  <form action="/psych/services/<%= s._id %>/delete" method="POST" style="display:inline;">
+                    <button class="gen-btn gen-btn-ghost" title="Eliminar" onclick="return confirm('¿Eliminar servicio?')">
+                      <i class="fas fa-trash text-danger"></i>
+                    </button>
+                  </form>
+                <% } %>
+              </div>
+            <% } %>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  <% } else { %>
+    <div class="gen-panel" style="text-align:center; padding:4rem;">
+      <i class="fas fa-clipboard-list" style="font-size:3rem; color:#cbd5e1; margin-bottom:1rem;"></i>
+      <h3 style="color:var(--gen-text-secondary);">No hay servicios registrados</h3>
+    </div>
+  <% } %>
+
+</div>
+
+<!-- 3. Modal de Creación (Estructura Corregida) -->
+<div class="gen-modal-overlay" id="serviceModal">
+  <div class="gen-modal-card">
+    
+    <div class="gen-modal-header">
+      <h2 class="gen-modal-title">
+        <i class="fas fa-hand-holding-heart" style="color:var(--gen-accent);"></i> Crear Servicio
+      </h2>
+      <button class="gen-btn gen-btn-ghost" onclick="closeServiceModal()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    <form action="/psych/services/create" method="POST">
+      <div class="gen-modal-body">
+        
+        <!-- Nombre -->
+        <div class="gen-form-group">
+          <label class="gen-label">Nombre del Servicio</label>
+          <input type="text" name="serviceType" class="gen-input" placeholder="Ej. Terapia Cognitiva, Consulta Inicial..." required>
+        </div>
+
+        <!-- Fila: Precio y Duración -->
+        <div class="form-row-grid">
+          <div class="gen-form-group">
+            <label class="gen-label">Precio ($)</label>
+            <input type="number" name="price" step="0.01" class="gen-input" required>
+          </div>
+          <div class="gen-form-group">
+            <label class="gen-label">Duración (min)</label>
+            <input type="number" name="durationMinutes" class="gen-input" required>
+          </div>
+        </div>
+
+        <!-- Tipo de Sesión -->
+        <div class="gen-form-group">
+          <label class="gen-label">Tipo de Sesión</label>
+          <div class="options-container">
+            <label class="option-item"><input type="radio" name="sessionKind" value="individual" checked> Individual</label>
+            <label class="option-item"><input type="radio" name="sessionKind" value="couple"> De Pareja</label>
+            <label class="option-item"><input type="radio" name="sessionKind" value="group"> Grupal</label>
+            <label class="option-item"><input type="radio" name="sessionKind" value="family"> Familiar</label>
+          </div>
+        </div>
+
+        <!-- Problemas -->
+        <div class="gen-form-group">
+          <label class="gen-label">Enfoque / Problemas (Selecciona varios)</label>
+          <div class="options-container">
+            <label class="option-item"><input type="checkbox" name="problems" value="ansiedad"> Ansiedad</label>
+            <label class="option-item"><input type="checkbox" name="problems" value="depresión"> Depresión</label>
+            <label class="option-item"><input type="checkbox" name="problems" value="trauma"> Trauma</label>
+            <label class="option-item"><input type="checkbox" name="problems" value="estrés"> Estrés</label>
+            <label class="option-item"><input type="checkbox" name="problems" value="autoestima"> Autoestima</label>
+            <label class="option-item"><input type="checkbox" name="problems" value="duelo"> Duelo</label>
+          </div>
+          <input type="text" name="problemsCustom" class="gen-input" style="margin-top:0.8rem;" placeholder="Otro (escribir manualmente)">
+        </div>
+
+        <!-- Fila: Fechas -->
+        <div class="form-row-grid">
+          <div class="gen-form-group">
+            <label class="gen-label">Fecha Inicio</label>
+            <input type="date" name="startDate" class="gen-input" required>
+          </div>
+          <div class="gen-form-group">
+            <label class="gen-label">Fecha Fin</label>
+            <input type="date" name="endDate" class="gen-input" required>
+          </div>
+        </div>
+
+        <!-- Descripción -->
+        <div class="gen-form-group">
+          <label class="gen-label">Descripción</label>
+          <textarea name="description" class="gen-input gen-textarea" rows="3" placeholder="Describe brevemente en qué consiste este servicio..."></textarea>
+        </div>
+
+      </div>
+
+      <div class="gen-modal-footer">
+        <button type="button" class="gen-btn gen-btn-outline" onclick="closeServiceModal()">Cancelar</button>
+        <button type="submit" class="gen-btn gen-btn-primary">Guardar Servicio</button>
+      </div>
+    </form>
+
+  </div>
+</div>
+
+<!-- Scripts -->
+<script>
+  function openServiceModal() {
+    const modal = document.getElementById('serviceModal');
+    modal.classList.add('show');
+  }
+
+  function closeServiceModal() {
+    const modal = document.getElementById('serviceModal');
+    modal.classList.remove('show');
+  }
+
+  window.onclick = function(event) {
+    const modal = document.getElementById('serviceModal');
+    if (event.target === modal) {
+      closeServiceModal();
+    }
+  }
+</script>
+
+<script src="/js/tradux.js"></script>
+<script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+<%- include('../partials/footer') %>

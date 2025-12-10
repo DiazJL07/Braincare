@@ -1,0 +1,372 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f8f8f8;
+}
+
+.footer {
+    background-color: #fef4e5;
+    padding: 40px 20px 0;
+    position: relative;
+}
+
+.footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 30px;
+    
+}
+
+.footer-brand {
+    flex: 1 1 250px;
+}
+
+.footer-brand h2 {
+    font-weight: bold;
+    font-size: 40px;
+    margin-bottom: 10px;
+    color: #7851C7;
+}
+
+.footer-brand p {
+    font-size: 18px;
+    line-height: 1.5;
+    color: #333;
+}
+
+.footer-columns {
+    display: flex;
+    flex: 3 1 700px;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 30px;
+}
+
+.footer-column h3 {
+    font-size: 16px;
+    margin-bottom: 10px;
+    color: #000;
+}
+
+.footer-column a {
+    display: block;
+    text-decoration: none;
+    color: #333;
+    font-size: 14px;
+    margin-bottom: 6px;
+    transition: color 0.3s ease;
+}
+
+.footer-column a:hover {
+    color: #000;
+}
+
+.new-badge {
+    background-color: #000;
+    color: #fff;
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 12px;
+    margin-left: 5px;
+}
+
+.extrafooter{
+    text-align: center;
+    padding: 20px 0;
+    background-color: #fef4e5;
+    color: #333;
+    font-size: 14px;
+}
+
+/* Estilo para la imagen del paisaje */
+/* 1. El contenedor: Usamos un truco para que se salga del padding del footer */
+.footerimg {
+    width: 100vw;               /* Obliga a ocupar el 100% del ancho de la VENTANA (no del padre) */
+    position: relative;         /* Necesario para el truco de centrado */
+    left: 50%;                  /* Mueve el contenedor al centro */
+    right: 50%;
+    margin-left: -50vw;         /* Lo jala a la izquierda para cubrir el borde */
+    margin-right: -50vw;        /* Lo jala a la derecha */
+    
+    background-color: #fef4e5;  /* Tu color de fondo */
+    display: flex;
+    justify-content: center;
+    padding: 0;                 /* Sin relleno interno */
+   
+}
+
+/* 2. La imagen: Ocupa todo el espacio que acabamos de crear */
+.footerimg img {
+    width: 100%;       /* Ocupa todo el ancho de la ventana */
+    height: auto;      /* Mantiene proporción */
+    display: block;    /* Elimina espacios fantasma */
+    
+    /* IMPORTANTE: Quitamos el max-width para que sea gigante en PC */
+    max-width: none;   
+}
+.footer-column a.active { color: #a97eff; font-weight: 600; }
+/* ===== MEDIA QUERIES RESPONSIVE ===== */
+@media (max-width: 425px) {
+    
+    /* 1. Quitamos el relleno de los lados del footer general */
+    .footer {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        /* Mantenemos el padding de arriba si lo necesitas */
+        padding-top: 30px; 
+    }
+
+    /* 2. Protegemos el texto: Le damos margen interno al contenedor del texto 
+       para que las letras no se peguen a los bordes de la pantalla */
+    .footer-container {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+
+    /* 3. La imagen ahora es libre de tocar los bordes */
+    .footerimg {
+        width: 100%;       /* Ocupa todo el ancho real */
+        margin: 0;         /* Quitamos cualquier margen negativo de la versión PC */
+        left: auto;        /* Reseteamos posicionamiento */
+        right: auto;
+        padding: 0;        /* Aseguramos que no tenga relleno */
+        background-color: #fef4e5; /* Mantiene el color de fondo */
+    }
+
+    .footerimg img {
+        width: 100%;       /* Ancho total */
+        height: auto;      /* Proporción correcta */
+        display: block;    /* Evita espacios fantasmas abajo */
+        margin: 0 auto;    /* Centrado perfecto */
+    }
+}
+
+/* Móviles pequeños (320px - 480px) */
+@media (max-width: 480px) {
+    .footer {
+        padding: 20px 15px 0;
+    }
+    
+    .footer-container {
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    .footer-brand {
+        text-align: center;
+        flex: 1 1 auto;
+    }
+    
+    .footer-brand h2 {
+        font-size: 28px;
+        margin-bottom: 8px;
+    }
+    
+    .footer-brand p {
+        font-size: 14px;
+        line-height: 1.4;
+    }
+    
+    .footer-columns {
+        flex-direction: column;
+        gap: 20px;
+        flex: 1 1 auto;
+    }
+    
+    .footer-column {
+        text-align: center;
+    }
+    
+    .footer-column h3 {
+        font-size: 14px;
+        margin-bottom: 8px;
+    }
+    
+    .footer-column a {
+        font-size: 12px;
+        margin-bottom: 4px;
+    }
+    .footerimg{
+        width: 100%;
+    }
+   
+}
+
+/* Móviles medianos (481px - 767px) */
+@media (min-width: 481px) and (max-width: 767px) {
+    .footer {
+        padding: 25px 18px 0;
+    }
+    
+    .footer-container {
+        flex-direction: column;
+        gap: 25px;
+    }
+    
+    .footer-brand {
+        text-align: center;
+    }
+    
+    .footer-brand h2 {
+        font-size: 32px;
+        margin-bottom: 10px;
+    }
+    
+    .footer-brand p {
+        font-size: 16px;
+        line-height: 1.4;
+    }
+    
+    .footer-columns {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: space-around;
+        gap: 25px;
+    }
+    
+    .footer-column {
+        flex: 1 1 45%;
+        min-width: 150px;
+    }
+    
+    .footer-column h3 {
+        font-size: 15px;
+    }
+    
+    .footer-column a {
+        font-size: 13px;
+    }
+    
+    
+}
+
+/* Tablets (768px - 1023px) */
+@media (min-width: 768px) and (max-width: 1023px) {
+    .footer {
+        padding: 35px 20px 0;
+    }
+    
+    .footer-container {
+        gap: 25px;
+        
+    }
+    
+    .footer-brand {
+        flex: 1 1 300px;
+    }
+    
+    .footer-brand h2 {
+        font-size: 36px;
+    }
+    
+    .footer-brand p {
+        font-size: 17px;
+    }
+    
+    .footer-columns {
+        flex: 2 1 500px;
+        gap: 25px;
+    }
+    
+    .footer-column h3 {
+        font-size: 15px;
+    }
+    
+    .footer-column a {
+        font-size: 13px;
+    }
+    
+    .footer img {
+       
+    }
+}
+
+/* Desktop pequeño (1024px - 1199px) */
+@media (min-width: 1024px) and (max-width: 1199px) {
+    .footer {
+        padding: 40px 25px 0;
+    }
+    
+    .footer-container {
+        max-width: 1000px;
+        gap: 30px;
+       
+    }
+    
+    .footer-brand h2 {
+        font-size: 38px;
+    }
+    
+    .footer-brand p {
+        font-size: 17px;
+    }
+    
+    .footer img {
+       
+    }
+}
+
+/* Desktop mediano (1200px - 1439px) */
+@media (min-width: 1200px) and (max-width: 1439px) {
+    .footer {
+        padding: 40px 30px 0;
+    }
+    
+    .footer-container {
+        max-width: 1150px;
+        gap: 30px;
+       
+    }
+    
+    .footer-brand h2 {
+        font-size: 40px;
+    }
+    
+    .footer-brand p {
+        font-size: 18px;
+    }
+    
+    .footer img {
+     
+    }
+}
+
+/* Desktop grande (1440px+) */
+@media (min-width: 1440px) {
+    .footer {
+        padding: 50px 40px 0;
+    }
+    
+    .footer-container {
+        max-width: 1300px;
+        gap: 35px;
+        
+    }
+    
+    .footer-brand h2 {
+        font-size: 42px;
+    }
+    
+    .footer-brand p {
+        font-size: 19px;
+    }
+    
+    .footer-columns {
+        gap: 35px;
+    }
+    
+    .footer-column h3 {
+        font-size: 17px;
+    }
+    
+    .footer-column a {
+        font-size: 15px;
+    }
+    
+    .footer img {
+     
+    }
+}

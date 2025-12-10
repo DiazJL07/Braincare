@@ -1,0 +1,21 @@
+.mt-8 {
+  margin-top: 8rem !important; 
+}
+
+.custom-modal-width {
+  max-width: 1200px;
+  width: 100%;
+}
+
+.pad10{
+  padding: 3rem !important;
+}
+
+/* Utilidades nativas de margen-end usadas en el header */
+.me-1 {
+  margin-right: 0.25rem !important;
+}
+
+.me-2 {
+  margin-right: 0.5rem !important;
+}

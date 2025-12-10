@@ -1,0 +1,131 @@
+ 
+<link rel="stylesheet" href="/css/admin-forms.css">
+<link rel="stylesheet" href="/css/admin-topics.css">
+
+<div class="row mb-4">
+  <div class="col-md-12">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/foro/admin/dashboard">Administración del Foro</a></li>
+        <li class="breadcrumb-item active" aria-current="page">
+          <%= foro._id ? 'Editar Foro' : 'Crear Foro' %>
+        </li>
+      </ol>
+    </nav>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-lg-12">
+    <div class="card shadow">
+      <div class="card-body">
+        <h1 class="card-title mb-4"><%= foro._id ? 'Editar Foro' : 'Crear Foro' %></h1>
+        
+        <% if (typeof error !== 'undefined') { %>
+          <div class="alert alert-danger" role="alert"><%= error %></div>
+        <% } %>
+        
+        <form action="<%= foro._id ? `/foro/admin/${foro._id}` : '/foro/admin' %>" method="POST" enctype="multipart/form-data">
+          <div class="mb-3">
+            <label for="title" class="form-label">Título</label>
+            <input type="text" class="form-control" id="title" name="title" value="<%= foro.title || '' %>" required>
+          </div>
+
+          <div class="mb-3">
+            <label for="topic" class="form-label">Tema</label>
+            <select class="form-select" id="topic" name="topic" required>
+              <option value="" disabled <%= !foro.topic ? 'selected' : '' %>>Selecciona un tema</option>
+              <% topics.forEach(topic => { %>
+                <option value="<%= topic._id %>" <%= (foro.topic && foro.topic._id && foro.topic._id.toString() === topic._id.toString()) || (foro.topic && foro.topic.toString() === topic._id.toString()) ? 'selected' : '' %>><%= topic.name %></option>
+              <% }); %>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label for="content" class="form-label">Contenido</label>
+            <textarea class="form-control" id="content" name="content" rows="10" required><%= foro.content || '' %></textarea>
+            <div id="editor-status" class="mt-2"></div>
+            <small class="form-text text-muted">Puedes usar HTML para dar formato al contenido.</small>
+          </div>
+
+          <div class="mb-3">
+            <label for="image" class="form-label">Imagen</label>
+            <input type="file" class="form-control" id="image" name="image" accept="image/*">
+            <% if (foro.image) { %>
+              <div class="mt-2">
+                <img src="<%= foro.image %>" alt="Imagen actual" style="max-height: 200px;">
+                <small class="d-block text-muted">Sube una nueva imagen para reemplazarla.</small>
+              </div>
+            <% } %>
+          </div>
+
+          <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+            <a href="/foro/admin/dashboard" class="btn btn-secondary me-md-2">Cancelar</a>
+            <button type="submit" class="btn btn-primary">Guardar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/5.10.5/tinymce.min.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const editorStatus = document.getElementById('editor-status');
+    const contentField = document.getElementById('content');
+    editorStatus.innerHTML = '<div class="alert alert-info">Cargando editor...</div>';
+
+    try {
+      tinymce.init({
+        selector: '#content',
+        height: 400,
+        plugins: 'advlist autolink lists link image charmap print preview anchor searchreplace visualblocks code fullscreen insertdatetime media table paste code help wordcount',
+        toolbar: 'undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help',
+        content_style: 'body { font-family: Arial, sans-serif; font-size: 16px; }',
+        setup: editor => {
+          editor.on('init', () => {
+            editorStatus.innerHTML = '<div class="alert alert-success">Editor cargado correctamente</div>';
+            setTimeout(() => editorStatus.innerHTML = '', 3000);
+          });
+          editor.on('change', () => editor.save());
+        }
+      });
+
+      document.querySelector('form').addEventListener('submit', e => {
+        if (!contentField.value.trim()) {
+          e.preventDefault();
+          editorStatus.innerHTML = '<div class="alert alert-danger">Por favor, ingresa contenido.</div>';
+        }
+      });
+    } catch (error) {
+      editorStatus.innerHTML = '<div class="alert alert-warning">No se pudo cargar el editor. Usa el campo básico.</div>';
+      contentField.style.display = 'block';
+    }
+  });
+</script>
+
+  <!-- Tu JS primero, para que el callback global exista antes de cargar el script de Google -->
+  <script src="/js/tradux.js"></script>
+  <!-- Script oficial de Google (callback definido en translate.js) -->
+  <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+<%- include('../partials/footer') %>
+<% if (typeof error !== 'undefined' && error) { %>
+<div class="modal" id="foroErrorModal" style="display:block; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1050;">
+  <div class="modal-dialog" style="margin:10% auto; max-width:500px;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Error al subir imagen</h5>
+        <button type="button" class="btn-close" onclick="document.getElementById('foroErrorModal').style.display='none'"></button>
+      </div>
+      <div class="modal-body">
+        <p><%= error %></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="document.getElementById('foroErrorModal').style.display='none'">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
+<% } %>

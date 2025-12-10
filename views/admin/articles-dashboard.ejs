@@ -1,0 +1,358 @@
+ 
+
+<link rel="stylesheet" href="/css/dashboard-general.css">
+
+
+<div class="gen-dash-wrapper animate-fade-in">
+
+  <div class="gen-header-row">
+    <div>
+      <h1 class="gen-page-title">Dashboard de Administración de Artículos</h1>
+      <p class="gen-page-subtitle">Gestiona artículos, temas y estadísticas</p>
+    </div>
+    <div class="gen-header-actions">
+      <button class="gen-btn gen-btn-primary" onclick="openArticleModal()">
+        <i class="fas fa-plus"></i> Crear Artículo
+      </button>
+    </div>
+  </div>
+
+  <div class="gen-panel">
+    <div class="gen-filter-container">
+      <div class="gen-filter-header">
+        <h2 class="gen-filter-title">
+          <i class="fas fa-filter" style="color: var(--gen-text-secondary);"></i> Filtros y Búsqueda
+        </h2>
+        <button class="gen-btn gen-btn-ghost" onclick="toggleAdvancedFilters()">
+          <i class="fas fa-cog"></i> Filtros Avanzados
+        </button>
+      </div>
+      
+      <div class="gen-filter-grid">
+        <div class="gen-form-group">
+          <label class="gen-label"><i class="fas fa-search"></i> Buscar</label>
+          <input type="text" class="gen-input" id="articlesSearchInput" 
+                 placeholder="Título, autor..." onkeyup="filterArticles()">
+        </div>
+        
+        <div class="gen-form-group">
+          <label class="gen-label"><i class="fas fa-tag"></i> Tema</label>
+          <select class="gen-select" id="articlesTopicFilter" onchange="filterArticles()">
+            <option value="all" <%= typeof currentTopic !== 'undefined' && currentTopic === 'all' ? 'selected' : '' %>>Todos los temas</option>
+            <% if (allTopics && allTopics.length > 0) { %>
+              <% allTopics.forEach(topic => { %>
+                <option value="<%= topic %>" <%= typeof currentTopic !== 'undefined' && currentTopic === topic ? 'selected' : '' %>><%= topic %></option>
+              <% }); %>
+            <% } %>
+          </select>
+        </div>
+      </div>
+      
+      <div class="gen-advanced-filters" id="articlesAdvancedFilters" style="display: none;">
+        <div class="gen-filter-grid">
+          <div class="gen-form-group">
+            <label class="gen-label"><i class="fas fa-calendar-alt"></i> Fecha</label>
+            <div class="gen-date-range">
+              <input type="date" class="gen-input" id="articlesDateFrom" onchange="filterArticles()">
+              <span>a</span>
+              <input type="date" class="gen-input" id="articlesDateTo" onchange="filterArticles()">
+            </div>
+          </div>
+          
+          <div class="gen-form-group">
+            <label class="gen-label"><i class="fas fa-eye"></i> Vistas</label>
+            <div class="gen-date-range">
+              <input type="number" class="gen-input" id="articlesViewsMin" placeholder="Mín" onchange="filterArticles()">
+              <input type="number" class="gen-input" id="articlesViewsMax" placeholder="Máx" onchange="filterArticles()">
+            </div>
+          </div>
+          
+          <div class="gen-form-group">
+            <label class="gen-label"><i class="fas fa-user-edit"></i> Autor</label>
+            <select class="gen-select" id="articlesAuthorFilter" onchange="filterArticles()">
+              <option value="all">Todos</option>
+              <% if (allAuthors && allAuthors.length > 0) { %>
+                <% allAuthors.forEach(author => { %>
+                  <option value="<%= author %>"><%= author %></option>
+                <% }); %>
+              <% } %>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="gen-panel" style="padding:0;">
+    <div class="gen-table-header">
+      <h2 class="gen-filter-title">
+        <i class="fas fa-list" style="color: var(--gen-accent);"></i> Lista de Artículos
+      </h2>
+    </div>
+    
+    <div class="gen-table-responsive">
+      <table class="gen-table">
+        <thead>
+          <tr>
+            <th>Título</th>
+            <th>Tema</th>
+            <th>Autor</th>
+            <th>Fecha</th>
+            <th>Vistas</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="articlesTableBody">
+          <% if (articles && articles.length > 0) { %>
+            <% articles.forEach(article => { %>
+              <tr class="articles-table-row" data-article-id="<%= article._id %>">
+                <td>
+                  <div style="display:flex; gap: 1rem; align-items:center;">
+                    <% if (article.thumbnail) { %>
+                      <img src="<%= article.thumbnail %>" class="gen-thumbnail">
+                    <% } else { %>
+                      <div class="gen-thumbnail"><i class="fas fa-newspaper"></i></div>
+                    <% } %>
+                    <div style="display:flex; flex-direction:column;">
+                      <a href="/articles/<%= article._id %>" class="gen-link-primary" target="_blank"><%= article.title %></a>
+                      <div style="display:flex; gap:0.25rem; flex-wrap:wrap; margin-top:0.25rem;">
+                        <% if (article.tags) { %>
+                          <% article.tags.slice(0, 3).forEach(tag => { %>
+                            <span style="font-size:0.7rem; background:#f3f4f6; padding:0 4px; border-radius:4px;">#<%= tag %></span>
+                          <% }); %>
+                        <% } %>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <span class="gen-badge gen-badge-neutral"><%= article.topic %></span>
+                  <% if (article.featured) { %><span class="gen-badge gen-badge-info">Destacado</span><% } %>
+                  <% if (article.status === 'draft') { %><span class="gen-badge" style="background:#fff7ed; color:#c2410c;">Borrador</span><% } %>
+                </td>
+                <td>
+                  <div class="gen-user-cell">
+                    <div class="gen-avatar-circle"><%= article.author ? article.author.name.charAt(0) : 'A' %></div>
+                    <div style="display:flex; flex-direction:column;">
+                      <span style="font-weight:500;"><%= article.author ? article.author.name : 'Desc.' %></span>
+                      <small style="color:var(--gen-text-secondary);"><%= article.author ? article.author.role : 'Autor' %></small>
+                    </div>
+                  </div>
+                </td>
+                <td><%= new Date(article.publicationDate).toLocaleDateString() %></td>
+                <td><i class="fas fa-eye" style="color:var(--gen-text-secondary);"></i> <%= article.views || 0 %></td>
+                <td>
+                  <div class="gen-action-group">
+                    <a href="/articles/<%= article._id %>" class="gen-action-btn-sm" title="Ver"><i class="fas fa-eye"></i></a>
+                    <a href="/articles/admin/<%= article._id %>/edit" class="gen-action-btn-sm" title="Editar"><i class="fas fa-edit"></i></a>
+                    <button type="button" class="gen-action-btn-sm delete" title="Eliminar"
+                            onclick="confirmDeleteArticle('<%= article._id %>', '<%= article.title %>')">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            <% }); %>
+          <% } else { %>
+            <tr><td colspan="6" style="text-align:center; padding:3rem;">No hay artículos.</td></tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="gen-pagination" id="articlesPagination"></div>
+
+</div>
+
+<div class="gen-modal-overlay" id="deleteArticleModal">
+  <div class="gen-modal-card" style="max-width: 450px;">
+    <div class="gen-modal-header" style="background: var(--gen-danger); color: white;">
+      <h3 class="gen-modal-title" style="color: white;">Confirmar Eliminación</h3>
+      <button class="gen-btn gen-btn-ghost" style="color: white;" onclick="closeModal()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="gen-modal-body" style="text-align: center;">
+      <p>¿Eliminar <strong id="deleteArticleTitle"></strong>?</p>
+      <small>Esta acción es irreversible.</small>
+    </div>
+    <div class="gen-modal-footer" style="justify-content: center;">
+      <button class="gen-btn gen-btn-outline" onclick="closeModal()">Cancelar</button>
+      <form id="deleteArticleForm" method="POST" style="display: inline;">
+        <button type="submit" class="gen-btn gen-btn-danger">Eliminar</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="gen-modal-overlay" id="articleModal">
+  <div class="gen-modal-card" style="max-width: 800px;">
+    <div class="gen-modal-header">
+      <h2 class="gen-modal-title">Nuevo Artículo</h2>
+      <button class="gen-btn gen-btn-ghost" onclick="closeArticleModal()"><i class="fas fa-times"></i></button>
+    </div>
+    <form id="articleForm" enctype="multipart/form-data" action="/articles/admin" method="POST">
+      <div class="gen-modal-body">
+        <div class="gen-form-group" style="margin-bottom:1rem;">
+          <label class="gen-label">Título</label>
+          <input type="text" name="title" class="gen-input" required>
+        </div>
+        <div class="gen-form-group" style="margin-bottom:1rem;">
+          <label class="gen-label">Tema</label>
+          <select name="topic" class="gen-select" required>
+            <option value="" disabled selected>Selecciona...</option>
+            <option value="Transtornos">Transtornos</option>
+            <option value="Recomendaciones">Recomendaciones</option>
+            <option value="Tratamientos">Tratamientos</option>
+            <option value="Prevencion">Prevención</option>
+            <option value="Investigacion">Investigación</option>
+          </select>
+        </div>
+        <div class="gen-form-group" style="margin-bottom:1rem;">
+          <label class="gen-label">Contenido</label>
+          <textarea name="content" class="gen-input gen-textarea" required></textarea>
+        </div>
+        <div class="gen-form-group">
+          <label class="gen-label">Imagen</label>
+          <div class="gen-file-upload">
+            <input type="file" name="image" class="gen-file-input" accept="image/*" onchange="previewImage(this)">
+            <div id="imgPreviewText"><span>Seleccionar Imagen</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="gen-modal-footer">
+        <button type="button" class="gen-btn gen-btn-outline" onclick="closeArticleModal()">Cancelar</button>
+        <button type="submit" class="gen-btn gen-btn-primary">Guardar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  // 1. Lógica de Filtros Avanzados (Toggle)
+  function toggleAdvancedFilters() {
+    const filters = document.getElementById('articlesAdvancedFilters');
+    // Usamos el display directo ya que el CSS nuevo usa clases de utilidad
+    if (filters.style.display === 'none') {
+      filters.style.display = 'block';
+      filters.classList.add('active'); // Para animación si el CSS la tiene
+    } else {
+      filters.style.display = 'none';
+      filters.classList.remove('active');
+    }
+  }
+
+  // 2. Lógica de Modales (Usando clase .show del nuevo CSS)
+  function openArticleModal() {
+    document.getElementById('articleModal').classList.add('show');
+  }
+
+  function closeArticleModal() {
+    document.getElementById('articleModal').classList.remove('show');
+  }
+
+  function confirmDeleteArticle(id, title) {
+    document.getElementById('deleteArticleTitle').innerText = title;
+    document.getElementById('deleteArticleForm').action = `/articles/admin/${id}/delete`;
+    document.getElementById('deleteArticleModal').classList.add('show');
+  }
+
+  function closeModal() {
+    document.getElementById('deleteArticleModal').classList.remove('show');
+  }
+
+  // Cerrar modales al hacer clic fuera
+  window.onclick = function(event) {
+    if (event.target.classList.contains('gen-modal-overlay')) {
+      event.target.classList.remove('show');
+    }
+  }
+
+  function previewImage(input) {
+    if(input.files && input.files[0]) {
+      document.getElementById('imgPreviewText').innerHTML = `<i class="fas fa-check"></i> ${input.files[0].name}`;
+    }
+  }
+
+  // 3. Lógica de Filtrado y Paginación
+  (function() {
+    let currentPage = 1;
+    const pageSize = 10;
+
+    // Función global de filtro
+    window.filterArticles = function() {
+      const search = document.getElementById('articlesSearchInput').value.toLowerCase();
+      const topic = document.getElementById('articlesTopicFilter').value;
+      const authorFilter = document.getElementById('articlesAuthorFilter') ? document.getElementById('articlesAuthorFilter').value : 'all';
+      
+      const rows = document.querySelectorAll('.articles-table-row');
+      
+      rows.forEach(row => {
+        const text = row.innerText.toLowerCase();
+        let show = true;
+
+        if (search && !text.includes(search)) show = false;
+        if (topic !== 'all' && !text.includes(topic.toLowerCase())) show = false;
+        if (authorFilter !== 'all' && !text.includes(authorFilter.toLowerCase())) show = false;
+
+        // Marcamos la fila como visible u oculta para la paginación
+        // Usamos un atributo de datos para indicar si pasó el filtro
+        if (show) {
+          row.removeAttribute('data-filtered-out');
+        } else {
+          row.setAttribute('data-filtered-out', 'true');
+          row.style.display = 'none'; // Ocultar visualmente inmediatamente
+        }
+      });
+
+      // Reiniciar a página 1 y renderizar
+      currentPage = 1;
+      renderPagination();
+    };
+
+    window.renderPagination = function() {
+      // Obtener filas que pasaron el filtro (no tienen data-filtered-out)
+      const visibleRows = Array.from(document.querySelectorAll('.articles-table-row:not([data-filtered-out])'));
+      const total = visibleRows.length;
+      const pages = Math.ceil(total / pageSize);
+      
+      // Aplicar paginación (Ocultar/Mostrar según página actual)
+      const start = (currentPage - 1) * pageSize;
+      const end = start + pageSize;
+
+      visibleRows.forEach((row, index) => {
+        if (index >= start && index < end) {
+          row.style.display = ''; // Mostrar (table-row por defecto)
+        } else {
+          row.style.display = 'none';
+        }
+      });
+
+      // Generar botones
+      const container = document.getElementById('articlesPagination');
+      container.innerHTML = '';
+      
+      if (pages <= 1) return; // No mostrar si solo hay 1 página
+
+      for (let i = 1; i <= pages; i++) {
+        const btn = document.createElement('button');
+        btn.className = 'gen-page-btn' + (i === currentPage ? ' active' : '');
+        btn.textContent = i;
+        btn.onclick = () => {
+          currentPage = i;
+          renderPagination(); // Re-renderizar para actualizar vista
+        };
+        container.appendChild(btn);
+      }
+    };
+
+    // Inicializar al cargar
+    document.addEventListener('DOMContentLoaded', () => {
+      renderPagination();
+    });
+  })();
+</script>
+
+<script src="/js/tradux.js"></script>
+<script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+<%- include('../partials/footer') %>

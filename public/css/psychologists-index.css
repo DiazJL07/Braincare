@@ -1,0 +1,359 @@
+/* PALETA DE COLORES (Variaciones de Morado) */
+:root {
+    --psych-primary: #764BA2; 
+    --psych-secondary: #667eea;
+    --psych-bg-dark: #2a0a57; 
+    --psych-card-shadow: rgba(0, 0, 0, 0.1);
+    --psych-text-dark: #333;
+    --psych-text-light: #f3f3f3;
+}
+
+/* 1 & 2. HEADER Y BÚSQUEDA */
+
+.psych-header {
+    background: var(--psych-bg-dark); 
+    color: var(--psych-text-light);
+    padding: 60px 20px;
+    margin-bottom: 30px;
+    padding-top: 5% !important;
+    background-image: radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.1) 1px, transparent 0);
+    background-size: 25px 25px;
+}
+
+.psych-header-content {
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.psych-header-title {
+    font-size: 2.8rem;
+    font-weight: 800;
+    margin-bottom: 5px;
+}
+
+.psych-header-subtitle {
+    font-size: 1.1rem;
+    font-weight: 300;
+    opacity: 0.8;
+}
+
+/* Barra de Búsqueda y Filtros */
+.psych-search-bar-container {
+    max-width: 800px;
+    margin: -70px auto 40px auto; 
+    padding: 0 15px;
+    position: relative;
+    z-index: 10;
+}
+
+.psych-search-input-group {
+    display: flex;
+    align-items: stretch;
+    border: 2px solid var(--psych-primary);
+    border-radius: 12px;
+    background-color: #fff;
+    box-shadow: 0 4px 20px var(--psych-card-shadow);
+    overflow: hidden;
+}
+
+.psych-search-icon {
+    padding: 0 15px;
+    color: var(--psych-primary);
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.psych-search-input {
+    flex-grow: 1;
+    border: none;
+    padding: 15px 10px;
+    font-size: 1rem;
+    outline: none;
+    border-radius: 0;
+}
+
+.psych-filter-button {
+    background: var(--psych-primary);
+    color: white;
+    border: none;
+    padding: 15px 20px;
+    border-radius: 0; 
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.2s;
+    flex-shrink: 0;
+    display: flex; 
+    align-items: center;
+}
+
+.psych-filter-button:hover {
+    background: var(--psych-secondary);
+}
+
+.psych-filter-button i {
+    margin-right: 8px;
+}
+
+
+/* Dropdown de Filtros */
+.psych-filter-dropdown {
+    position: absolute;
+    right: 15px; 
+    top: 100%;
+    margin-top: 10px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    padding: 15px;
+    z-index: 20;
+    display: none; 
+    min-width: 250px;
+}
+
+.psych-filter-dropdown.active {
+    display: block;
+}
+
+.psych-filter-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.psych-filter-label {
+    font-weight: 600;
+    color: var(--psych-text-dark);
+    margin-bottom: 5px;
+}
+
+.psych-filter-select {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 1rem;
+}
+
+
+/* 3. DISEÑO DE LA CARTA (CARD) - CORRECCIÓN DE ALINEACIÓN */
+
+.psych-grid {
+    display: flex;
+    flex-direction: column; /* **CLAVE:** Fuerzamos la lista a ser vertical */
+    gap: 20px; /* Reduje el gap para que parezca más lista */
+    max-width: 800px; /* Usamos el mismo ancho del header para centrar */
+    margin: 30px auto; 
+    padding: 0 20px;
+}
+
+.psych-card {
+    width: 100%; /* La tarjeta siempre ocupa todo el ancho disponible */
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px var(--psych-card-shadow);
+    border: 1px solid var(--psych-primary); 
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.psych-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+}
+
+.psych-card-body {
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.psych-card-avatar-wrap {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    padding: 4px;
+    background: linear-gradient(135deg, var(--psych-primary), var(--psych-secondary));
+}
+
+.psych-card-avatar {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 4px solid #fff;
+    display: block;
+}
+
+.psych-card-info {
+    flex: 1;
+}
+
+.psych-card-name {
+    margin: 0;
+    font-weight: 700;
+    font-size: 1.3rem;
+    color: var(--psych-text-dark);
+}
+
+.psych-card-specialty-tag {
+    margin-top: 8px;
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    background: #f3e8ff;
+    color: var(--psych-primary);
+    border: 1px solid #dcd1ff;
+}
+
+.psych-tag-icon {
+    margin-right: 6px;
+    font-size: 0.9rem;
+}
+
+.psych-card-footer {
+    padding: 12px 20px;
+    border-top: 1px solid #f0f0f0;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.psych-card-profile-btn {
+    display: inline-flex;
+    align-items: center;
+    background: var(--psych-primary);
+    color: white;
+    padding: 8px 15px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+.psych-card-profile-btn:hover {
+    background: var(--psych-secondary);
+}
+
+.psych-btn-icon {
+    margin-left: 8px;
+    transition: transform 0.2s;
+}
+
+.psych-card-profile-btn:hover .psych-btn-icon {
+    transform: translateX(3px);
+}
+
+/* 4. PAGINACIÓN y VACÍO */
+.psych-pagination {
+    display: flex;
+    justify-content: center;
+    padding: 20px 0;
+    gap: 8px;
+}
+
+.psych-page-btn {
+    background: #f0f0f0;
+    color: var(--psych-text-dark);
+    border: 1px solid #ccc;
+    padding: 8px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.psych-page-btn:hover {
+    background: #e0e0e0;
+}
+
+.psych-page-btn.active {
+    background: var(--psych-primary);
+    color: white;
+    border-color: var(--psych-primary);
+}
+
+.psych-empty-result {
+    text-align: center;
+    padding: 40px;
+    width: 100%;
+    color: #888;
+}
+
+
+@media (max-width: 600px) {
+    /* Header para pantallas pequeñas */
+    .psych-header {
+        padding: 40px 10px 80px 10px;
+    }
+
+    .psych-header-title {
+        font-size: 2rem;
+    }
+
+    .psych-header-subtitle {
+        font-size: 0.9rem;
+    }
+
+    /* Barra de Búsqueda Compacta */
+    .psych-search-bar-container {
+        margin-top: -60px; 
+        padding: 0 10px;
+    }
+    
+    .psych-search-input-group {
+        border-width: 1px;
+        border-radius: 8px;
+    }
+
+    .psych-search-input {
+        padding: 12px 10px;
+        font-size: 0.9rem;
+    }
+
+    .psych-search-icon {
+        padding: 0 10px;
+    }
+
+    /* FIX BOTÓN FILTRO (Solo ícono) */
+    .psych-filter-button {
+        padding: 12px 12px;
+        width: 45px; 
+        flex-shrink: 0;
+        overflow: hidden;
+        position: relative;
+        text-indent: -9999px; 
+        line-height: 0; 
+    }
+
+    .psych-filter-button i {
+        margin-right: 0;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        line-height: 1;
+        text-indent: 0;
+    }
+    
+    /* Tarjeta y contenido interno */
+    .psych-grid {
+        padding: 0 10px;
+    }
+    
+    /* En móvil, el contenido interno de la tarjeta se apila verticalmente */
+    .psych-card-body {
+        flex-direction: column; 
+        text-align: center;
+    }
+    .psych-card-info {
+        margin-top: 10px;
+    }
+    .psych-card-footer {
+        justify-content: center; 
+    }
+}

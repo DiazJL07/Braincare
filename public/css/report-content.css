@@ -1,0 +1,255 @@
+.admin-dashboard-wrapper {
+    max-width: 1400px;
+    margin: 2rem auto;
+    margin-top: 6rem;
+    padding: 0 1.5rem;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    color: #374151;
+    background-color: #f9fafb; /* Fondo general muy suave */
+}
+
+/* --- Header de Página --- */
+.dashboard-page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.page-headline {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #111827;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    
+}
+
+.nav-return-link {
+    text-decoration: none;
+    color: #4b5563;
+    background-color: #ffffff;
+    border: 1px solid #d1d5db;
+    padding: 0.6rem 1.2rem;
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.nav-return-link:hover {
+    background-color: #f3f4f6;
+    color: #1f2937;
+    border-color: #9ca3af;
+}
+
+/* --- Sistema de Grid (2 Columnas: 65% - 35%) --- */
+.admin-split-layout {
+    margin-top: 1rem;
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 2rem;
+    align-items: start;
+}
+
+@media (max-width: 1024px) {
+    .admin-split-layout {
+        grid-template-columns: 1fr; /* Una columna en tablets/móviles */
+    }
+}
+
+/* --- Paneles (Tarjetas) --- */
+.admin-panel {
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e5e7eb;
+    margin-bottom: 2rem;
+    overflow: hidden;
+}
+
+.panel-top-bar {
+    background-color: #f9fafb;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.panel-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.panel-interior {
+    padding: 1.5rem;
+}
+
+/* --- Estilos de Información (Key-Value) --- */
+.info-grid-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.data-point-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.data-label {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+    color: #6b7280;
+    font-weight: 600;
+}
+
+.data-value {
+    font-size: 1rem;
+    color: #111827;
+    font-weight: 500;
+}
+
+/* --- Contenido Reportado (Visualización) --- */
+.evidence-preview-box {
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 1.25rem;
+    margin-top: 0.5rem;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    border-left: 4px solid #3b82f6; /* Azul indicador */
+}
+
+.post-meta-tags {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+    flex-wrap: wrap;
+}
+
+.meta-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: #4b5563;
+    background: #e5e7eb;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+}
+
+/* --- Badges y Estados (Sin Bootstrap) --- */
+.status-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    gap: 0.35rem;
+}
+
+/* Variantes de color hardcodeadas */
+.pill-warning { background-color: #fef3c7; color: #92400e; } /* Pendiente/Spam */
+.pill-success { background-color: #d1fae5; color: #065f46; } /* Resuelto/Activo */
+.pill-danger { background-color: #fee2e2; color: #991b1b; }  /* Baneado/Descartado */
+.pill-info { background-color: #dbeafe; color: #1e40af; }     /* Revisado/Foro */
+.pill-neutral { background-color: #f3f4f6; color: #374151; }  /* Comentario */
+
+/* --- Formulario de Procesamiento --- */
+.decision-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.form-field-block {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.field-label {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: #374151;
+}
+
+.input-control-select,
+.input-control-text,
+.input-control-number {
+    width: 100%;
+    padding: 0.6rem;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    background-color: #fff;
+    box-sizing: border-box;
+}
+
+.input-control-select:focus,
+.input-control-text:focus {
+    outline: 2px solid #3b82f6;
+    border-color: #3b82f6;
+}
+
+.helper-text {
+    font-size: 0.8rem;
+    color: #6b7280;
+}
+
+.primary-action-button {
+    background-color: #2563eb; /* Azul fuerte */
+    color: #ffffff;
+    border: none;
+    padding: 0.75rem;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    transition: background 0.2s;
+    width: 100%;
+}
+
+.primary-action-button:hover {
+    background-color: #1d4ed8;
+}
+
+.link-external {
+    color: #2563eb;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+.link-external:hover { text-decoration: underline; }
+
+/* --- Alertas (Reemplazo de Bootstrap alerts) --- */
+.system-notification {
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.notify-success { background-color: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; }
+.notify-error { background-color: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }

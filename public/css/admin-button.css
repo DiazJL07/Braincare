@@ -1,0 +1,340 @@
+/* ==========================================================================
+   ADMIN BUTTON STYLES - CSS NATIVO CON ANIMACIONES
+   Diseño administrativo profesional y organizado
+   ========================================================================== */
+
+/* Variables CSS para consistencia */
+:root {
+  --admin-primary: #2c3e50;
+  --admin-secondary: #34495e;
+  --admin-accent: #3498db;
+  --admin-hover: #2980b9;
+  --admin-success: #27ae60;
+  --admin-warning: #f39c12;
+  --admin-danger: #e74c3c;
+  --admin-light: #ecf0f1;
+  --admin-dark: #1a252f;
+  --admin-shadow: rgba(0, 0, 0, 0.1);
+  --admin-shadow-hover: rgba(0, 0, 0, 0.2);
+  --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* ==========================================================================
+   BOTÓN ADMINISTRATIVO BASE
+   ========================================================================== */
+
+.btn-admin {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border: 2px solid transparent;
+  border-radius: 0.5rem;
+  background: linear-gradient(135deg, var(--admin-secondary) 0%, var(--admin-primary) 100%);
+  color: #000000;
+  cursor: pointer;
+  overflow: hidden;
+  transition: var(--transition-smooth);
+  box-shadow: 0 4px 15px var(--admin-shadow);
+  z-index: 1;
+}
+
+/* Efecto de brillo animado */
+.btn-admin::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  transition: var(--transition-smooth);
+  z-index: -1;
+}
+
+/* Estados del botón */
+.btn-admin:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px var(--admin-shadow-hover);
+  background: linear-gradient(135deg, var(--admin-accent) 0%, var(--admin-hover) 100%);
+  border-color: var(--admin-accent);
+  color: #000000;
+  text-decoration: none;
+}
+
+.btn-admin:hover::before {
+  left: 100%;
+}
+
+.btn-admin:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 10px var(--admin-shadow);
+}
+
+.btn-admin:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.3);
+}
+
+/* ==========================================================================
+   VARIANTES DE BOTONES ADMINISTRATIVOS
+   ========================================================================== */
+
+/* Botón de retroceso/volver */
+.btn-admin-back {
+  background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+  border-color: #6c757d;
+}
+
+.btn-admin-back:hover {
+  background: linear-gradient(135deg, #5a6268 0%, #343a40 100%);
+  border-color: #5a6268;
+}
+
+/* Botón de éxito */
+.btn-admin-success {
+  background: linear-gradient(135deg, var(--admin-success) 0%, #229954 100%);
+  border-color: var(--admin-success);
+}
+
+.btn-admin-success:hover {
+  background: linear-gradient(135deg, #229954 0%, #1e8449 100%);
+  border-color: #229954;
+}
+
+/* Botón de advertencia */
+.btn-admin-warning {
+  background: linear-gradient(135deg, var(--admin-warning) 0%, #e67e22 100%);
+  border-color: var(--admin-warning);
+}
+
+.btn-admin-warning:hover {
+  background: linear-gradient(135deg, #e67e22 0%, #d35400 100%);
+  border-color: #e67e22;
+}
+
+/* Botón de peligro */
+.btn-admin-danger {
+  background: linear-gradient(135deg, var(--admin-danger) 0%, #c0392b 100%);
+  border-color: var(--admin-danger);
+}
+
+.btn-admin-danger:hover {
+  background: linear-gradient(135deg, #c0392b 0%, #a93226 100%);
+  border-color: #c0392b;
+}
+
+/* ==========================================================================
+   ICONOS Y ANIMACIONES
+   ========================================================================== */
+
+/* Contenedor de icono */
+.btn-admin .icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition-bounce);
+}
+
+/* Animación del icono al hover */
+.btn-admin:hover .icon {
+  transform: translateX(-3px);
+}
+
+.btn-admin-back:hover .icon {
+  animation: bounceLeft 0.6s ease-in-out;
+}
+
+/* Animación de rebote hacia la izquierda */
+@keyframes bounceLeft {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateX(-3px);
+  }
+  40% {
+    transform: translateX(-8px);
+  }
+  60% {
+    transform: translateX(-5px);
+  }
+}
+
+/* ==========================================================================
+   EFECTOS DE CARGA Y ESTADOS
+   ========================================================================== */
+
+/* Estado de carga */
+.btn-admin.loading {
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.btn-admin.loading::after {
+  content: '';
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  margin: auto;
+  border: 2px solid transparent;
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Estado deshabilitado */
+.btn-admin:disabled,
+.btn-admin.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+  transform: none;
+  box-shadow: none;
+}
+
+/* ==========================================================================
+   TAMAÑOS DE BOTONES
+   ========================================================================== */
+
+/* Botón pequeño */
+.btn-admin-sm {
+  padding: 0.5rem 1rem;
+  font-size: 0.75rem;
+  border-radius: 0.375rem;
+}
+
+/* Botón grande */
+.btn-admin-lg {
+  padding: 1rem 2rem;
+  font-size: 1rem;
+  border-radius: 0.75rem;
+}
+
+/* Botón extra grande */
+.btn-admin-xl {
+  padding: 1.25rem 2.5rem;
+  font-size: 1.125rem;
+  border-radius: 1rem;
+}
+
+/* ==========================================================================
+   GRUPOS DE BOTONES
+   ========================================================================== */
+
+.btn-group-admin {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.btn-group-admin .btn-admin {
+  flex: 1;
+}
+
+.btn-group-admin .btn-admin:not(:last-child) {
+  margin-right: 0;
+}
+
+/* ==========================================================================
+   RESPONSIVE DESIGN
+   ========================================================================== */
+
+@media (max-width: 768px) {
+  .btn-admin {
+    padding: 0.625rem 1.25rem;
+    font-size: 0.8125rem;
+  }
+  
+  .btn-group-admin {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .btn-group-admin .btn-admin {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .btn-admin {
+    padding: 0.5rem 1rem;
+    font-size: 0.75rem;
+  }
+}
+
+/* ==========================================================================
+   UTILIDADES ADICIONALES
+   ========================================================================== */
+
+/* Botón con ancho completo */
+.btn-admin-block {
+  width: 100%;
+  display: flex;
+}
+
+/* Botón flotante */
+.btn-admin-float {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  border-radius: 50%;
+  width: 3.5rem;
+  height: 3.5rem;
+  padding: 0;
+  z-index: 1000;
+  box-shadow: 0 4px 20px var(--admin-shadow-hover);
+}
+
+.btn-admin-float:hover {
+  transform: translateY(-3px) scale(1.05);
+}
+
+/* Animación de entrada */
+.btn-admin-animate-in {
+  animation: slideInUp 0.5s ease-out;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Efecto de pulso para llamar la atención */
+.btn-admin-pulse {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(52, 152, 219, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(52, 152, 219, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(52, 152, 219, 0);
+  }
+}

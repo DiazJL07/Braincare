@@ -1,0 +1,191 @@
+footer {
+    background-color: #fef4e5;
+    color: white;
+    padding: 40px 0 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.footer-container {
+    max-width: 1500px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 40px;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+/* Sección de la marca */
+.brand-section {
+    flex: 2;
+
+    max-width: 350px;
+}
+
+.brand-section h1 {
+    color: #ffffff;
+    font-size: 32px;
+    font-weight: bold;
+    margin-bottom: 15px;
+    margin-top: 0;
+}
+
+.brand-section p {
+    color: #e0e0e0;
+    line-height: 1.6;
+    margin-bottom: 25px;
+    font-size: 14px;
+}
+
+/* Iconos de redes sociales */
+.social-icons {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.social-icons .icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    font-size: 18px;
+}
+
+.social-icons .icon:hover {
+    background-color: #70E0B3;
+    color: #413654;
+    transform: translateY(-2px);
+}
+
+/* Secciones del footer */
+.footer-section {
+    flex: 1;
+    min-width: 150px;
+}
+
+.footer-section h4 {
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    margin-top: 0;
+}
+
+.footer-section p {
+    color: #e0e0e0;
+    font-size: 14px;
+    margin: 0;
+    line-height: 1.5;
+}
+
+.footer-section ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.footer-section ul li {
+    margin-bottom: 12px;
+}
+
+.footer-section ul li a {
+    color: #e0e0e0;
+    text-decoration: none;
+    font-size: 14px;
+    transition: color 0.3s ease;
+    line-height: 1.4;
+}
+
+.footer-section ul li a:hover {
+    color: #70E0B3;
+}
+
+/* Grupo de secciones */
+.footer-sections-group {
+    display: flex;
+    flex: 3;
+    gap: 30px;
+    flex-wrap: wrap;
+    min-width: 300px;
+}
+
+.footer-sections-group .footer-section {
+    flex: 1;
+    min-width: 180px;
+}
+
+/* Footer bottom */
+.footer-bottom {
+    background-color: rgba(0, 0, 0, 0.2);
+    text-align: center;
+    padding: 20px 0;
+    margin-top: 40px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.footer-bottom p {
+    color: #b0b0b0;
+    font-size: 13px;
+    margin: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .footer-container {
+        flex-direction: column;
+        gap: 30px;
+        text-align: left;
+    }
+    
+    .brand-section {
+        max-width: 100%;
+        text-align: center;
+    }
+    
+    .footer-sections-group {
+        flex-direction: column;
+        gap: 25px;
+    }
+    
+    .footer-sections-group .footer-section {
+        min-width: 100%;
+    }
+    
+    .social-icons {
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    footer {
+        padding: 30px 0 0;
+    }
+    
+    .footer-container {
+        padding: 0 15px;
+        gap: 25px;
+    }
+    
+    .brand-section h1 {
+        font-size: 28px;
+    }
+    
+    .social-icons .icon {
+        width: 36px;
+        height: 36px;
+        font-size: 16px;
+    }
+    
+    .footer-bottom {
+        padding: 15px 0;
+        margin-top: 30px;
+    }
+}

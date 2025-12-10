@@ -1,0 +1,269 @@
+<%- include('layouts/main') %>
+
+<div class="container mt-4">
+  <!-- Contenedor de alertas -->
+  <div id="alertContainer"></div>
+  
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card shadow">
+        <div class="card-header bg-warning text-dark">
+          <h4 class="mb-0">
+            <i class="fas fa-flag"></i> Reportar Contenido Inapropiado
+          </h4>
+        </div>
+        <div class="card-body">
+          <div class="alert alert-info">
+            <i class="fas fa-info-circle"></i>
+            <strong>Importante:</strong> Los reportes son revisados por nuestro equipo de moderación. 
+            Por favor, proporciona información detallada y precisa sobre el contenido que consideras inapropiado.
+          </div>
+
+          <% if (contentType === 'foro' && content) { %>
+            <div class="card mb-4 bg-light">
+              <div class="card-header">
+                <h6 class="mb-0">Contenido a reportar:</h6>
+              </div>
+              <div class="card-body">
+                <h6><%= content.title %></h6>
+                <p><strong>Autor:</strong> <%= content.author.name %></p>
+                <p><strong>Tema:</strong> <%= content.topic %></p>
+                <p><strong>Fecha:</strong> <%= new Date(content.publicationDate).toLocaleDateString('es-ES') %></p>
+                <div class="content-preview">
+                  <strong>Contenido:</strong>
+                  <div class="mt-2 p-3 border rounded">
+                    <%- content.content.substring(0, 300) %>
+                    <% if (content.content.length > 300) { %>
+                      <span class="text-muted">... (contenido truncado)</span>
+                    <% } %>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <% } %>
+
+          <form id="reportForm" action="/reports/create" method="POST">
+            <input type="hidden" name="contentType" value="<%= contentType %>">
+            <input type="hidden" name="contentId" value="<%= contentId %>">
+            <input type="hidden" name="reportedUserId" value="<%= reportedUserId %>">
+
+            <div class="mb-3">
+              <label for="reason" class="form-label">
+                <i class="fas fa-exclamation-triangle"></i> Razón del reporte *
+              </label>
+              <select name="reason" id="reason" class="form-select" required>
+                <option value="">Selecciona una razón</option>
+                <option value="Spam">Spam</option>
+                <option value="Acoso o bullying">Acoso o bullying</option>
+                <option value="Lenguaje ofensivo">Lenguaje ofensivo</option>
+                <option value="Contenido inapropiado">Contenido inapropiado</option>
+                <option value="Información falsa">Información falsa</option>
+                <option value="Violación de términos">Violación de términos</option>
+                <option value="Otro">Otro</option>
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label for="description" class="form-label">
+                <i class="fas fa-comment-alt"></i> Descripción adicional
+              </label>
+              <textarea 
+                name="description" 
+                id="description" 
+                class="form-control" 
+                rows="4" 
+                placeholder="Proporciona detalles específicos sobre por qué consideras que este contenido es inapropiado. Esto ayudará a nuestro equipo de moderación a tomar una decisión informada."
+                maxlength="500"
+              ></textarea>
+              <div class="form-text">
+                <span id="charCount">0</span>/500 caracteres
+              </div>
+            </div>
+
+            <div class="alert alert-warning">
+              <i class="fas fa-shield-alt"></i>
+              <strong>Política de reportes:</strong>
+              <ul class="mb-0 mt-2">
+                <li>Los reportes falsos o malintencionados pueden resultar en acciones disciplinarias</li>
+                <li>Toda la información proporcionada será revisada por nuestro equipo</li>
+                <li>Recibirás una notificación sobre el estado de tu reporte</li>
+                <li>Los reportes son confidenciales y anónimos para el usuario reportado</li>
+              </ul>
+            </div>
+
+            <div class="d-flex justify-content-between">
+              <a href="/foro" class="btn-admin btn-admin-back btn-admin-animate-in">
+                <i class="fas fa-arrow-left icon"></i> Cancelar
+              </a>
+              <button type="submit" class="btn btn-warning" id="submitBtn">
+                <i class="fas fa-flag"></i> Enviar Reporte
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const descriptionTextarea = document.getElementById('description');
+  const charCount = document.getElementById('charCount');
+  const reportForm = document.getElementById('reportForm');
+  const submitBtn = document.getElementById('submitBtn');
+
+  // Contador de caracteres
+  descriptionTextarea.addEventListener('input', function() {
+    const currentLength = this.value.length;
+    charCount.textContent = currentLength;
+    
+    if (currentLength > 450) {
+      charCount.style.color = '#dc3545';
+    } else if (currentLength > 400) {
+      charCount.style.color = '#fd7e14';
+    } else {
+      charCount.style.color = '#6c757d';
+    }
+  });
+
+  // Función para mostrar alertas
+  function showAlert(type, message) {
+    // Buscar contenedor de alertas
+    let alertContainer = document.getElementById('alertContainer');
+    if (!alertContainer) {
+      // Si no existe, crear uno al inicio del contenido
+      alertContainer = document.createElement('div');
+      alertContainer.id = 'alertContainer';
+      const mainContent = document.querySelector('.container-fluid') || document.querySelector('.container') || document.body;
+      mainContent.insertBefore(alertContainer, mainContent.firstChild);
+    }
+    
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
+    alertDiv.innerHTML = `
+      ${message}
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    alertContainer.appendChild(alertDiv);
+    
+    // Auto-remove after 5 seconds
+    setTimeout(() => {
+      if (alertDiv.parentNode) {
+        alertDiv.remove();
+      }
+    }, 5000);
+  }
+
+  // Manejo del envío del formulario
+  reportForm.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const reason = document.getElementById('reason').value;
+    if (!reason) {
+      showAlert('danger', 'Por favor selecciona una razón para el reporte');
+      return;
+    }
+
+    // Confirmar envío
+    if (confirm('¿Estás seguro de que quieres enviar este reporte? Esta acción no se puede deshacer.')) {
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
+      
+      try {
+        const formData = new FormData(this);
+        const response = await fetch('/reports/create', {
+          method: 'POST',
+          body: formData
+        });
+        
+        const ct = response.headers.get('content-type') || '';
+        let data;
+        if (ct.includes('application/json')) {
+          try { data = await response.json(); } catch (_) { data = { message: 'Respuesta no válida del servidor' }; }
+        } else {
+          if (response.redirected || (response.url && response.url.includes('/auth/login'))) {
+            showAlert('danger', 'Debes iniciar sesión para enviar reportes. Redirigiendo...');
+            setTimeout(() => { window.location.href = '/auth/login'; }, 1200);
+            return;
+          }
+          const text = await response.text();
+          data = { message: text && text.length < 200 ? text : 'Error al enviar el reporte' };
+        }
+        
+        if (response.ok) {
+          submitBtn.innerHTML = '<i class="fas fa-check"></i> Reporte Enviado';
+          submitBtn.classList.remove('btn-warning');
+          submitBtn.classList.add('btn-success');
+          setTimeout(() => { window.history.back(); }, 1500);
+        } else {
+          showAlert('danger', data.message || 'Error al enviar el reporte');
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = '<i class="fas fa-flag"></i> Enviar Reporte';
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        showAlert('danger', 'Error de conexión al enviar el reporte');
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="fas fa-flag"></i> Enviar Reporte';
+      }
+    } else {
+      // Si el usuario cancela, rehabilitar el botón
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = '<i class="fas fa-flag"></i> Enviar Reporte';
+    }
+  });
+
+  // Validación en tiempo real
+  const reasonSelect = document.getElementById('reason');
+  reasonSelect.addEventListener('change', function() {
+    if (this.value === 'other') {
+      descriptionTextarea.required = true;
+      descriptionTextarea.placeholder = 'Por favor, describe específicamente el problema con este contenido.';
+    } else {
+      descriptionTextarea.required = false;
+      descriptionTextarea.placeholder = 'Proporciona detalles específicos sobre por qué consideras que este contenido es inapropiado. Esto ayudará a nuestro equipo de moderación a tomar una decisión informada.';
+    }
+  });
+});
+</script>
+
+<style>
+.content-preview {
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.card {
+  border: none;
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.bg-light {
+  background-color: #f8f9fa !important;
+}
+
+.alert {
+  border: none;
+  border-radius: 0.5rem;
+}
+
+.btn {
+  border-radius: 0.375rem;
+  font-weight: 500;
+}
+
+.form-control, .form-select {
+  border-radius: 0.375rem;
+}
+
+#charCount {
+  font-weight: 500;
+}
+</style>
+
+  <!-- Tu JS primero, para que el callback global exista antes de cargar el script de Google -->
+  <script src="/js/tradux.js"></script>
+  <!-- Script oficial de Google (callback definido en translate.js) -->
+  <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>

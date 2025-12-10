@@ -1,0 +1,269 @@
+/* CSS para corregir el contenido del foro individual */
+
+/* Estilos para preservar el formato del contenido del editor TinyMCE */
+.article-content {
+    /* Preservar formato del editor sin sobrescribir colores específicos */
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.6;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    color: #333333; /* Color base por defecto */
+}
+
+/* NO sobrescribir estilos inline del editor TinyMCE */
+.article-content *[style] {
+    /* Mantener estilos inline del editor */
+}
+
+/* Resetear estilos que puedan interferir con TinyMCE */
+.article-content * {
+    /* No forzar colores, permitir que TinyMCE los controle */
+}
+
+/* Estilos específicos para elementos comunes del editor */
+.article-content p {
+    margin-bottom: 1rem;
+    /* Permitir que TinyMCE controle el color */
+}
+
+.article-content h1,
+.article-content h2,
+.article-content h3,
+.article-content h4,
+.article-content h5,
+.article-content h6 {
+    /* Permitir que TinyMCE controle color y peso de fuente */
+    margin-bottom: 0.75rem;
+    margin-top: 1.5rem;
+}
+
+.article-content strong,
+.article-content b {
+    font-weight: bold;
+    /* Permitir que TinyMCE controle el color */
+}
+
+.article-content em,
+.article-content i {
+    font-style: italic;
+    /* Permitir que TinyMCE controle el color */
+}
+
+.article-content u {
+    text-decoration: underline;
+    /* Permitir que TinyMCE controle el color */
+}
+
+.article-content ul,
+.article-content ol {
+    margin-bottom: 1rem;
+    padding-left: 2rem;
+}
+
+.article-content li {
+    margin-bottom: 0.5rem;
+    /* Permitir que TinyMCE controle el color */
+}
+
+.article-content blockquote {
+    border-left: 4px solid #ddd;
+    padding-left: 1rem;
+    margin: 1rem 0;
+    font-style: italic;
+    /* Permitir que TinyMCE controle el color */
+}
+
+.article-content a {
+    color: #007bff;
+    text-decoration: underline;
+}
+
+.article-content a:hover {
+    color: #0056b3;
+}
+
+/* Preservar colores específicos aplicados por TinyMCE */
+/* Permitir que los estilos inline de TinyMCE se mantengan sin interferencia */
+.article-content [style*="color"] {
+    /* Los estilos inline tienen mayor especificidad y se mantendrán */
+}
+
+.article-content span[style*="color"] {
+    /* Los estilos inline tienen mayor especificidad y se mantendrán */
+}
+
+.article-content font[color] {
+    /* Los atributos de color se mantendrán */
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .article-content {
+        padding: 1rem;
+        font-size: 0.95rem;
+    }
+    
+    .article-content h1 {
+        font-size: 1.5rem;
+    }
+    
+    .article-content h2 {
+        font-size: 1.3rem;
+    }
+    
+    .article-content h3 {
+        font-size: 1.1rem;
+    }
+    
+    .article-content ul,
+    .article-content ol {
+        padding-left: 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .article-content {
+        padding: 0.75rem;
+        font-size: 0.9rem;
+    }
+    
+    .article-content h1 {
+        font-size: 1.3rem;
+    }
+    
+    .article-content h2 {
+        font-size: 1.2rem;
+    }
+    
+    .article-content h3 {
+        font-size: 1rem;
+    }
+    
+    .article-content ul,
+    .article-content ol {
+        padding-left: 1rem;
+    }
+    
+    .article-content blockquote {
+        padding-left: 0.75rem;
+        margin: 0.75rem 0;
+    }
+}
+
+/* Asegurar que el contenedor del foro sea responsive */
+.container-fluid {
+    padding-left: 15px;
+    padding-right: 15px;
+    max-width: 100%;
+}
+
+/* Mejorar el layout responsive del foro */
+.row {
+    margin-left: -15px;
+    margin-right: -15px;
+}
+
+.col-lg-8,
+.col-lg-4 {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+/* Estilos responsive para el título del foro */
+.card-title {
+    font-size: 1.5rem;
+    line-height: 1.3;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+/* Mejorar la visualización de metadatos */
+.d-flex.justify-content-between {
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+@media (max-width: 768px) {
+    .container-fluid {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+    
+    .row {
+        margin-left: -10px;
+        margin-right: -10px;
+    }
+    
+    .col-lg-8,
+    .col-lg-4 {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+    
+    /* Stack columnas en móvil */
+    .col-lg-4 {
+        margin-top: 2rem;
+    }
+    
+    .card-title {
+        font-size: 1.3rem;
+    }
+    
+    /* Mejorar botones en móvil */
+    .d-flex.justify-content-between {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .btn-sm {
+        margin-bottom: 0.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .container-fluid {
+        padding-left: 5px;
+        padding-right: 5px;
+    }
+    
+    .row {
+        margin-left: -5px;
+        margin-right: -5px;
+    }
+    
+    .col-lg-8,
+    .col-lg-4 {
+        padding-left: 5px;
+        padding-right: 5px;
+    }
+    
+    .card {
+        margin-bottom: 1rem;
+        border-radius: 8px;
+    }
+    
+    .card-body {
+        padding: 1rem;
+    }
+    
+    .card-title {
+        font-size: 1.2rem;
+    }
+    
+    /* Mejorar imágenes de perfil en móvil */
+    .rounded-circle {
+        width: 32px !important;
+        height: 32px !important;
+    }
+    
+    /* Ajustar badges y botones */
+    .badge {
+        font-size: 0.7rem;
+        padding: 0.3rem 0.6rem;
+    }
+    
+    .btn-sm {
+        font-size: 0.8rem;
+        padding: 0.4rem 0.8rem;
+    }
+}

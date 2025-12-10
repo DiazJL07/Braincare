@@ -1,0 +1,124 @@
+
+<link rel="stylesheet" href="/css/guide-detail.css">
+
+<div class="guide-page-wrapper">
+
+  <article class="guide-card">
+    
+    <div class="info-column">
+      <span class="category-pill"><%= guide.topic %></span>
+      
+      <h1 class="guide-title"><%= guide.title %></h1>
+      
+      <p class="guide-description">
+        Esta guía fue elaborada cuidadosamente por <strong><%= guide.author ? guide.author.name : 'Autor desconocido' %></strong>, 
+        profesional en salud mental de BrainCare. Diseñada para ofrecerte herramientas prácticas.
+      </p>
+
+      <div class="meta-row">
+        <div class="author-info">
+          <span class="author-name">
+            <%= guide.author ? guide.author.name : 'Autor desconocido' %>
+            <% if (guide.author && guide.author.role === 'psychologist') { %>
+              <span class="psych-badge" title="Psicólogo Verificado">Ψ</span>
+            <% } %>
+          </span>
+          <span class="publish-date"><%= new Date(guide.publicationDate).toLocaleDateString() %></span>
+        </div>
+
+        <div class="stats-container">
+          <span><i class="fas fa-eye"></i> <%= guide.views %></span>
+          <span><i class="fas fa-download"></i> <%= guide.downloads %></span>
+        </div>
+      </div>
+
+      <div class="actions">
+        <a href="/guides/<%= guide._id %>/download" class="btn-custom btn-primary-custom">
+          <i class="fas fa-download"></i>
+          Descargar PDF
+        </a>
+        
+        <button onclick="openPdfModal()" class="btn-custom btn-secondary-custom">
+          <i class="fas fa-expand"></i>
+          Vista Previa
+        </button>
+      </div>
+    </div>
+
+    <div class="preview-column">
+      <div class="document-mockup" onclick="openPdfModal()">
+        <% if (guide.image) { %>
+          <img src="<%= guide.image %>" class="mockup-image" alt="Portada de <%= guide.title %>">
+        <% } else { %>
+          <div class="mockup-fallback-header">
+            BrainCare<br>Guía Digital
+          </div>
+          <div class="mockup-lines">
+            <div class="line"></div>
+            <div class="line"></div>
+            <div class="line"></div>
+            <div class="line short"></div>
+            <br>
+            <div class="line"></div>
+            <div class="line"></div>
+          </div>
+        <% } %>
+      </div>
+      <div class="preview-label">Clic para leer</div>
+    </div>
+
+  </article>
+
+  <div class="related-section">
+    <p style="color: var(--text-secondary);">¿Buscas más información?</p>
+    <div class="related-links">
+      <a href="/guides?topic=<%= guide.topic %>" class="btn-custom btn-secondary-custom" style="font-size: 0.9rem; padding: 8px 20px;">
+        <i class="fas fa-tag"></i> Más sobre <%= guide.topic %>
+      </a>
+      <a href="/guides" class="btn-custom btn-secondary-custom" style="font-size: 0.9rem; padding: 8px 20px;">
+        <i class="fas fa-list"></i> Ver todo
+      </a>
+    </div>
+  </div>
+
+</div>
+
+<div id="pdfModal" class="modal-overlay">
+  <div class="modal-content">
+    <button class="modal-close" onclick="closePdfModal()">&times;</button>
+    <% if (guide._id) { %>
+      <iframe src="/guides/<%= guide._id %>/view" class="pdf-iframe-full" title="<%= guide.title %>"></iframe>
+      <div style="margin-top: 10px; text-align: center;">
+        <a href="/guides/<%= guide._id %>/download" download="<%= ( (guide.title || 'guia') + '.pdf' ).replace(/[^A-Za-z0-9_.-]/g, '_') %>" class="btn-custom btn-secondary-custom" style="font-size: 0.9rem; padding: 8px 20px;">
+          <i class="fas fa-file-download"></i> Descargar si no se muestra
+        </a>
+      </div>
+    <% } else { %>
+      <div style="padding: 20px; text-align: center; color: var(--text-secondary);">
+        <i class="fas fa-file-pdf" style="font-size: 2rem; color: #dc3545;"></i>
+        <p>No se encontró el PDF para esta guía.</p>
+      </div>
+    <% } %>
+  </div>
+</div>
+
+<script>
+  function openPdfModal() {
+    document.getElementById('pdfModal').style.display = 'flex';
+    document.body.style.overflow = 'hidden'; // Evita scroll de fondo
+  }
+
+  function closePdfModal() {
+    document.getElementById('pdfModal').style.display = 'none';
+    document.body.style.overflow = 'auto'; // Restaura scroll
+  }
+
+  // Cerrar si se hace clic fuera del contenido
+  document.getElementById('pdfModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+      closePdfModal();
+    }
+  });
+</script>
+
+<%- include('../partials/footer') %>

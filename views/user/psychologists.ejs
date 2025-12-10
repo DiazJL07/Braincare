@@ -1,0 +1,262 @@
+ 
+<link rel="stylesheet" href="/css/psychologists-index.css">
+
+<div class="psych-header">
+    <div class="psych-header-content">
+        <h1 class="psych-header-title">Directorio de Psicólogos</h1>
+        <p class="psych-header-subtitle">
+            Encuentra al profesional ideal. Explora perfiles y especialidades registradas.
+        </p>
+    </div>
+</div>
+
+<div class="psych-search-bar-container">
+    <div class="psych-search-input-group">
+        <i class="fas fa-search psych-search-icon"></i>
+        <input type="text" id="psychSearchInput" class="psych-search-input" placeholder="Buscar por nombre de psicólogo" />
+       <button id="psychFilterButton" class="psych-filter-button">
+        <i class="fas fa-filter"></i> Filtrar
+        </button>
+    </div>
+    
+    <div class="psych-filter-dropdown" id="psychFilterDropdown">
+        <div class="psych-filter-group">
+            <label for="psychSpecialtyFilter" class="psych-filter-label">Especialidad:</label>
+            <select class="psych-filter-select" id="psychSpecialtyFilter">
+                <option value="all">Todas</option>
+                <% const uniqueSpecs = [...new Set((psychologists || []).map(p => p.specialty).filter(Boolean))]; %>
+                <% if (uniqueSpecs.length > 0) { %>
+                    <% uniqueSpecs.forEach(spec => { %>
+                        <option value="<%= spec %>"><%= spec %></option>
+                    <% }); %>
+                <% } else { %>
+                    <option value="Clínica">Clínica</option>
+                    <option value="Infantil">Infantil</option>
+                    <option value="Parejas">Parejas</option>
+                    <option value="Cognitivo-Conductual">Cognitivo-Conductual</option>
+                    <option value="Neuropsicología">Neuropsicología</option>
+                    <option value="Adicciones">Adicciones</option>
+                    <option value="Trauma">Trauma</option>
+                <% } %>
+            </select>
+        </div>
+    </div>
+</div>
+
+<div class="psych-grid" id="psychGrid">
+    <% if (psychologists && psychologists.length > 0) { %>
+        <% psychologists.forEach(p => { %>
+            <div class="psych-card" data-specialty="<%= p.specialty %>">
+                <div class="psych-card-body">
+                    <% const img = p.profileImage ? p.profileImage : '/img/default-avatar.svg'; %>
+                    
+                    <div class="psych-card-avatar-wrap">
+                        <img src="<%= img %>" alt="<%= p.name %>" class="psych-card-avatar"/>
+                    </div>
+                    
+                    <div class="psych-card-info">
+                        <h5 class="psych-card-name"><%= p.name %></h5>
+                        <span class="psych-card-specialty-tag">
+                            <i class="fas fa-brain psych-tag-icon"></i> 
+                            <%= p.specialty || 'Especialidad no especificada' %>
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="psych-card-footer">
+                    <a href="/user/public/<%= p._id %>" class="psych-card-profile-btn">
+                        Ver perfil <i class="fas fa-arrow-right psych-btn-icon"></i>
+                    </a>
+                </div>
+            </div>
+        <% }) %>
+    <% } else { %>
+        <div class="psych-empty">
+            <h3>No hay psicólogos registrados</h3>
+            <p>Vuelve más tarde.</p>
+        </div>
+    <% } %>
+</div>
+
+<div id="psychPagination" class="psych-pagination"></div>
+
+<script>
+    (function(){
+        const input = document.getElementById('psychSearchInput');
+        const spec = document.getElementById('psychSpecialtyFilter');
+        const grid = document.getElementById('psychGrid');
+        const cards = Array.from(grid ? grid.querySelectorAll('.psych-card') : []);
+        const pag = document.getElementById('psychPagination');
+        const filterBtn = document.getElementById('psychFilterButton');
+        const filterDrop = document.getElementById('psychFilterDropdown');
+        
+        // Toggle de Filtros
+        if(filterBtn && filterDrop) {
+            filterBtn.addEventListener('click', function() {
+                filterDrop.classList.toggle('active');
+            });
+            // Ocultar al hacer clic fuera
+            document.addEventListener('click', function(e) {
+                if (!filterBtn.contains(e.target) && !filterDrop.contains(e.target)) {
+                    filterDrop.classList.remove('active');
+                }
+            });
+        }
+        
+        let empty = document.getElementById('psychEmptyResult');
+        let page = 1; const size = 10; let query = ''; let specialty = 'all';
+        function matches(card){
+            const title = (card.querySelector('.psych-card-name')?.textContent || '').toLowerCase();
+            const specText = (card.querySelector('.psych-card-specialty-tag')?.textContent || '').toLowerCase().replace('🧠', '').trim(); // Limpiamos el ícono
+            const q = query.toLowerCase();
+            const nameOk = (!q || title.includes(q));
+            const specOk = (specialty === 'all' || specText.includes(specialty.toLowerCase())); // Usamos includes por si la data de especialidad no está exacta
+            return nameOk && specOk;
+        }
+        function filtered(){ return cards.filter(matches); }
+        function render(){
+            const items = filtered();
+            const total = items.length; const pages = Math.max(1, Math.ceil(total/size));
+            if(page>pages) page = pages;
+            cards.forEach(c=>c.style.display='none');
+            const start = (page-1)*size; const end = start+size;
+            items.slice(start,end).forEach(c=>{ c.style.display=''; c.style.animation='fadeInUp 0.25s ease-out'; });
+            if (!empty) {
+                empty = document.createElement('div');
+                empty.id = 'psychEmptyResult';
+                empty.className = 'psych-empty-result';
+                empty.innerHTML = '<h3>No se encontraron resultados</h3><p>Ajusta los criterios de búsqueda o filtro.</p>';
+                empty.style.display = 'none';
+                grid.parentNode.insertBefore(empty, grid.nextSibling);
+            }
+            empty.style.display = total === 0 ? '' : 'none';
+            if(pag){
+                pag.innerHTML='';
+                for(let i=1;i<=pages;i++){
+                    const b = document.createElement('button');
+                    b.className = 'psych-page-btn'+(i===page?' active':'');
+                    b.textContent = i;
+                    b.onclick = function(){ page=i; render(); };
+                    pag.appendChild(b);
+                }
+            }
+        }
+        if(input){ input.addEventListener('input', function(e){ query = e.target.value || ''; page=1; render(); }); }
+        if(spec){ spec.addEventListener('change', function(e){ specialty = e.target.value || 'all'; page=1; render(); render(); filterDrop.classList.remove('active'); }); }
+        render();
+    })();
+</script>
+
+<script>
+    (function(){
+        function ensureAbsoluteReturnUrl(){
+            var forms = document.querySelectorAll('form.ps-chat-form')
+            forms.forEach(function(form){
+                var ru = form.querySelector('input[name="returnUrl"]')
+                if (ru && ru.value && ru.value.indexOf('http') !== 0) {
+                    if (ru.value.charAt(0) !== '/') ru.value = '/' + ru.value
+                    ru.value = window.location.origin + ru.value
+                }
+            })
+        }
+        document.addEventListener('DOMContentLoaded', ensureAbsoluteReturnUrl)
+    })()
+</script>
+
+<% if (locals.user) { %>
+<script>
+    (function(){
+        function currentPsychIdFromHash(){
+            var h = window.location.hash || ''
+            var m = h.match(/#chat-user-modal-([A-Za-z0-9]+)/)
+            return m ? m[1] : null
+        }
+        var es = null
+        var userId = '<%= locals.user._id %>'
+        var activeChatId = null
+        function connectSSE(){
+            try { es = new EventSource('/api/user-updates/' + userId) } catch(e) { es = null }
+            if (!es) return
+            es.onmessage = function(ev){
+                try {
+                    var data = JSON.parse(ev.data)
+                    if (data && data.type === 'chat_message' && activeChatId && String(data.chatId) === String(activeChatId)) {
+                        var pid = currentPsychIdFromHash()
+                        var container = pid ? document.getElementById('chat-thread-' + pid) : null
+                        if (container) {
+                            var isOwn = String(data.senderId) === String(userId)
+                            var wrap = document.createElement('div')
+                            wrap.style.marginBottom = '10px'
+                            wrap.style.display = 'flex'
+                            wrap.style.justifyContent = isOwn ? 'flex-end' : 'flex-start'
+                            var bubble = document.createElement('div')
+                            bubble.style.maxWidth = '70%'
+                            bubble.style.padding = '10px 12px'
+                            bubble.style.borderRadius = '12px'
+                            bubble.style.background = isOwn ? '#e8f0fe' : '#f5f5f5'
+                            var text = document.createElement('div')
+                            text.style.fontSize = '0.85rem'
+                            text.style.color = '#444'
+                            text.textContent = data.text
+                            var time = document.createElement('div')
+                            time.style.fontSize = '0.75rem'
+                            time.style.color = '#777'
+                            time.style.marginTop = '4px'
+                            time.textContent = new Date(data.createdAt || Date.now()).toLocaleString('es-ES')
+                            bubble.appendChild(text)
+                            bubble.appendChild(time)
+                            wrap.appendChild(bubble)
+                            container.appendChild(wrap)
+                            container.scrollTop = container.scrollHeight
+                        }
+                    }
+                } catch(e){}
+            }
+        }
+        async function loadThread(){
+            var pid = currentPsychIdFromHash()
+            if (!pid) return
+            try {
+                var res = await fetch('/psych/chats/thread?psych=' + pid, { credentials: 'same-origin' })
+                if (!res.ok) return
+                var data = await res.json()
+                activeChatId = data.chatId
+                var container = document.getElementById('chat-thread-' + pid)
+                if (container) {
+                    container.innerHTML = ''
+                    (data.messages || []).forEach(function(m){
+                        var isOwn = m.sender && m.sender._id && String(m.sender._id) === String(userId)
+                        var wrap = document.createElement('div')
+                        wrap.style.marginBottom = '10px'
+                        wrap.style.display = 'flex'
+                        wrap.style.justifyContent = isOwn ? 'flex-end' : 'flex-start'
+                        var bubble = document.createElement('div')
+                        bubble.style.maxWidth = '70%'
+                        bubble.style.padding = '10px 12px'
+                        bubble.style.borderRadius = '12px'
+                        bubble.style.background = isOwn ? '#e8f0fe' : '#f5f5f5'
+                        var text = document.createElement('div')
+                        text.style.fontSize = '0.85rem'
+                        text.style.color = '#444'
+                        text.textContent = m.text
+                        var time = document.createElement('div')
+                        time.style.fontSize = '0.75rem'
+                        time.style.color = '#777'
+                        time.style.marginTop = '4px'
+                        time.textContent = new Date(m.createdAt).toLocaleString('es-ES')
+                        bubble.appendChild(text)
+                        bubble.appendChild(time)
+                        wrap.appendChild(bubble)
+                        container.appendChild(wrap)
+                        container.scrollTop = container.scrollHeight
+                    })
+                }
+            } catch(e) {}
+        }
+        document.addEventListener('DOMContentLoaded', function(){ connectSSE(); loadThread() })
+        window.addEventListener('hashchange', function(){ loadThread() })
+    })()
+</script>
+<% } %>
+<%- include('../partials/footer') %>
+
